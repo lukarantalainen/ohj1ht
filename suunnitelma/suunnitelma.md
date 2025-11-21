@@ -1,51 +1,45 @@
 # Harjoitustyön suunnitelma
 
-(Täydennä oman pelisi tiedot tähän tiedostoon muokkaamalla 
-tiedostoa tekstieditorissa. Käytä [Markdown-syntaksia](https://about.gitlab.com/handbook/markdown-guide/).
-Poista sitten *kaikki* suluilla merkityt kohdat.)
-
 ## Tietoja 
 
-Tekijä: (Etunimi Sukunimi)
+Tekijä: Luka Rantalainen
 
-Työ git-varaston osoite: <https://gitlab.jyu.fi/anlakane/ohj1ht> (*Korvaa* tämä osoite oman git-varastosi osoitteella)
+Työ git-varaston osoite: https://gitlab.jyu.fi/lujivera/ohj1ht
 
-Pelin nimi: (Nimi)
+Pelin nimi: Traffic Sandbox
 
-Pelialusta: Windows/macOS/Linux (Valitse alusta)
+Pelialusta: Windows
 
-Pelaajien lukumäärä: 1/2/3/4 (Valitse pelaajien lukumäärä)
+Pelaajien lukumäärä: 1
 
 ## Pelin tarina
 
-(Pelin tarina.)
+Hauska peli, jossa voi sekä yrittää pelata liikennesääntöjä noudattaen ja aiheuttaa kolareita.
 
 ## Pelin idea ja tavoitteet
 
-(Pelin idea ja tavoitteet.)
+Sandbox-peli, jossa pelaaja voi ohjata liikennettä miten haluaa.
 
 ## Hahmotelma pelistä
 
-(Kun olet lisännyt suunnitelmakuvan tähän hakemistoon, linkitä se tähän alle. Alla on esimerkkikuvan linkitys.)
-
-![Esimerkkikuva](esimerkkikuva.png "Esimerkkikuva")
+![Hahmotelma](traffic-sandbox.png "Hahmotelma")
 
 ## Toteutuksen suunnitelma
 
 Helmikuu
 
-- (Tavoite 1)
-- (Tavoite 2)
-- (Tavoite 3)
+- Kartan teko
+- Autot kartalle
+- Kartan vaihtaminen
 
 Maaliskuu
 
-- (Tavoite 1)
-- (Tavoite 2)
-- (Tavoite 3)
+- Nopeuden muuttaminen
+- Autojen määrän muuttaminen
+- Autojen aggressiivisuus
 
 Jos aikaa jää
 
-- (Tavoite 1)
-- (Tavoite 2)
-- (Tavoite 3)
+- Räjähdykset ja muut (kaaostila)
+- Muut ominaisuudet autoille/kuljettajille
+- Lisää preset karttoja
