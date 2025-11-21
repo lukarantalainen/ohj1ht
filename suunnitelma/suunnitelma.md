@@ -4,7 +4,7 @@
 
 Tekijä: Luka Rantalainen
 
-Työ git-varaston osoite: https://gitlab.jyu.fi/lujivera/ohj1ht
+Työ git-varaston osoite: https://github.com/lukarantalainen/ohj1ht.git
 
 Pelin nimi: Traffic Sandbox
 
