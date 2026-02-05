@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Formats.Webp;
 
 namespace TrafficSim;
 
-/// @author gr313129
+/// @author lukar
 /// @version 16.01.2026
 /// <summary>
 /// 
@@ -17,86 +17,103 @@ namespace TrafficSim;
 public class TrafficSim : PhysicsGame
 {
     private PhysicsObject _player;
+    private PhysicsObject _road1;
+    private PhysicsObject _road2;
+    private Label _debugLabel;
+    private PhysicsObject _lowerBorder;
     public override void Begin()
     {
-        GameObject road = new GameObject(Level.Height, Level.Width * 0.8, Shape.Rectangle);
-        road.Color = Color.Black;
-        Add(road, -3);
-        
         CreatePlayer();
         AddControls();
-        
-
-        PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
-        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-    
         CreateMap();
-        CreatePlayer();
+        CreateRoad();
+        CreateDebugLabel();
 
+        AddCollisionHandler(_lowerBorder, _road1, RoadCycle);
+        AddCollisionHandler(_lowerBorder, _road2, RoadCycle);
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+    }
+
+
+    private void CreateDebugLabel()
+    {
+        _debugLabel = new Label();
+        _debugLabel.Position = new Vector(Level.Left+100, Level.Top-100);
+        Add(_debugLabel);
     }
 
     private void CreateMap()
     {
         Level.BackgroundColor = Color.JungleGreen;
-        Level.CreateBorders();
-        var road = new GameObject(Level.Width*0.8, 2000);
-        road.Color = Color.Black;
-        Add(road, -3);
+        _lowerBorder = new PhysicsObject(Level.Width, 1);
+        _lowerBorder.Y = Level.Bottom;
+        Add(_lowerBorder, -3);
     }
-
+    
+    private void CreateRoad()
+    {
+        _road1 = new PhysicsObject(Level.Width*0.8, 50);
+        _road1.Color = Color.Black;
+        _road1.IgnoresGravity = true;
+        _road1.IgnoresCollisionResponse = true;
+        Add(_road1, -3);
+        
+        
+        
+        _road2 =  new PhysicsObject(Level.Width * 0.8, 50);
+        _road2.Color = Color.White;
+        _road2.Y = _road1.Y + 50;
+        _road2.IgnoresGravity = true;
+        _road2.IgnoresCollisionResponse = true;
+        Add(_road2, -3);
+    }
+    
+    private void RoadCycle(PhysicsObject target, PhysicsObject road)
+    {
+        road.Y = Level.Top;
+    }
     private void CreatePlayer()
     {
-        _player = new PhysicsObject(40, 20,  Shape.Rectangle);
-        _player.Color = Color.Green;
-        Add(_player);
         _player = new PhysicsObject(40, 20);
         _player.Color = Color.Red;
-        _player.MaxVelocity = 200;
-        _player.LinearDamping = 0.95;
-        _player.MomentOfInertia = 500;
-        _player.AngularDamping = 0.5;
         _player.Angle = Angle.FromDegrees(90);
         Add(_player, 0);
-        AddControls();
     }
-
+    
     private void AddControls()
     {
-        Keyboard.Listen(Key.W, ButtonState.Down, MovePlayer, "", new Vector(0, 100));
-        Keyboard.Listen(Key.S, ButtonState.Down, MovePlayer, "", new Vector(0, -100));
-        Keyboard.Listen(Key.A, ButtonState.Down, MovePlayer, "", new Vector(-100, 0));
-        Keyboard.Listen(Key.D, ButtonState.Down, MovePlayer, "", new Vector(100, 0));
-    }
-
-    private void MovePlayer(Vector direction)
-    {
-        _player.Push(direction);
-    }
-
-    private void MovePlayer(Angle angle)
-    {
-        
-    
-        Keyboard.Listen(Key.W, ButtonState.Down, MoveCar, "", true);
-        Keyboard.Listen(Key.S, ButtonState.Down, MoveCar, "", false);
+        Keyboard.Listen(Key.W, ButtonState.Down, Drive, "");
+        Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
         Keyboard.Listen(Key.D, ButtonState.Down, RotateCar, "", true);
         Keyboard.Listen(Key.A, ButtonState.Down, RotateCar, "", false);
+        Keyboard.Listen(Key.R, ButtonState.Pressed, ResetPos, "");
     }
 
-    private void MoveCar(bool forward)
+    private void ResetPos()
     {
-        Vector facing = Vector.FromLengthAndAngle(500, _player.Angle);
-        
-        if (forward)
-        {
-            _player.Push(facing);
-        }
+        _road1.Position = new Vector(0, 0);
+        _road2.Position = new Vector(0, 50);
+    }
+    private void MoveRoads(double force)
+    {
+        _road1.Push(new Vector(0, _road1.Mass*force));
+        _road2.Push(new Vector(0, _road2.Mass*force));
+    }
 
-        else
+    
+    private void Drive()
+    {
+        _debugLabel.Text = "Accelerating";
+        MoveRoads(-100);
+    }
+
+    private void Brake()
+    {
+        if (_road1.Velocity.Y < 0)
         {
-            _player.Push(-facing);
+            _debugLabel.Text = "Braking";
+            MoveRoads(100);
         }
     }
 
@@ -111,6 +128,4 @@ public class TrafficSim : PhysicsGame
             _player.ApplyTorque(1000);
         }
     }
-    
-   
 }
