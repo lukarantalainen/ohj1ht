@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Jypeli;
 using Jypeli.Assets;
 using Jypeli.Controls;
@@ -15,101 +16,72 @@ namespace TrafficSim;
 /// </summary>
 public class TrafficSim : PhysicsGame
 {
-    public IntMeter IntervalMeter;
-    public Timer VehicleTimer;
+    private PhysicsObject _player;
     public override void Begin()
     {
-        Level.BackgroundColor = Color.Aqua;
-        IntervalMeter = new IntMeter(0);
-        VehicleTimer = new Timer();
-        VehicleTimer.Interval = 1.0;
-        VehicleTimer.Timeout += CreateVehicle;
-        VehicleTimer.Start();
-
-        GameObject road = new GameObject(2000, 40);
-        Add(road);
-        
-        ShowInterval();
+        CreateMap();
+        CreatePlayer();
 
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
-        Keyboard.Listen(Key.Enter, ButtonState.Down, SetInterval, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
     }
-    void SetInterval()
+
+    private void CreateMap()
     {
-        double nextInterval = RandomGen.NextDouble(0.2, 1.0);
-        IntervalMeter.Value = Convert.ToInt32(Math.Floor(nextInterval * 100));
-        VehicleTimer.Interval = nextInterval;
+        Level.BackgroundColor = Color.JungleGreen;
+        Level.CreateBorders();
+        var road = new GameObject(Level.Width*0.8, 2000);
+        road.Color = Color.Black;
+        Add(road, -3);
     }
 
-    void ShowInterval()
+    private void CreatePlayer()
     {
-        Label text = new Label();
-        text.X = Level.Left + 100;
-        text.Y = Level.Top - 100;
-        text.BindTo(IntervalMeter);
-        Add(text);
+        _player = new PhysicsObject(40, 20);
+        _player.Color = Color.Red;
+        _player.MaxVelocity = 200;
+        _player.LinearDamping = 0.95;
+        _player.MomentOfInertia = 500;
+        _player.AngularDamping = 0.5;
+        _player.Angle = Angle.FromDegrees(90);
+        Add(_player, 0);
+        AddControls();
     }
 
-    void CreateVehicle()
+    private void AddControls()
     {
-        if (RandomGen.NextInt(1, 10) <= 8)
+        Keyboard.Listen(Key.W, ButtonState.Down, MoveCar, "", true);
+        Keyboard.Listen(Key.S, ButtonState.Down, MoveCar, "", false);
+        Keyboard.Listen(Key.D, ButtonState.Down, RotateCar, "", true);
+        Keyboard.Listen(Key.A, ButtonState.Down, RotateCar, "", false);
+    }
+
+    private void MoveCar(bool forward)
+    {
+        Vector facing = Vector.FromLengthAndAngle(500, _player.Angle);
+        
+        if (forward)
         {
-            Vehicle carObj = new Vehicle();
-            PhysicsObject car = carObj.FourDoor();
-            car.Position = RandomGen.NextVector(Level.Left, Level.Bottom, Level.Right, Level.Top);
-            Add(car);
+            _player.Push(facing);
+        }
+
+        else
+        {
+            _player.Push(-facing);
+        }
+    }
+
+    private void RotateCar(bool right)
+    {
+        if (right)
+        {
+            _player.ApplyTorque(-1000);
         }
         else
         {
-            Vehicle truckObj = new Vehicle();
-            PhysicsObject truck = truckObj.Truck();
-            truck.Position = RandomGen.NextVector(Level.Left, Level.Bottom, Level.Right, Level.Top);
-            Add(truck);
-        }
-        
-
-    }
-
-    public static class Colors
-    {
-        private static Color[] commonCarColors = { Color.Black, Color.White, Color.Gray, Color.Blue, Color.Red};
-        private static Color[] rareCarColors = { Color.Silver, Color.Brown, Color.LightBlue, Color.Yellow, Color.BrightGreen };
-
-        public static Color GetCommonCarColor()
-        {
-            return commonCarColors[RandomGen.NextInt(0, commonCarColors.Length)];
-        }
-
-        public static Color GetRareCarColor()
-        {
-            return rareCarColors[RandomGen.NextInt(0, rareCarColors.Length)];
+            _player.ApplyTorque(1000);
         }
     }
-
-    public class Vehicle
-    {
-        public PhysicsObject FourDoor()
-        {
-            PhysicsObject car = new PhysicsObject(20, 40);
-            if (RandomGen.NextInt(1, 10) < 8)
-            {
-                car.Color = Colors.GetCommonCarColor();
-            }
-            else
-            {
-                car.Color = Colors.GetRareCarColor();
-            }
-            
-            return car;
-        }
-
-        public PhysicsObject Truck()
-        {
-            PhysicsObject truck = new PhysicsObject(20, 60);
-            truck.Color = RandomGen.NextColor();
-            return truck;
-        }
-        
-    }
+    
+   
 }
