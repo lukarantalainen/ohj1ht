@@ -26,7 +26,11 @@ public class TrafficSim : PhysicsGame
         CreatePlayer();
         AddControls();
         CreateMap();
-        CreateRoad();
+        _road1 = CreateRoad(Color.Black, 2000);
+        _road2 = CreateRoad(Color.Blue, 2000);
+        Add(_road1);
+        Add(_road2);
+        
         CreateDebugLabel();
 
         AddCollisionHandler(_lowerBorder, _road1, RoadCycle);
@@ -51,32 +55,25 @@ public class TrafficSim : PhysicsGame
         Add(_lowerBorder, -3);
     }
     
-    private void CreateRoad()
+    private PhysicsObject CreateRoad(Color color, double height)
     {
-        _road1 = new PhysicsObject(Level.Width*0.8, 50);
-        _road1.Color = Color.Black;
-        _road1.IgnoresGravity = true;
-        _road1.IgnoresCollisionResponse = true;
-        Add(_road1, -3);
+        PhysicsObject road = new PhysicsObject(Level.Width*0.8, 2000);
+        road.Color = Color.Black;
+        road.IgnoresGravity = true;
+        road.IgnoresCollisionResponse = true;
         
-        
-        
-        _road2 =  new PhysicsObject(Level.Width * 0.8, 50);
-        _road2.Color = Color.White;
-        _road2.Y = _road1.Y + 50;
-        _road2.IgnoresGravity = true;
-        _road2.IgnoresCollisionResponse = true;
-        Add(_road2, -3);
+        return road;
     }
     
     private void RoadCycle(PhysicsObject target, PhysicsObject road)
     {
-        road.Y = Level.Top;
+        road.Y = 1000;
     }
     private void CreatePlayer()
     {
         _player = new PhysicsObject(40, 20);
         _player.Color = Color.Red;
+        _player.AngularDamping = 0.95;
         _player.Angle = Angle.FromDegrees(90);
         Add(_player, 0);
     }
