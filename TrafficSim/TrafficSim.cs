@@ -21,6 +21,7 @@ public class TrafficSim : PhysicsGame
     private PhysicsObject _road2;
     private Label _debugLabel;
     private PhysicsObject _lowerBorder;
+    private Image road_texture = LoadImage("road_texture");
     public override void Begin()
     {
         CreatePlayer();
@@ -28,6 +29,7 @@ public class TrafficSim : PhysicsGame
         CreateMap();
         _road1 = CreateRoad(Color.Black, 2000);
         _road2 = CreateRoad(Color.Blue, 2000);
+        _road2.Y = _road1.Y + _road1.Height;
         Add(_road1);
         Add(_road2);
         
@@ -38,8 +40,7 @@ public class TrafficSim : PhysicsGame
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
     }
-
-
+    
     private void CreateDebugLabel()
     {
         _debugLabel = new Label();
@@ -51,23 +52,25 @@ public class TrafficSim : PhysicsGame
     {
         Level.BackgroundColor = Color.JungleGreen;
         _lowerBorder = new PhysicsObject(Level.Width, 1);
-        _lowerBorder.Y = Level.Bottom;
+        _lowerBorder.Y = -2000;
         Add(_lowerBorder, -3);
     }
     
     private PhysicsObject CreateRoad(Color color, double height)
     {
         PhysicsObject road = new PhysicsObject(Level.Width*0.8, 2000);
-        road.Color = Color.Black;
+        road.Image = road_texture;
         road.IgnoresGravity = true;
         road.IgnoresCollisionResponse = true;
+
+        road.MaxVelocity = 200;
         
         return road;
     }
     
-    private void RoadCycle(PhysicsObject target, PhysicsObject road)
+    private static void RoadCycle(PhysicsObject target, PhysicsObject road)
     {
-        road.Y = 1000;
+        road.Y += 2000;
     }
     private void CreatePlayer()
     {
@@ -97,7 +100,6 @@ public class TrafficSim : PhysicsGame
         _road1.Push(new Vector(0, _road1.Mass*force));
         _road2.Push(new Vector(0, _road2.Mass*force));
     }
-
     
     private void Drive()
     {
@@ -125,4 +127,6 @@ public class TrafficSim : PhysicsGame
             _player.ApplyTorque(1000);
         }
     }
+    
+    
 }
