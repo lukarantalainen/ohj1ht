@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Jypeli;
-using Jypeli.Assets;
-using Jypeli.Controls;
-using Jypeli.Widgets;
-using SixLabors.ImageSharp.Formats.Webp;
+
 
 namespace TrafficSim;
 
@@ -16,68 +11,38 @@ namespace TrafficSim;
 /// </summary>
 public class TrafficSim : PhysicsGame
 {
-    private PhysicsObject _player;
-    private PhysicsObject _road1;
-    private PhysicsObject _road2;
-    private Label _debugLabel;
+    private Player _player;
+    private static readonly Image CarTexture = LoadImage("car_texture");
+    private static readonly Shape CarShape = Shape.FromImage(CarTexture);
+    
+    private Road _topRoad;
+    private Road _bottomRoad;
+    private static readonly Image RoadTexture = LoadImage("road_texture");
     private PhysicsObject _lowerBorder;
-    private Image road_texture = LoadImage("road_texture");
+    
+    private Label _debugLabel;
+    
+    private const int RoadWidth = 200;
+    private const int PlayerSize = 200;
     public override void Begin()
     {
+        IsFullScreen = true;
+        InitializeGame();
+    }
+
+    private void InitializeGame()
+    {
+        ClearAll();
         CreatePlayer();
         AddControls();
         CreateMap();
-        _road1 = CreateRoad(Color.Black, 2000);
-        _road2 = CreateRoad(Color.Blue, 2000);
-        _road2.Y = _road1.Y + _road1.Height;
-        Add(_road1);
-        Add(_road2);
-        
         CreateDebugLabel();
-
-        AddCollisionHandler(_lowerBorder, _road1, RoadCycle);
-        AddCollisionHandler(_lowerBorder, _road2, RoadCycle);
-        PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
-        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-    }
-    
-    private void CreateDebugLabel()
-    {
-        _debugLabel = new Label();
-        _debugLabel.Position = new Vector(Level.Left+100, Level.Top-100);
-        Add(_debugLabel);
-    }
-
-    private void CreateMap()
-    {
-        Level.BackgroundColor = Color.JungleGreen;
-        _lowerBorder = new PhysicsObject(Level.Width, 1);
-        _lowerBorder.Y = -2000;
-        Add(_lowerBorder, -3);
-    }
-    
-    private PhysicsObject CreateRoad(Color color, double height)
-    {
-        PhysicsObject road = new PhysicsObject(Level.Width*0.8, 2000);
-        road.Image = road_texture;
-        road.IgnoresGravity = true;
-        road.IgnoresCollisionResponse = true;
-
-        road.MaxVelocity = 200;
         
-        return road;
     }
     
-    private static void RoadCycle(PhysicsObject target, PhysicsObject road)
-    {
-        road.Y += 2000;
-    }
     private void CreatePlayer()
     {
-        _player = new PhysicsObject(40, 20);
-        _player.Color = Color.Red;
-        _player.AngularDamping = 0.95;
-        _player.Angle = Angle.FromDegrees(90);
+        _player = new Player(PlayerSize, PlayerSize, CarTexture, CarShape);
         Add(_player, 0);
     }
     
@@ -85,48 +50,75 @@ public class TrafficSim : PhysicsGame
     {
         Keyboard.Listen(Key.W, ButtonState.Down, Drive, "");
         Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
-        Keyboard.Listen(Key.D, ButtonState.Down, RotateCar, "", true);
-        Keyboard.Listen(Key.A, ButtonState.Down, RotateCar, "", false);
-        Keyboard.Listen(Key.R, ButtonState.Pressed, ResetPos, "");
-    }
-
-    private void ResetPos()
-    {
-        _road1.Position = new Vector(0, 0);
-        _road2.Position = new Vector(0, 50);
-    }
-    private void MoveRoads(double force)
-    {
-        _road1.Push(new Vector(0, _road1.Mass*force));
-        _road2.Push(new Vector(0, _road2.Mass*force));
+        Keyboard.Listen(Key.A, ButtonState.Down, _player.SteerLeft, "");
+        Keyboard.Listen(Key.D, ButtonState.Down, _player.SteerRight, "");
+        Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
+        Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
+        Keyboard.Listen(Key.Left, ButtonState.Down, _player.SteerLeft, "");
+        Keyboard.Listen(Key.Right, ButtonState.Down, _player.SteerRight, "");
+        Keyboard.Listen(Key.R, ButtonState.Pressed, InitializeGame, "");
+        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
     }
     
     private void Drive()
     {
-        _debugLabel.Text = "Accelerating";
-        MoveRoads(-100);
+        _bottomRoad.SimulateDriving(500);
+        _topRoad.SimulateDriving(500);
     }
-
     private void Brake()
     {
-        if (_road1.Velocity.Y < 0)
-        {
-            _debugLabel.Text = "Braking";
-            MoveRoads(100);
-        }
+        if (_bottomRoad.Velocity.Y > 0) return;
+        _bottomRoad.SimulateBraking(500);
+        _topRoad.SimulateBraking(500);
+    }
+    private void CreateMap()
+    {
+        CreateLowerBorder();
+        CreateRoads();
     }
 
-    private void RotateCar(bool right)
+    private void CreateLowerBorder()
     {
-        if (right)
-        {
-            _player.ApplyTorque(-1000);
-        }
-        else
-        {
-            _player.ApplyTorque(1000);
-        }
+        Level.BackgroundColor = Color.JungleGreen;
+        _lowerBorder = new PhysicsObject(Level.Width, 1);
+        _lowerBorder.Y = -(Screen.Height-200);
+        Add(_lowerBorder, -3);
+    }
+
+    private void CreateRoads()
+    {
+        _bottomRoad = new Road(RoadWidth, Screen.Height, RoadTexture);
+        _topRoad = new Road(RoadWidth, Screen.Height, RoadTexture);
+        
+        _topRoad.Y = _bottomRoad.Y+_bottomRoad.Height-200;
+        
+        Add(_bottomRoad, -3);
+        Add(_topRoad, -3);
+        AddCollisionHandler(_lowerBorder, _bottomRoad, RoadCycle);
+        AddCollisionHandler(_lowerBorder, _topRoad, RoadCycle);
     }
     
+    private static void RoadCycle(PhysicsObject target, PhysicsObject road)
+    {
+        road.Y = 3000;
+    }
+    
+    private void CreateDebugLabel()
+    {
+        _debugLabel = new Label();
+        _debugLabel.Position = new Vector(Level.Left+100, Level.Top-100);
+        Add(_debugLabel);
+        _debugLabel.Text = "Test";
+        Timer speedMeter = new Timer();
+        speedMeter.Interval = 0.01;
+        speedMeter.Timeout += UpdateLabel;
+        speedMeter.Start();
+    }
+
+    private void UpdateLabel()
+    {
+        _debugLabel.Text = _topRoad.Velocity.Magnitude.ToString();
+
+    }
     
 }
