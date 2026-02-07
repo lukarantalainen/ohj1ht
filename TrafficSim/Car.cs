@@ -1,10 +1,10 @@
 using Jypeli;
 namespace TrafficSim;
 
-public class Player : PhysicsObject
+public class Car : PhysicsObject
 {
     private const double SteeringForce = 1000;
-    public Player(double width, double height, Image texture, Shape shape) : base(width, height, shape)
+    public Car(double width, double height, Image texture, Shape shape) : base(width, height, shape)
     {
         Image = texture;
         LinearDamping = 0.998;
@@ -21,4 +21,5 @@ public class Player : PhysicsObject
     {
         Push(new Vector(-Mass*SteeringForce, 0));
     }
+    
 }
