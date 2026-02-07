@@ -4,11 +4,10 @@ namespace TrafficSim;
 
 public class Controls
 {
-    private Car _car;
+    private PlayerCar _car;
     private RoadMap _RoadMap;
-    
 
-    public Controls(Car car,  RoadMap roadMap)
+    public Controls(PlayerCar car,  RoadMap roadMap)
     {
         _car = car;
         _RoadMap = roadMap;
@@ -26,11 +25,11 @@ public class Controls
 
     public void SteerLeft()
     {
-        _car.SteerLeft();
+        _car.SteerLeft(_RoadMap.GetVelocity());
     }
 
     public void SteerRight()
     {
-        _car.SteerRight();
+        _car.SteerRight(_RoadMap.GetVelocity());
     }
 }

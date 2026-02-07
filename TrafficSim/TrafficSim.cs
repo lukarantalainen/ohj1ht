@@ -1,6 +1,5 @@
-using System;
-using System.IO;
 using Jypeli;
+using Jypeli.Widgets;
 
 
 namespace TrafficSim;
@@ -18,10 +17,6 @@ public class TrafficSim : PhysicsGame
     
     private static readonly Image RoadTexture = LoadImage("road_texture");
     
-    private Label _debugLabel;
-    
-    private const int RoadWidth = 200;
-    private const int PlayerSize = 200;
     public override void Begin()
     {
         IsFullScreen = true;
@@ -31,53 +26,45 @@ public class TrafficSim : PhysicsGame
     private void InitializeGame()
     {
         ClearAll();
-
         CreateMap();
-        CreateDebugLabel();
     }
     
     private void CreateMap()
     {
-        var roadMap = CreateRoads();
         var car = CreateCar();
+        var roadMap = CreateRoad();
         Controls controls = new Controls(car, roadMap);
         AddControls(controls);
     }
-
-    private RoadMap CreateRoads()
+    private PlayerCar CreateCar()
     {
-        double screenHeight = Screen.Height;
-        Road road1 = new Road(RoadWidth, screenHeight+200, RoadTexture);
-        Road road2 = new Road(RoadWidth, screenHeight, RoadTexture);
+        const int playerSize = 200;
+        var car = new PlayerCar(playerSize, playerSize, CarTexture, CarShape);
+        Add(car);
+        return car;
+    }
+    private RoadMap CreateRoad()
+    {
+        int roadWidth = 200;
+        double roadHeight = Screen.Height*1.5;
+        Road road1 = new Road(roadWidth, roadHeight, RoadTexture);
+        Road road2 = new Road(roadWidth, roadHeight, RoadTexture);
         
-        Add(road1);
-        Add(road2);
-        
-        PhysicsObject lowerBorder = CreateLowerBorder();
-        Add(lowerBorder);
+        Add(road1, -1);
+        Add(road2, -1);
+
+        PhysicsObject lowerBorder = Road.CreateLowerBorder(Screen.Bottom-roadHeight);
+        Add(lowerBorder, -1);
         
         AddCollisionHandler(lowerBorder, road1, road1.MoveRoad);
         AddCollisionHandler(lowerBorder, road2, road2.MoveRoad);
-        
         RoadMap roadMap = new RoadMap(road1, road2);
+        Add(roadMap.CreateSlider());
+
+        SpeedOMeter speedOMeter = new SpeedOMeter(roadMap, new Vector(Level.Left+100, Level.Top-100));
+        Add(speedOMeter);
         
         return roadMap;
-    }
-    
-    private PhysicsObject CreateLowerBorder()
-    {
-        Level.BackgroundColor = Color.JungleGreen;
-        PhysicsObject lowerBorder = new PhysicsObject(Level.Width, 1);
-        lowerBorder.Color = Color.HotPink;
-        lowerBorder.Y = Screen.Bottom-Screen.Height;
-        return lowerBorder;
-    }
-
-    private Car CreateCar()
-    {
-        var car = new Car(PlayerSize, PlayerSize, CarTexture, CarShape);
-        Add(car);
-        return car;
     }
     
     private void AddControls(Controls controls)
@@ -93,15 +80,7 @@ public class TrafficSim : PhysicsGame
         Keyboard.Listen(Key.R, ButtonState.Pressed, InitializeGame, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
     }
+    
 
-    
-    
-    private void CreateDebugLabel()
-    {
-        _debugLabel = new Label();
-        _debugLabel.Position = new Vector(Level.Left+100, Level.Top-100);
-        Add(_debugLabel);
-        _debugLabel.Text = "Test";
-    }
     
 }
