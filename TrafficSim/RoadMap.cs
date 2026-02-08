@@ -6,24 +6,31 @@ public class RoadMap
 {
     private readonly Road _road1;
     private readonly Road _road2;
-    public RoadMap(Road road1, Road road2)
+    private readonly Background _background1;
+    private readonly Background _background2;
+    public RoadMap(Road road1, Road road2, Background background1, Background background2)
     {
         _road1 = road1;
         _road2 = road2;
         _road2.Y+=road1.Height;
+        _background1 = background1;
+        _background2 = background2;
+        _background2.Y+=background1.Height;
     }
     
     public Slider CreateSlider()
     {
-        DoubleMeter roadWidth = new  DoubleMeter(200, 1, 1000);
+        IntMeter roadWidth = new  IntMeter(200, 1, 2000);
         roadWidth.Changed += ChangeRoadWidth;
+        
     
         Slider roadSlider = new Slider(200, 20);
+        roadSlider.Position = new Vector(-500, 500);
         roadSlider.BindTo(roadWidth);
         return roadSlider;
     }
 
-    private void ChangeRoadWidth(double oldValue, double newValue)
+    private void ChangeRoadWidth(int oldValue, int newValue)
     {
         _road1.Width = newValue;
         _road2.Width = newValue;
@@ -33,11 +40,15 @@ public class RoadMap
     {
         _road1.SimulateDriving(5000);
         _road2.SimulateDriving(5000);
+        _background1.SimulateDriving();
+        _background2.SimulateDriving();
     }
     public void Brake()
     {
         _road1.SimulateBraking(5000);
         _road2.SimulateBraking(5000);
+        _background1.SimulateBraking();
+        _background2.SimulateBraking();
     }
 
     public double GetVelocity()

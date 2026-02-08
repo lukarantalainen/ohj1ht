@@ -17,7 +17,9 @@ public class Road : PhysicsObject
 
     public void SimulateBraking(double force)
     {
+        if (Velocity.Y > -100) return;
         base.Push(new Vector(0, Mass*force));
+        
     }
 
     public void MoveRoad(PhysicsObject border, PhysicsObject self)

@@ -17,6 +17,8 @@ public class TrafficSim : PhysicsGame
     
     private static readonly Image RoadTexture = LoadImage("road_texture");
     
+    private static readonly Image DesertTexture = LoadImage("desert_texture");
+    
     public override void Begin()
     {
         IsFullScreen = true;
@@ -40,9 +42,10 @@ public class TrafficSim : PhysicsGame
     {
         const int playerSize = 200;
         var car = new PlayerCar(playerSize, playerSize, CarTexture, CarShape);
-        Add(car);
+        Add(car, 0);
         return car;
     }
+    
     private RoadMap CreateRoad()
     {
         int roadWidth = 200;
@@ -53,13 +56,29 @@ public class TrafficSim : PhysicsGame
         Add(road1, -1);
         Add(road2, -1);
 
-        PhysicsObject lowerBorder = Road.CreateLowerBorder(Screen.Bottom-roadHeight);
-        Add(lowerBorder, -1);
         
-        AddCollisionHandler(lowerBorder, road1, road1.MoveRoad);
-        AddCollisionHandler(lowerBorder, road2, road2.MoveRoad);
-        RoadMap roadMap = new RoadMap(road1, road2);
-        Add(roadMap.CreateSlider());
+        
+        Background background1 = new Background(Screen.Width, roadHeight, DesertTexture);
+        Add(background1, -2);
+        Background background2 = new Background(Screen.Width, roadHeight, DesertTexture);
+        Add(background2, -2);
+        
+        
+        RoadMap roadMap = new RoadMap(road1, road2, background1, background2);
+        var slider =  roadMap.CreateSlider();
+        Add(slider);
+        
+        
+        PhysicsObject roadLowerBorder = Road.CreateLowerBorder(Screen.Bottom-roadHeight);
+        Add(roadLowerBorder, -1);
+        PhysicsObject backgroundLowerBorder = Background.CreateLowerBorder(Screen.Bottom-roadHeight);
+        Add(backgroundLowerBorder, -2);
+        
+        AddCollisionHandler(roadLowerBorder, road1, road1.MoveRoad);
+        AddCollisionHandler(roadLowerBorder, road2, road2.MoveRoad);
+        AddCollisionHandler(backgroundLowerBorder, background1, background1.MoveBackground);
+        AddCollisionHandler(backgroundLowerBorder, background2, background2.MoveBackground);
+        
 
         SpeedOMeter speedOMeter = new SpeedOMeter(roadMap, new Vector(Level.Left+100, Level.Top-100));
         Add(speedOMeter);
@@ -80,7 +99,4 @@ public class TrafficSim : PhysicsGame
         Keyboard.Listen(Key.R, ButtonState.Pressed, InitializeGame, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
     }
-    
-
-    
 }
