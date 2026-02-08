@@ -1,19 +1,35 @@
 using Jypeli;
+using System;
+using System.Collections.Generic;
 
 namespace TrafficSim;
 
 public class Background : PhysicsObject
 {
+    private static double _width;
     private static double _height;
-    public Background(double width, double height, Image texture) : base(width, height)
+    private readonly Image _backgroundItemTexture;
+    private new const double MaxVelocity = 1000;
+
+    private Background(double width, double height) : base(width, height) //default
     {
-        Image = texture;
         _height = height;
+        _width = width;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
-        MaxVelocity = 1000;
+        base.MaxVelocity = MaxVelocity;
     }
-
+    
+    public Background(double width, double height, Color color) :  this(width, height)
+    {
+        base.Color = color;
+    }
+    public Background(double width, double height, Image backgroundTexture, Image backgroundItemTexture) : base(width, height)
+    {
+        Image = backgroundTexture;
+        _backgroundItemTexture = backgroundItemTexture;
+    }
+    
     public void MoveBackground(PhysicsObject a, PhysicsObject b)
     {
         Y += _height*2;
@@ -32,7 +48,8 @@ public class Background : PhysicsObject
     
     public static PhysicsObject CreateLowerBorder(double posY)
     {
-        var border = new PhysicsObject(5000, 1);
+        var border = new PhysicsObject(6000, 100);
+        border.Color = Color.Black;
         border.Top = posY;
         border.IgnoresCollisionResponse = true;
         border.IgnoresGravity = true;

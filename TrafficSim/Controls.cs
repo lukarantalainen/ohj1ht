@@ -25,11 +25,11 @@ public class Controls
 
     public void SteerLeft()
     {
-        _car.SteerLeft(_RoadMap.GetVelocity());
+        _car.SteerLeft(_RoadMap.GetAbsVelocity());
     }
 
     public void SteerRight()
     {
-        _car.SteerRight(_RoadMap.GetVelocity());
+        _car.SteerRight(_RoadMap.GetAbsVelocity());
     }
 }

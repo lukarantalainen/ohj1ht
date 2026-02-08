@@ -29,7 +29,7 @@ public class Road : PhysicsObject
     
     public static PhysicsObject CreateLowerBorder(double posY)
     {
-        var border = new PhysicsObject(5000, 1);
+        var border = new PhysicsObject(5000, 100);
         border.Top = posY;
         border.IgnoresCollisionResponse = true;
         border.IgnoresGravity = true;

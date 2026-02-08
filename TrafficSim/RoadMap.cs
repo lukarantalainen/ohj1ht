@@ -1,4 +1,5 @@
 using Jypeli;
+using System;
 
 namespace TrafficSim;
 using Jypeli.Widgets;
@@ -8,6 +9,8 @@ public class RoadMap
     private readonly Road _road2;
     private readonly Background _background1;
     private readonly Background _background2;
+    private PhysicsObject borderLeft;
+    private PhysicsObject borderRight;
     public RoadMap(Road road1, Road road2, Background background1, Background background2)
     {
         _road1 = road1;
@@ -16,6 +19,29 @@ public class RoadMap
         _background1 = background1;
         _background2 = background2;
         _background2.Y+=background1.Height;
+    }
+    
+    
+
+    public void Drive()
+    {
+        _road1.SimulateDriving(5000);
+        _road2.SimulateDriving(5000);
+        _background1.SimulateDriving();
+        _background2.SimulateDriving();
+    }
+    public void Brake()
+    {
+        if (GetAbsVelocity() < 500) return;
+        _road1.SimulateBraking(5000);
+        _road2.SimulateBraking(5000);
+        _background1.SimulateBraking();
+        _background2.SimulateBraking();
+    }
+
+    public double GetAbsVelocity()
+    {
+        return (Math.Abs(_road1.Velocity.Magnitude + _road2.Velocity.Magnitude)) / 2;
     }
     
     public Slider CreateSlider()
@@ -34,26 +60,26 @@ public class RoadMap
     {
         _road1.Width = newValue;
         _road2.Width = newValue;
+        MoveBorders();
     }
 
-    public void Drive()
+    public PhysicsObject[] CreateRoadBorders(double width, double height, Color color)
     {
-        _road1.SimulateDriving(5000);
-        _road2.SimulateDriving(5000);
-        _background1.SimulateDriving();
-        _background2.SimulateDriving();
-    }
-    public void Brake()
-    {
-        _road1.SimulateBraking(5000);
-        _road2.SimulateBraking(5000);
-        _background1.SimulateBraking();
-        _background2.SimulateBraking();
+        borderLeft = new PhysicsObject(width, height);
+        borderLeft.MakeStatic();
+        borderLeft.Right = _road1.Left;
+        borderLeft.Color = color;
+        borderRight = new PhysicsObject(width, height);
+        borderRight.MakeStatic();
+        borderRight.Left = _road1.Right;
+        borderRight.Color = color;
+        return [borderRight, borderLeft];
     }
 
-    public double GetVelocity()
+    private void MoveBorders()
     {
-        return (_road1.Velocity.Magnitude + _road2.Velocity.Magnitude) / 2;
+        borderLeft.Right = _road1.Left;
+        borderRight.Left = _road1.Right;
     }
     
 }

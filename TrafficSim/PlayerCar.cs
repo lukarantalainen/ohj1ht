@@ -8,18 +8,19 @@ public class PlayerCar : PhysicsObject
     {
         Image = texture;
         LinearDamping = 0.998;
+        Restitution = 0.5;
         CanRotate = false;
         base.Position = new Vector(0, -200);
     }
 
     public void SteerRight(double velocity)
     {
-        Push(new Vector(Mass*(velocity+100)*0.5, 0));
+        Push(new Vector(Mass*(velocity), 0));
     }
 
     public void SteerLeft(double velocity)
     {
-        Push(new Vector(-Mass*(velocity+100)*0.5, 0));
+        Push(new Vector(-Mass*(velocity), 0));
     }
     
 }

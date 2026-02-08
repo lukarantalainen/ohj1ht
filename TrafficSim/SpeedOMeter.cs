@@ -16,7 +16,7 @@ public class SpeedOMeter : Label
     }
     private void UpdateSpeedOMeter(Label speedOMeter, RoadMap roadMap)
     {
-        base.Text = roadMap.GetVelocity().ToString("F1");
+        base.Text = roadMap.GetAbsVelocity().ToString("F1");
         
     }
 }
