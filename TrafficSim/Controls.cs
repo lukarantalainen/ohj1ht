@@ -1,35 +1,33 @@
-using System.IO;
-
 namespace TrafficSim;
 
 public class Controls
 {
-    private PlayerCar _car;
-    private RoadMap _RoadMap;
+    private readonly PlayerCar _car;
+    private readonly RoadMap _roadMap;
 
     public Controls(PlayerCar car,  RoadMap roadMap)
     {
         _car = car;
-        _RoadMap = roadMap;
+        _roadMap = roadMap;
     }
 
     public void Drive()
     {
-        _RoadMap.Drive();
+        _roadMap.Drive();
     }
 
     public void Brake()
     {
-        _RoadMap.Brake();
+        _roadMap.Brake();
     }
 
     public void SteerLeft()
     {
-        _car.SteerLeft(_RoadMap.GetAbsVelocity());
+        _car.SteerLeft(_roadMap.GetAbsVelocity());
     }
 
     public void SteerRight()
     {
-        _car.SteerRight(_RoadMap.GetAbsVelocity());
+        _car.SteerRight(_roadMap.GetAbsVelocity());
     }
 }
