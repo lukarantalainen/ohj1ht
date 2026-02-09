@@ -48,9 +48,9 @@ public class Background : PhysicsObject
     /// <summary>
     /// Moves the background to simulate driving forward
     /// </summary>
-    public void SimulateDriving()
+    public void SimulateDriving(double force)
     {
-        Push(new Vector(0, -Mass*100));
+        Push(new Vector(0, -Mass*force));
     }
 
     /// <summary>

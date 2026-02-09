@@ -3,9 +3,9 @@ namespace TrafficSim;
 
 public class PlayerCar : PhysicsObject
 {
-    private const double SteeringForce = 100;
+    private const double PlayerSize = 200;
 
-    public PlayerCar(double width, double height, TrafficSim parent) : base(width, height)
+    public PlayerCar(TrafficSim parent) : base(PlayerSize, PlayerSize)
     {
         var carTexture = Game.LoadImage("car_texture");
         Image = carTexture;

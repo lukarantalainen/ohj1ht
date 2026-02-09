@@ -119,10 +119,12 @@ public class RoadMap
     /// </summary>
     public void Drive()
     {
-        _road1.SimulateDriving(5000);
-        _road2.SimulateDriving(5000);
-        _background1.SimulateDriving();
-        _background2.SimulateDriving();
+        const double drivingForce = 1000;
+        const double backgroundRatio = 5;
+        _road1.SimulateDriving(drivingForce);
+        _road2.SimulateDriving(drivingForce);
+        _background1.SimulateDriving(drivingForce/backgroundRatio);
+        _background2.SimulateDriving(drivingForce/backgroundRatio);
     }
     
     /// <summary>
@@ -148,11 +150,11 @@ public class RoadMap
     
     private void CreateSlider(TrafficSim parent)
     {
-        IntMeter roadWidth = new  IntMeter(200, 1, 2000);
+        var roadWidth = new  IntMeter(200, 1, 2000);
         roadWidth.Changed += ChangeRoadWidth;
         
     
-        Slider roadSlider = new Slider(200, 20);
+        var roadSlider = new Slider(200, 20);
         roadSlider.Position = new Vector(-500, 500);
         roadSlider.BindTo(roadWidth);
         parent.Add(roadSlider);
