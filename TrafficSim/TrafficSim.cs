@@ -1,6 +1,10 @@
 using Jypeli;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace TrafficSim;
+
 
 /// @author lukar
 /// @version 16.01.2026
@@ -11,7 +15,7 @@ public class TrafficSim : PhysicsGame
 {
     public override void Begin()
     {
-        //IsFullScreen = true;
+        IsFullScreen = true;
         ResetGame();
     }
     
@@ -32,5 +36,4 @@ public class TrafficSim : PhysicsGame
 
         Controls.Start(car, roadMap, this);
     }
-    
 }

@@ -10,6 +10,8 @@ using Jypeli.Widgets;
 /// </summary>
 public class RoadMap
 {
+    private readonly TrafficSim _parent;
+    
     private readonly Road _road1;
     private readonly Road _road2;
     private readonly PhysicsObject _roadLowerBorder;
@@ -27,6 +29,7 @@ public class RoadMap
     private static readonly double ScreenHeight = Game.Screen.Height;
     public RoadMap(TrafficSim parent)
     {
+        _parent = parent;
         var roadTexture = Game.LoadImage("road_texture");
         _road1 = new Road(RoadWidth, ScreenHeight, roadTexture);
         _road2 = new Road(RoadWidth, ScreenHeight, roadTexture);
@@ -39,8 +42,8 @@ public class RoadMap
         var desertTexture = Game.LoadImage("desert_texture");
         var cactusTexture = Game.LoadImage("cactus_texture");
         
-        _background1 = new Background(ScreenWidth, ScreenHeight, desertTexture, cactusTexture);
-        _background2 = new Background(ScreenWidth, ScreenHeight, desertTexture, cactusTexture);
+        _background1 = new Background(ScreenWidth, ScreenHeight, Color.JungleGreen);
+        _background2 = new Background(ScreenWidth, ScreenHeight, Color.Orange);
         _background2.Y+=_background1.Height;
         
         Add(_background1, _background2, parent, -2);
@@ -50,9 +53,21 @@ public class RoadMap
         AddHandlers(parent);
 
         CreateRoadBorders(BorderWidth, ScreenHeight, Color.Silver, parent);
+        StartVehicleGenerator();
 
         CreateSlider(parent);
     }
+
+    private void StartVehicleGenerator()
+    {
+        var timer = new Timer();
+        timer.Interval = 1;
+        var road1Generator = new VehicleGenerator(_road1);
+        var road2Generator = new VehicleGenerator(_road2);
+        timer.Timeout += delegate { road1Generator.Generate(); road2Generator.Generate(); };
+        timer.Start();
+    }
+    
 
     private static void Add(PhysicsObject obj, TrafficSim parent, int level = 0)
     {

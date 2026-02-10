@@ -4,19 +4,14 @@ namespace TrafficSim;
 
 public class Vehicle : PhysicsObject
 {
-    private new const int Width = 200;
-    private new const int Height = 200;
-
-    
     public enum VehicleType
     {
         Car,
         Truck,
         Taxi,
-        
     }
 
-    public Vehicle() : base(Width, Height)
+    public Vehicle(double width, double height) : base(width, height)
     {
         
     }
