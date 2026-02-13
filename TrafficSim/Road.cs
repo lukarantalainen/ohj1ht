@@ -17,6 +17,8 @@ public class Road : PhysicsObject
         Image = texture;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
+        IgnoresCollisionResponse = true;
+        MaxVelocity = 1000;
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ using Jypeli;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Jypeli.Assets;
 
 namespace TrafficSim;
 
@@ -13,6 +14,7 @@ namespace TrafficSim;
 /// </summary>
 public class TrafficSim : PhysicsGame
 {
+    private Player _car;
     public override void Begin()
     {
         IsFullScreen = true;
@@ -23,17 +25,17 @@ public class TrafficSim : PhysicsGame
     {
         ClearAll();
         CreateMap();
-        Debug.Start(this);
+        Debug.Start(this, _car);
     }
     
     private void CreateMap()
     {
-        var car = new PlayerCar(this);
+        _car = new Player(this);
         var roadMap = new RoadMap(this);
         
         var speedOMeter = new SpeedOMeter(roadMap, new Vector(Level.Left+100, Level.Top-100));
         Add(speedOMeter);
 
-        Controls.Start(car, roadMap, this);
+        Controls.Start(_car, roadMap, this);
     }
 }

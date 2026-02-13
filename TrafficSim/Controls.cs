@@ -6,20 +6,20 @@ using Jypeli;
 
 public class Controls
 {
-    private readonly PlayerCar _car;
+    private readonly Player _car;
     private readonly RoadMap _roadMap;
-    private readonly TrafficSim _parent;
+    private readonly TrafficSim _trafficSim;
 
-    private Controls(PlayerCar car,  RoadMap roadMap, TrafficSim parent)
+    private Controls(Player car,  RoadMap roadMap, TrafficSim trafficSim)
     {
         _car = car;
         _roadMap = roadMap;
-        _parent = parent;
+        _trafficSim = trafficSim;
     }
 
-    public static void Start(PlayerCar car,  RoadMap roadMap, TrafficSim parent)
+    public static void Start(Player car,  RoadMap roadMap, TrafficSim trafficSim)
     {
-        var controls = new Controls(car, roadMap, parent);
+        var controls = new Controls(car, roadMap, trafficSim);
         controls.AddControls();
     }
 
@@ -45,15 +45,15 @@ public class Controls
     
     private void AddControls()
     {
-        _parent.Keyboard.Listen(Key.W, ButtonState.Down, Drive, "");
-        _parent.Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
-        _parent.Keyboard.Listen(Key.A, ButtonState.Down, SteerLeft, "");
-        _parent.Keyboard.Listen(Key.D, ButtonState.Down, SteerRight, "");
-        _parent.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
-        _parent.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
-        _parent.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
-        _parent.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
-        _parent.Keyboard.Listen(Key.R, ButtonState.Pressed, _parent.ResetGame, "");
-        _parent.Keyboard.Listen(Key.Escape, ButtonState.Pressed, _parent.ConfirmExit, "Lopeta peli");
+        _trafficSim.Keyboard.Listen(Key.W, ButtonState.Down, Drive, "");
+        _trafficSim.Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
+        _trafficSim.Keyboard.Listen(Key.A, ButtonState.Down, SteerLeft, "");
+        _trafficSim.Keyboard.Listen(Key.D, ButtonState.Down, SteerRight, "");
+        _trafficSim.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
+        _trafficSim.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
+        _trafficSim.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
+        _trafficSim.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
+        _trafficSim.Keyboard.Listen(Key.R, ButtonState.Pressed, _trafficSim.ResetGame, "");
+        _trafficSim.Keyboard.Listen(Key.Escape, ButtonState.Pressed, _trafficSim.ConfirmExit, "Lopeta peli");
     }
 }

@@ -10,7 +10,7 @@ using Jypeli.Widgets;
 /// </summary>
 public class RoadMap
 {
-    private readonly TrafficSim _parent;
+    private readonly TrafficSim _trafficSim;
     
     private readonly Road _road1;
     private readonly Road _road2;
@@ -27,17 +27,17 @@ public class RoadMap
     private const int BorderWidth = 20;
     private static readonly double ScreenWidth = Game.Screen.Width;
     private static readonly double ScreenHeight = Game.Screen.Height;
-    public RoadMap(TrafficSim parent)
+    public RoadMap(TrafficSim trafficSim)
     {
-        _parent = parent;
+        _trafficSim = trafficSim;
         var roadTexture = Game.LoadImage("road_texture");
         _road1 = new Road(RoadWidth, ScreenHeight, roadTexture);
         _road2 = new Road(RoadWidth, ScreenHeight, roadTexture);
         _road2.Y+=_road1.Height;
         
-        Add(_road1, _road2, parent, -1);
+        Add(_road1, _road2, trafficSim, -1);
         _roadLowerBorder = CreateLowerBorder(Game.Screen.Bottom - ScreenHeight);
-        Add(_roadLowerBorder, parent, -1);
+        Add(_roadLowerBorder, trafficSim, -1);
         
         var desertTexture = Game.LoadImage("desert_texture");
         var cactusTexture = Game.LoadImage("cactus_texture");
@@ -46,25 +46,24 @@ public class RoadMap
         _background2 = new Background(ScreenWidth, ScreenHeight, Color.Orange);
         _background2.Y+=_background1.Height;
         
-        Add(_background1, _background2, parent, -2);
+        Add(_background1, _background2, trafficSim, -2);
         _backgroundLowerBorder = CreateLowerBorder(Game.Screen.Bottom - ScreenHeight);
-        Add(_backgroundLowerBorder, parent, -2);
+        Add(_backgroundLowerBorder, trafficSim, -2);
         
-        AddHandlers(parent);
+        AddHandlers(trafficSim);
 
-        CreateRoadBorders(BorderWidth, ScreenHeight, Color.Silver, parent);
+        CreateRoadBorders(BorderWidth, ScreenHeight, Color.Silver, trafficSim);
         StartVehicleGenerator();
 
-        CreateSlider(parent);
+        CreateSlider(trafficSim);
     }
 
     private void StartVehicleGenerator()
     {
         var timer = new Timer();
         timer.Interval = 1;
-        var road1Generator = new VehicleGenerator(_road1);
-        var road2Generator = new VehicleGenerator(_road2);
-        timer.Timeout += delegate { road1Generator.Generate(); road2Generator.Generate(); };
+        var vehicleGenerator = new VehicleGenerator(_trafficSim, _road1, _road2);
+        timer.Timeout += delegate { vehicleGenerator.Generate(); };
         timer.Start();
     }
     
