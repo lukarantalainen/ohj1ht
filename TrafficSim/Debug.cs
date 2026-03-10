@@ -8,6 +8,7 @@ public class Debug
 {
     private TrafficSim _trafficSim; 
     private Player _player;
+
     private Debug(TrafficSim trafficSim,  Player player)
     {
         _player = player;

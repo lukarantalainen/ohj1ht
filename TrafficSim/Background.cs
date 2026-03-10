@@ -17,6 +17,7 @@ public class Background : PhysicsObject
         _width = width;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
+        IgnoresExplosions = true;
         base.MaxVelocity = MaxVelocity;
     }
     /// <summary>

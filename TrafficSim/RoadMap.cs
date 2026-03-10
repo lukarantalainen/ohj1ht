@@ -3,7 +3,6 @@ using System;
 
 namespace TrafficSim;
 using Jypeli.Widgets;
-//TODO fix the inheritance
 
 /// <summary>
 /// Contains the main road and background of the game 
@@ -55,7 +54,9 @@ public class RoadMap
         CreateRoadBorders(BorderWidth, ScreenHeight, Color.Silver, trafficSim);
         StartVehicleGenerator();
 
-        CreateSlider(trafficSim);
+        DebugStatic.CreateSlider(trafficSim, _road1, _road2, _borderLeft, _borderRight);
+        
+        
     }
 
     private void StartVehicleGenerator()
@@ -63,7 +64,7 @@ public class RoadMap
         var timer = new Timer();
         timer.Interval = 1;
         var vehicleGenerator = new VehicleGenerator(_trafficSim, _road1, _road2);
-        timer.Timeout += delegate { vehicleGenerator.Generate(); };
+        timer.Timeout += delegate { vehicleGenerator.Generate(GetAbsVelocity()); };
         timer.Start();
     }
     
@@ -139,6 +140,7 @@ public class RoadMap
         _road2.SimulateDriving(drivingForce);
         _background1.SimulateDriving(drivingForce/backgroundRatio);
         _background2.SimulateDriving(drivingForce/backgroundRatio);
+
     }
     
     /// <summary>
@@ -160,31 +162,6 @@ public class RoadMap
     public double GetAbsVelocity()
     {
         return (Math.Abs(_road1.Velocity.Magnitude + _road2.Velocity.Magnitude)) / 2;
-    }
-    
-    private void CreateSlider(TrafficSim parent)
-    {
-        var roadWidth = new  IntMeter(200, 1, 2000);
-        roadWidth.Changed += ChangeRoadWidth;
-        
-    
-        var roadSlider = new Slider(200, 20);
-        roadSlider.Position = new Vector(-500, 500);
-        roadSlider.BindTo(roadWidth);
-        parent.Add(roadSlider);
-    }
-
-    private void ChangeRoadWidth(int oldValue, int newValue)
-    {
-        _road1.Width = newValue;
-        _road2.Width = newValue;
-        MoveBorders();
-    }
-
-    private void MoveBorders()
-    {
-        _borderLeft.Right = _road1.Left;
-        _borderRight.Left = _road1.Right;
     }
     
 }

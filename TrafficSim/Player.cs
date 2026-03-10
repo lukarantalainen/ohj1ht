@@ -1,4 +1,4 @@
-using Jypeli;
+    using Jypeli;
 using Jypeli.Assets;
 namespace TrafficSim;
 
@@ -17,7 +17,7 @@ public class Player : PhysicsObject
         Mass = 100000;
         base.Position = new Vector(0, -200);
         trafficSim.Add(this, 0);
-        trafficSim.AddCollisionHandler(this, "vehicle", CollisionHandler.DestroyTarget);
+        trafficSim.AddCollisionHandler(this, "vehicle", CollisionHandler.ExplodeTarget(100, true));
     }
 
     public void SteerRight(double velocity)

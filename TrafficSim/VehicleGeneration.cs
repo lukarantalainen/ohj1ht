@@ -15,8 +15,9 @@ public class VehicleGenerator
         _road1 = road1;
         _road2 = road2;
     }
-    public void Generate()
+    public void Generate(double velocity)
     {
+        if (velocity < 100) return;
         var lane1 = (_road1.Left+_road1.X)/2;
         var lane2 = (_road2.Right+_road2.X)/2;
         
