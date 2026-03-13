@@ -26,6 +26,8 @@ public class RoadMap
     private const int BorderWidth = 20;
     private static readonly double ScreenWidth = Game.Screen.Width;
     private static readonly double ScreenHeight = Game.Screen.Height;
+
+    private readonly Progress _progress;
     public RoadMap(TrafficSim trafficSim)
     {
         _trafficSim = trafficSim;
@@ -55,8 +57,8 @@ public class RoadMap
         StartVehicleGenerator();
 
         DebugStatic.CreateSlider(trafficSim, _road1, _road2, _borderLeft, _borderRight);
-        
-        
+
+        _progress = new Progress(trafficSim, 500);
     }
 
     private void StartVehicleGenerator()
@@ -136,6 +138,7 @@ public class RoadMap
     {
         const double drivingForce = 1000;
         const double backgroundRatio = 5;
+        _progress.SimulateDriving(drivingForce);
         _road1.SimulateDriving(drivingForce);
         _road2.SimulateDriving(drivingForce);
         _background1.SimulateDriving(drivingForce/backgroundRatio);
@@ -149,6 +152,7 @@ public class RoadMap
     public void Brake()
     {
         if (GetAbsVelocity() < 500) return;
+        _progress.SimulateBraking(5000);
         _road1.SimulateBraking(5000);
         _road2.SimulateBraking(5000);
         _background1.SimulateBraking();
