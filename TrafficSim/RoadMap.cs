@@ -58,7 +58,7 @@ public class RoadMap
 
         DebugStatic.CreateSlider(trafficSim, _road1, _road2, _borderLeft, _borderRight);
 
-        _progress = new Progress(trafficSim, 500);
+        _progress = new Progress(trafficSim, 60000);
     }
 
     private void StartVehicleGenerator()

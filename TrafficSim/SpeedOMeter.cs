@@ -4,7 +4,7 @@ using Jypeli;
 public class SpeedOMeter : Label
 {
     public SpeedOMeter(RoadMap roadMap, Vector position)
-    {
+    {   
         base.Text = "0";
         base.Position = position;
         

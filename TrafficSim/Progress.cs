@@ -21,18 +21,21 @@ public class Progress
     private void CreateProgressBar()
     {
         _distMeter = new DoubleMeter(0);
+        _distMeter.MaxValue = _trackLength;
         _distMeter.Changed += CheckLimit;
 
-        ProgressBar progressBar = new ProgressBar(20, 100);
-        progressBar.Position = new Vector(300, 100);
+        ProgressBar progressBar = new ProgressBar(100, 40);
+        progressBar.Angle = Angle.FromDegrees(-90);
         progressBar.BindTo(_distMeter);
+        progressBar.Position = new Vector(Game.Screen.Right-100, 100);
         progressBar.BarColor = Color.Red;
+        progressBar.Color = Color.Black;
         _trafficSim.Add(progressBar);
     }
 
     private void CheckLimit(double last, double current)
     {
-        if (current > _trackLength && !_finished)
+        if (current >= _trackLength && !_finished)
         {
             _finishLine = new PhysicsObject(Game.Screen.Width, 20, Shape.Rectangle);
             _finishLine.Color = Color.Black;
@@ -51,15 +54,14 @@ public class Progress
         {
             _finishLine.Push(new Vector(0, -_finishLine.Mass*force));
         }
-        _distMeter.Value++;
+        _distMeter.Value+=10;
     }
 
     public void SimulateBraking(double force)
     {
-        if (_finished && _finishLine.Velocity.Y<30)
+        if (_finished && _finishLine.Velocity.Y < 30)
         {
-            _finishLine.Push(new Vector(0, _finishLine.Mass*force));
+            _finishLine.Push(new Vector(0, _finishLine.Mass * force));
         }
     }
-    
 }

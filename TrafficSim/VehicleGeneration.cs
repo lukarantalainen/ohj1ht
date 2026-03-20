@@ -23,7 +23,7 @@ public class VehicleGenerator
         
         var vehicle = new Vehicle(50, 100);
         var lane =  RandomGen.NextInt(0, 2);
-        vehicle.Position = (lane==0) ? new Vector(lane1, Game.Screen.Top+200) :  new Vector(lane2, Game.Screen.Top+200);
+        vehicle.Position = (lane==0) ? new Vector(lane1, Game.Screen.Top+200) : new Vector(lane2, Game.Screen.Top+200);
         _vehicles.Add(vehicle);
         
         foreach (var v in _vehicles)
