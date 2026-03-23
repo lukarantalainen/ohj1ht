@@ -27,13 +27,15 @@ public class RoadMap
     private static readonly double ScreenWidth = Game.Screen.Width;
     private static readonly double ScreenHeight = Game.Screen.Height;
 
+    private const double MaxVelocity = 3000;
+
     private readonly Progress _progress;
     public RoadMap(TrafficSim trafficSim)
     {
         _trafficSim = trafficSim;
         var roadTexture = Game.LoadImage("road_texture");
-        _road1 = new Road(RoadWidth, ScreenHeight, roadTexture);
-        _road2 = new Road(RoadWidth, ScreenHeight, roadTexture);
+        _road1 = new Road(RoadWidth, ScreenHeight, roadTexture, MaxVelocity);
+        _road2 = new Road(RoadWidth, ScreenHeight, roadTexture, MaxVelocity);
         _road2.Y+=_road1.Height;
         
         Add(_road1, _road2, trafficSim, -1);
@@ -43,8 +45,8 @@ public class RoadMap
         var desertTexture = Game.LoadImage("desert_texture");
         var cactusTexture = Game.LoadImage("cactus_texture");
         
-        _background1 = new Background(ScreenWidth, ScreenHeight, Color.JungleGreen);
-        _background2 = new Background(ScreenWidth, ScreenHeight, Color.Orange);
+        _background1 = new Background(ScreenWidth, ScreenHeight, desertTexture, MaxVelocity);
+        _background2 = new Background(ScreenWidth, ScreenHeight, desertTexture, MaxVelocity);
         _background2.Y+=_background1.Height;
         
         Add(_background1, _background2, trafficSim, -2);
@@ -58,7 +60,7 @@ public class RoadMap
 
         DebugStatic.CreateSlider(trafficSim, _road1, _road2, _borderLeft, _borderRight);
 
-        _progress = new Progress(trafficSim, 60000);
+        _progress = new Progress(trafficSim, this, 6000);
     }
 
     private void StartVehicleGenerator()
@@ -152,7 +154,7 @@ public class RoadMap
     public void Brake()
     {
         if (GetAbsVelocity() < 500) return;
-        _progress.SimulateBraking(5000);
+        _progress.SimulateBraking();
         _road1.SimulateBraking(5000);
         _road2.SimulateBraking(5000);
         _background1.SimulateBraking();
@@ -165,7 +167,33 @@ public class RoadMap
     /// <returns></returns>
     public double GetAbsVelocity()
     {
-        return (Math.Abs(_road1.Velocity.Magnitude + _road2.Velocity.Magnitude)) / 2;
+        return Math.Abs(_road1.Velocity.Magnitude + _road2.Velocity.Magnitude) / 2;
     }
-    
+
+    public void EndGame(PhysicsObject a, PhysicsObject b)
+    {
+        Stop();
+        CreateSelectionWindow();
+    }
+
+    private void CreateSelectionWindow()
+    {
+        string[] options = { "Top List", "Restart", "Quit"};
+        MultiSelectWindow endWindow = new MultiSelectWindow("Finished!", options);
+        
+        endWindow.AddItemHandler(0, delegate{});
+        endWindow.AddItemHandler(1, _trafficSim.ResetGame);
+        endWindow.AddItemHandler(2, _trafficSim.ConfirmExit);
+        
+        _trafficSim.Add(endWindow);
+    }
+
+    private void Stop()
+    {
+        _road1.Stop();
+        _road2.Stop();
+        _background1.Stop();
+        _background2.Stop();
+        _progress.Stop();
+    }
 }

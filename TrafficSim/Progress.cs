@@ -1,4 +1,6 @@
 using Jypeli.GameObjects;
+using Jypeli;
+using Jypeli.Assets;
 
 namespace TrafficSim;
 using Jypeli;
@@ -6,22 +8,34 @@ using Jypeli.Widgets;
 public class Progress
 {
     private readonly TrafficSim _trafficSim;
-    private readonly double _trackLength;
+    private readonly RoadMap _roadMap;
+    private double _roadLength;
     private DoubleMeter _distMeter;
     private PhysicsObject _finishLine;
     private bool _finished;
 
-    public Progress(TrafficSim trafficSim, double trackLength)
+    public Progress(TrafficSim trafficSim, RoadMap roadMap, double roadLength)
     {
         _trafficSim = trafficSim;
-        _trackLength = trackLength;
+        _roadMap = roadMap;
+        _roadLength = new DoubleMeter(roadLength);
         CreateProgressBar();
+    }
+
+    public double GetRoadLength()
+    {
+        return _roadLength;
+    }
+    
+    public void SetRoadLength(double newLength)
+    {
+        _roadLength = newLength;
     }
 
     private void CreateProgressBar()
     {
         _distMeter = new DoubleMeter(0);
-        _distMeter.MaxValue = _trackLength;
+        _distMeter.MaxValue = _roadLength;
         _distMeter.Changed += CheckLimit;
 
         ProgressBar progressBar = new ProgressBar(100, 40);
@@ -35,17 +49,30 @@ public class Progress
 
     private void CheckLimit(double last, double current)
     {
-        if (current >= _trackLength && !_finished)
+        if (current >= _roadLength && !_finished)
         {
-            _finishLine = new PhysicsObject(Game.Screen.Width, 20, Shape.Rectangle);
-            _finishLine.Color = Color.Black;
-            _finishLine.Position = new Vector(Game.Screen.Left, Game.Screen.Top-100);
-            _finishLine.IgnoresCollisionResponse = true;
-            _finishLine.IgnoresExplosions = true;
-            _finishLine.IgnoresPhysicsLogics = true;
-            _trafficSim.Add(_finishLine, 3);
-            _finished = true;
+            CreateFinishLine();
         }
+    }
+
+    private void CreateFinishLine()
+    {
+        _finishLine = new PhysicsObject(Game.Screen.Width, 20, Shape.Rectangle);
+        _finishLine.Color = Color.Black;
+        _finishLine.Position = new Vector(Game.Screen.Left, Game.Screen.Top-100);
+        _finishLine.IgnoresCollisionResponse = true;
+        _finishLine.IgnoresExplosions = true;
+        _finishLine.IgnoresPhysicsLogics = true;
+        _trafficSim.Add(_finishLine, 3);
+            
+        _finished = true;
+
+        _trafficSim.AddCollisionHandler(_finishLine, "player", _roadMap.EndGame);
+    }
+
+    public void Stop()
+    {
+        _finishLine.Stop();
     }
 
     public void SimulateDriving(double force)
@@ -57,11 +84,11 @@ public class Progress
         _distMeter.Value+=10;
     }
 
-    public void SimulateBraking(double force)
+    public void SimulateBraking()
     {
-        if (_finished && _finishLine.Velocity.Y < 30)
+        if (_finished)
         {
-            _finishLine.Push(new Vector(0, _finishLine.Mass * force));
+            _finishLine.Stop();
         }
     }
 }

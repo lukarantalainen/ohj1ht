@@ -9,28 +9,28 @@ public class Background : PhysicsObject
     private static double _width;
     private static double _height;
     private readonly Image _backgroundItemTexture;
-    private new const double MaxVelocity = 1000;
+    private new const double MaxVelocity = 350;
 
-    private Background(double width, double height) : base(width, height) //default
+    private Background(double width, double height, double maxVelocity) : base(width, height) 
     {
         _height = height;
         _width = width;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
         IgnoresExplosions = true;
-        base.MaxVelocity = MaxVelocity;
+        base.MaxVelocity = maxVelocity;
     }
-    /// <summary>
-    /// Constructor that takes a Jypeli.Color as a parameter
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="color"></param>
-    public Background(double width, double height, Color color) :  this(width, height)
+
+    public Background(double width, double height, Color color, double maxVelocity) :  this(width, height, maxVelocity)
     {
         base.Color = color;
     }
-    public Background(double width, double height, Image backgroundTexture, Image backgroundItemTexture) : this(width, height)
+    
+    public Background(double width, double height, Image backgroundTexture, double maxVelocity) : this(width, height, maxVelocity)
+    {
+        Image = backgroundTexture;
+    }
+    public Background(double width, double height, Image backgroundTexture, Image backgroundItemTexture, double maxVelocity) : this(width, height, maxVelocity)
     {
         Image = backgroundTexture;
         _backgroundItemTexture = backgroundItemTexture;

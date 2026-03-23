@@ -6,20 +6,14 @@ namespace TrafficSim;
 /// </summary>
 public class Road : PhysicsObject
 {
-    /// <summary>
-    /// Constructs a Road object
-    /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="texture"></param>
-    public Road(double width, double height, Image texture) : base(width, height)
+    public Road(double width, double height, Image texture, double maxVelocity) : base(width, height)
     {
         Image = texture;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
         IgnoresExplosions = true;
         IgnoresCollisionResponse = true;
-        MaxVelocity = 1000;
+        MaxVelocity = maxVelocity;
     }
 
     /// <summary>

@@ -10,11 +10,12 @@ public class Player : PhysicsObject
     {
         var carTexture = Game.LoadImage("car_texture");
         Image = carTexture;
-        base.Shape = Shape.FromImage(carTexture);
+        base.Shape = Shape.FromImage(carTexture);   
         LinearDamping = 0.998;
         Restitution = 0;
         CanRotate = false;
-        Mass = 100000;
+        Mass = 1000;
+        Tag = "player";
         base.Position = new Vector(0, -200);
         trafficSim.Add(this, 0);
         trafficSim.AddCollisionHandler(this, "vehicle", CollisionHandler.ExplodeTarget(100, true));
