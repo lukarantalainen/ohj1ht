@@ -15,6 +15,8 @@ namespace TrafficSim;
 public class TrafficSim : PhysicsGame
 {
     private Player _car;
+    private RoadMap _roadMap;
+    private Progress _progress;
     public override void Begin()
     {
         IsFullScreen = true;
@@ -30,12 +32,18 @@ public class TrafficSim : PhysicsGame
     
     private void CreateMap()
     {
+        _progress = new Progress(this, _roadMap, 6000);
         _car = new Player(this);
-        var roadMap = new RoadMap(this);
+        _roadMap = new RoadMap(this, _progress);
         
-        var speedOMeter = new SpeedOMeter(roadMap, new Vector(Level.Left+100, Level.Top-100));
+        var speedOMeter = new SpeedOMeter(_roadMap, new Vector(Level.Left+100, Level.Top-100));
         Add(speedOMeter);
 
-        Controls.Start(_car, roadMap, this);
+    }
+
+    public void AddControls()
+    {
+        Controls.Start(_car, _roadMap, this);
+        
     }
 }

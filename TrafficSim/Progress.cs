@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Threading;
 using Jypeli.GameObjects;
 using Jypeli;
 using Jypeli.Assets;
@@ -15,7 +17,8 @@ public class Progress
     private PhysicsObject _finishLine;
     private bool _finished;
     private Timer _startTimer;
-
+    private DoubleMeter _timeMeter;
+    private Label _display;
     public Progress(TrafficSim trafficSim, RoadMap roadMap, double roadLength)
     {
         _trafficSim = trafficSim;
@@ -27,16 +30,37 @@ public class Progress
 
     private void AddStartTimer()
     {
-        _startTimer = new Timer();
-        _startTimer.Interval = 1;
-        _startTimer.Timeout += delegate {Countdown(_startTimer.CurrentTime);};
+        _timeMeter = new DoubleMeter(3.9);
+        
+        _startTimer = new Timer(3);
+        
+        _startTimer.Interval = 0.1;
+        _startTimer.Timeout += Countdown;
         _startTimer.Start();
+
+        _display = new Label(100, 50, "3");
+        _display.Color = Color.Orange;
+        _display.TextColor = Color.GreenYellow;
+        _display.DecimalPlaces = 0;
+        _display.BindTo(_timeMeter);
+        _display.Position = new Vector(0, 100);
+        _trafficSim.Add(_display);
     }
 
-    private void Countdown(double time)
+    private void Countdown()
     {
-        if (Math.Round(time) == 4)
+        _timeMeter.Value -= 0.1;
+        if (_timeMeter.Value <=0)
         {
+            _display.Unbind();
+            _trafficSim.AddControls();
+            _display.Text = "Go!";
+
+        }
+
+        if (_timeMeter.Value <= -2)
+        {
+            _display.Destroy();
             _startTimer.Stop();
         }
     }

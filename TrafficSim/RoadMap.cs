@@ -30,7 +30,7 @@ public class RoadMap
     private const double MaxVelocity = 3000;
 
     private readonly Progress _progress;
-    public RoadMap(TrafficSim trafficSim)
+    public RoadMap(TrafficSim trafficSim, Progress progress)
     {
         _trafficSim = trafficSim;
         var roadTexture = Game.LoadImage("road_texture");
@@ -60,7 +60,7 @@ public class RoadMap
 
         DebugStatic.CreateSlider(trafficSim, _road1, _road2, _borderLeft, _borderRight);
 
-        _progress = new Progress(trafficSim, this, 6000);
+        _progress = progress;
     }
 
     private void StartVehicleGenerator()
