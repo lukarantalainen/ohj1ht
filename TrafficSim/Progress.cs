@@ -1,3 +1,4 @@
+using System;
 using Jypeli.GameObjects;
 using Jypeli;
 using Jypeli.Assets;
@@ -13,6 +14,7 @@ public class Progress
     private DoubleMeter _distMeter;
     private PhysicsObject _finishLine;
     private bool _finished;
+    private Timer _startTimer;
 
     public Progress(TrafficSim trafficSim, RoadMap roadMap, double roadLength)
     {
@@ -20,16 +22,23 @@ public class Progress
         _roadMap = roadMap;
         _roadLength = new DoubleMeter(roadLength);
         CreateProgressBar();
+        AddStartTimer();
     }
 
-    public double GetRoadLength()
+    private void AddStartTimer()
     {
-        return _roadLength;
+        _startTimer = new Timer();
+        _startTimer.Interval = 1;
+        _startTimer.Timeout += delegate {Countdown(_startTimer.CurrentTime);};
+        _startTimer.Start();
     }
-    
-    public void SetRoadLength(double newLength)
+
+    private void Countdown(double time)
     {
-        _roadLength = newLength;
+        if (Math.Round(time) == 4)
+        {
+            _startTimer.Stop();
+        }
     }
 
     private void CreateProgressBar()
