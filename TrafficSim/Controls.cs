@@ -53,7 +53,5 @@ public class Controls
         _trafficSim.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
         _trafficSim.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
         _trafficSim.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
-        _trafficSim.Keyboard.Listen(Key.R, ButtonState.Pressed, _trafficSim.ResetGame, "");
-        _trafficSim.Keyboard.Listen(Key.Escape, ButtonState.Pressed, _trafficSim.ConfirmExit, "Lopeta peli");
     }
 }

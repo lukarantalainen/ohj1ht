@@ -42,7 +42,7 @@ public class Road : PhysicsObject
     /// <param name="self"></param>
     public void MoveRoad(PhysicsObject border, PhysicsObject self)
     {
-        Y += Height*2;
+        Bottom = Game.Screen.Top;
     }
     
     

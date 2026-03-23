@@ -6,25 +6,35 @@ using Jypeli;
 using Jypeli.Widgets;
 public class Debug
 {
-    private TrafficSim _trafficSim; 
-    private Player _player;
+    private readonly TrafficSim _trafficSim; 
+    private readonly Player _player;
+    private readonly RoadMap _roadMap;
+    private readonly Road _road1;
+    private readonly Road _road2;
+    private readonly PhysicsObject _borderLeft;
+    private readonly PhysicsObject _borderRight;
 
-    private Debug(TrafficSim trafficSim,  Player player)
+    private Debug(TrafficSim trafficSim, Player player,  RoadMap roadMap)
     {
-        _player = player;
         _trafficSim = trafficSim;
+        _player = player;
+        _roadMap = roadMap;
+        _road1 = _roadMap.GetRoad(0);
+        _road2 = _roadMap.GetRoad(1);
+        _borderLeft = _roadMap.GetBorder(0);
+        _borderRight = _roadMap.GetBorder(1);
     }
 
-    public static void Start(TrafficSim trafficSim, Player player)
+    public static void Start(TrafficSim trafficSim, Player player, RoadMap roadMap)
     {
-        var debug = new Debug(trafficSim, player);
+        var debug = new Debug(trafficSim, player, roadMap);
         debug.Init();
-
     }
 
     private void Init()
     {
         CreateZoomSlider();
+        CreateRoadWidthSlider();
         CreatePlayerPosition();
     }
 
@@ -60,5 +70,31 @@ public class Debug
     private void UpdatePos(Label label)
     {
         label.Text = _player.Position.ToString();
+    }
+    
+    private void CreateRoadWidthSlider()
+    {
+        var roadWidth = new IntMeter(200, 1, 2000);
+        roadWidth.Changed += ChangeRoadWidth;
+        
+    
+        var roadSlider = new Slider(200, 20);
+        roadSlider.Position = new Vector(-500, 500);
+        roadSlider.BindTo(roadWidth);
+        _trafficSim.Add(roadSlider);
+    }
+
+    private void ChangeRoadWidth(int oldValue, int newValue)
+    {
+        _road1.Width = newValue;
+        _road2.Width = newValue;
+        MoveBorders();
+    }
+
+    private void MoveBorders()
+    {
+        _borderLeft.Right = _road1.Left;
+        _borderRight.Left = _road1.Right;
+
     }
 }

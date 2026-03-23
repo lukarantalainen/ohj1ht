@@ -11,18 +11,16 @@ using Jypeli.Widgets;
 public class Progress
 {
     private readonly TrafficSim _trafficSim;
-    private readonly RoadMap _roadMap;
-    private double _roadLength;
+    private readonly double _roadLength;
     private DoubleMeter _distMeter;
     private PhysicsObject _finishLine;
     private bool _finished;
     private Timer _startTimer;
     private DoubleMeter _timeMeter;
     private Label _display;
-    public Progress(TrafficSim trafficSim, RoadMap roadMap, double roadLength)
+    public Progress(TrafficSim trafficSim, double roadLength)
     {
         _trafficSim = trafficSim;
-        _roadMap = roadMap;
         _roadLength = new DoubleMeter(roadLength);
         CreateProgressBar();
         AddStartTimer();
@@ -100,7 +98,7 @@ public class Progress
             
         _finished = true;
 
-        _trafficSim.AddCollisionHandler(_finishLine, "player", _roadMap.EndGame);
+        _trafficSim.AddCollisionHandler(_finishLine, "player", _trafficSim.EndGame);
     }
 
     public void Stop()
