@@ -17,20 +17,30 @@ public class Progress
     private DoubleMeter _timeMeter;
     
     private PhysicsObject _finishLine;
+    private bool _started;
     private bool _finished;
+    
+    private double _roadLength;
     
     public Progress(TrafficSim trafficSim, double roadLength)
     {
         _trafficSim = trafficSim;
-        AddCountdown();
-        CreateProgressBar(roadLength);
+        _roadLength = roadLength;
     }
 
-    private void AddCountdown()
+    public void StartGame()
     {
-        DoubleMeter countdown = new DoubleMeter(3.9);
+        if (_started) return;
+        StartCountdown();
+        CreateProgressBar(_roadLength);
+        _started = true;
+    }
+
+    private void StartCountdown()
+    {
+        var countdown = new DoubleMeter(3.9);
         
-        Label display = new Label(100, 50, "3");
+        var display = new Label(100, 50, "3");
         display.Color = Color.Orange;
         display.TextColor = Color.GreenYellow;
         display.DecimalPlaces = 0;
@@ -38,7 +48,7 @@ public class Progress
         display.Position = new Vector(0, 100);
         _trafficSim.Add(display);
         
-        Timer starttimer = new Timer(3);
+        var starttimer = new Timer(3);
         
         starttimer.Interval = 0.1;
         starttimer.Timeout += delegate { Countdown(display, countdown, starttimer); };
@@ -48,36 +58,35 @@ public class Progress
     private void Countdown(Label display, DoubleMeter countdown,  Timer starttimer)
     {
         countdown.Value -= 0.1;
-        if (countdown.Value <=0)
+        if (countdown.Value <=0.1)
         {
+            starttimer.Stop();
             display.Unbind();
             _trafficSim.AddControls();
-            display.Text = "Go!";
-            StartTimer();
-        }
-
-        if (countdown.Value <= -2)
-        {
             display.Destroy();
-            starttimer.Stop();
+            StartTimer();
         }
     }
 
     private void StartTimer()
     {
         _timeMeter = new DoubleMeter(0);
-        Timer timer = new Timer();
+        var timer = new Timer();
         timer.Interval = 0.1;
         timer.Timeout += UpdateTimer;
         timer.Start();
         
-        Label currentTime = new Label();
+        var currentTime = new Label();
         currentTime.BindTo(_timeMeter);
+        currentTime.Color = Color.Black;
+        currentTime.TextColor = Color.BrightGreen;
+        currentTime.Position = new Vector(-300, 200);
+        _trafficSim.Add(currentTime);
     }
 
     public double StopTimer()
     {
-        _timeMeter.Stop();
+        //_timeMeter.Stop();
         return _timeMeter.Value;
     }
 
@@ -92,7 +101,7 @@ public class Progress
         _distMeter.MaxValue = roadLength;
         _distMeter.Changed += delegate(double old, double current) { CheckLimit(old, current, roadLength); };
 
-        ProgressBar progressBar = new ProgressBar(100, 40);
+        var progressBar = new ProgressBar(100, 40);
         progressBar.Angle = Angle.FromDegrees(-90);
         progressBar.BindTo(_distMeter);
         progressBar.Position = new Vector(Game.Screen.Right-100, 100);

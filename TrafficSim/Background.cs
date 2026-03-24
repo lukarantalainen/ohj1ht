@@ -35,7 +35,7 @@ public class Background : PhysicsObject
     
     public void Cycle(PhysicsObject a, PhysicsObject b)
     {
-        Y += _height*2;
+        Y += _height;
     }
 
     public void Drive(double force)

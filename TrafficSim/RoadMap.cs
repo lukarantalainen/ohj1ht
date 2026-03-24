@@ -26,7 +26,7 @@ public class RoadMap
     
     private const double MaxVelocity = 1500;
     private readonly Image _roadTexture = Game.LoadImage("road_texture");
-    //private readonly Image _desertTexture = Game.LoadImage("desert_texture");
+    private readonly Image _desertTexture = Game.LoadImage("desert_texture");
     //private readonly Image _cactusTexture = Game.LoadImage("cactus_texture");
     
     public RoadMap(TrafficSim trafficSim, Progress progress)
@@ -82,7 +82,7 @@ public class RoadMap
 
     private Background CreateBackground(Vector position)
     {
-        Background background = new Background(_screenWidth, _screenHeight, Color.LightCyan, MaxVelocity);
+        Background background = new Background(_screenWidth, _screenHeight, _desertTexture, MaxVelocity);
         background.Position = position;
         
         _trafficSim.Add(background, -2);

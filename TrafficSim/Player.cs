@@ -21,14 +21,14 @@ public class Player : PhysicsObject
         trafficSim.AddCollisionHandler(this, "vehicle", CollisionHandler.ExplodeTarget(100, true));
     }
 
-    public void SteerRight(double velocity)
+    public void SteerRight()
     {
-        Push(new Vector(Mass*(velocity), 0));
+        Push(new Vector(Mass*1000, 0));
     }
 
-    public void SteerLeft(double velocity)
+    public void SteerLeft()
     {
-        Push(new Vector(-Mass*(velocity), 0));
+        Push(new Vector(-Mass*1000, 0));
     }
     
 }

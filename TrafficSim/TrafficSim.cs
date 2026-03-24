@@ -1,6 +1,7 @@
 using Jypeli;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 using Jypeli.Assets;
 
@@ -16,6 +17,7 @@ public class TrafficSim : PhysicsGame
     private Progress _progress;
     private Player _car;
     private RoadMap _roadMap;
+    public bool DebugEnabled = false;
     public override void Begin()
     {
         IsFullScreen = true;
@@ -30,25 +32,30 @@ public class TrafficSim : PhysicsGame
         _progress = new Progress(this, 6000);
         _car = new Player(this);
         _roadMap = new RoadMap(this, _progress);
+        Debug.Start(this, _car, _roadMap);
+        MessageDisplay.Add("Press SPACE to begin!");
+        Keyboard.Listen(Key.Space, ButtonState.Down, _progress.StartGame, "");
+        
     }
 
     public void AddControls()
     {
-        Controls.Start(this,  _car,  _roadMap);
+        Controls.Start(this,  _car,  _roadMap); 
     }
     
     public void EndGame(PhysicsObject a, PhysicsObject b)
     {
-        //StopAll();
-        //var elapsedTime = _progress.StopTimer();
-        //Console.WriteLine(elapsedTime);
-        //CreateSelectionWindow();
+        IsPaused = true;
+        var elapsedTime = _progress.StopTimer();
+        Console.WriteLine(elapsedTime);
+        CreateSelectionWindow(elapsedTime);
+        RemoveCollisionHandlers();
     }
 
-    private void CreateSelectionWindow()
+    private void CreateSelectionWindow(double finishTime)
     {
         string[] options = { "Top List", "Restart", "Quit"};
-        var endWindow = new MultiSelectWindow("Finished!", options);
+        var endWindow = new MultiSelectWindow($"Finished in! {finishTime}", options);
         
         endWindow.AddItemHandler(0, delegate{});
         endWindow.AddItemHandler(1, Init);
