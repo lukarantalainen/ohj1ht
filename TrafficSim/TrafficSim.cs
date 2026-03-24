@@ -29,7 +29,8 @@ public class TrafficSim : PhysicsGame
         ClearAll();
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        _progress = new Progress(this, 6000);
+        
+        _progress = new Progress(this, RandomGen.NextDouble(10000, 40000));
         _car = new Player(this);
         _roadMap = new RoadMap(this, _progress);
         Debug.Start(this, _car, _roadMap);
@@ -59,7 +60,7 @@ public class TrafficSim : PhysicsGame
         
         endWindow.AddItemHandler(0, delegate{});
         endWindow.AddItemHandler(1, Init);
-        endWindow.AddItemHandler(2, ConfirmExit);
+        endWindow.AddItemHandler(2, Exit);
         
         Add(endWindow);
     }
