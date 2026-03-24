@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Jypeli.GameObjects;
 using Jypeli;
@@ -11,85 +12,85 @@ using Jypeli.Widgets;
 public class Progress
 {
     private readonly TrafficSim _trafficSim;
-    private readonly double _roadLength;
+    
     private DoubleMeter _distMeter;
+    private DoubleMeter _timeMeter;
+    
     private PhysicsObject _finishLine;
     private bool _finished;
-    private Timer _startTimer;
-    private DoubleMeter _timeMeter;
-    private Label _display;
+    
     public Progress(TrafficSim trafficSim, double roadLength)
     {
         _trafficSim = trafficSim;
-        _roadLength = new DoubleMeter(roadLength);
-        CreateProgressBar();
         AddCountdown();
+        CreateProgressBar(roadLength);
     }
 
     private void AddCountdown()
     {
-        _timeMeter = new DoubleMeter(3.9);
+        DoubleMeter countdown = new DoubleMeter(3.9);
         
-        _startTimer = new Timer(3);
+        Label display = new Label(100, 50, "3");
+        display.Color = Color.Orange;
+        display.TextColor = Color.GreenYellow;
+        display.DecimalPlaces = 0;
+        display.BindTo(countdown);
+        display.Position = new Vector(0, 100);
+        _trafficSim.Add(display);
         
-        _startTimer.Interval = 0.1;
-        _startTimer.Timeout += Countdown;
-        _startTimer.Start();
-
-        _display = new Label(100, 50, "3");
-        _display.Color = Color.Orange;
-        _display.TextColor = Color.GreenYellow;
-        _display.DecimalPlaces = 0;
-        _display.BindTo(_timeMeter);
-        _display.Position = new Vector(0, 100);
-        _trafficSim.Add(_display);
+        Timer starttimer = new Timer(3);
+        
+        starttimer.Interval = 0.1;
+        starttimer.Timeout += delegate { Countdown(display, countdown, starttimer); };
+        starttimer.Start();
     }
 
-    private void Countdown()
+    private void Countdown(Label display, DoubleMeter countdown,  Timer starttimer)
     {
-        _timeMeter.Value -= 0.1;
-        if (_timeMeter.Value <=0)
+        countdown.Value -= 0.1;
+        if (countdown.Value <=0)
         {
-            _display.Unbind();
+            display.Unbind();
             _trafficSim.AddControls();
-            _display.Text = "Go!";
+            display.Text = "Go!";
             StartTimer();
-
         }
 
-        if (_timeMeter.Value <= -2)
+        if (countdown.Value <= -2)
         {
-            _display.Destroy();
-            _startTimer.Stop();
+            display.Destroy();
+            starttimer.Stop();
         }
     }
 
     private void StartTimer()
     {
-        DoubleMeter timeMeter = new DoubleMeter(0);
+        _timeMeter = new DoubleMeter(0);
         Timer timer = new Timer();
         timer.Interval = 0.1;
-        timer.Timeout += delegate {UpdateTimer(timeMeter);};
-
-        Label currentTime = new Label();
-        currentTime.BindTo(timeMeter);
-    }
-
-    public void StopTimer()
-    {
+        timer.Timeout += UpdateTimer;
+        timer.Start();
         
+        Label currentTime = new Label();
+        currentTime.BindTo(_timeMeter);
     }
 
-    private void UpdateTimer(DoubleMeter timeMeter)
+    public double StopTimer()
     {
-        timeMeter.Value += 0.1;
+        _timeMeter.Stop();
+        return _timeMeter.Value;
     }
 
-    private void CreateProgressBar()
+    private void UpdateTimer()
+    {
+        _timeMeter.Value += 0.1;
+    }
+
+    private void CreateProgressBar(double roadLength)
     {
         _distMeter = new DoubleMeter(0);
-        _distMeter.MaxValue = _roadLength;
-        _distMeter.Changed += CheckLimit;
+        _distMeter.MaxValue = roadLength;
+        _distMeter.Changed += delegate(double old, double current) { CheckLimit(old, current, roadLength); };
 
         ProgressBar progressBar = new ProgressBar(100, 40);
         progressBar.Angle = Angle.FromDegrees(-90);
@@ -100,9 +101,9 @@ public class Progress
         _trafficSim.Add(progressBar);
     }
 
-    private void CheckLimit(double last, double current)
+    private void CheckLimit(double old, double current, double roadLength)
     {
-        if (current >= _roadLength && !_finished)
+        if (current >= roadLength && !_finished)
         {
             CreateFinishLine();
         }
@@ -112,7 +113,7 @@ public class Progress
     {
         _finishLine = new PhysicsObject(Game.Screen.Width, 20, Shape.Rectangle);
         _finishLine.Color = Color.Black;
-        _finishLine.Position = new Vector(Game.Screen.Left, Game.Screen.Top-100);
+        _finishLine.Position = new Vector(0, Game.Screen.Top);
         _finishLine.IgnoresCollisionResponse = true;
         _finishLine.IgnoresExplosions = true;
         _finishLine.IgnoresPhysicsLogics = true;
@@ -123,11 +124,6 @@ public class Progress
         _trafficSim.AddCollisionHandler(_finishLine, "player", _trafficSim.EndGame);
     }
 
-    public void Stop()
-    {
-        _finishLine.Stop();
-    }
-
     public void SimulateDriving(double force)
     {
         if (_finished)
@@ -135,13 +131,5 @@ public class Progress
             _finishLine.Push(new Vector(0, -_finishLine.Mass*force));
         }
         _distMeter.Value+=10;
-    }
-
-    public void SimulateBraking()
-    {
-        if (_finished)
-        {
-            _finishLine.Stop();
-        }
     }
 }

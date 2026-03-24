@@ -19,48 +19,39 @@ public class TrafficSim : PhysicsGame
     public override void Begin()
     {
         IsFullScreen = true;
-        
-        ResetGame();
+        Init();
     }
     
-    public void ResetGame()
+    private void Init()
     {
         ClearAll();
-        CreateMap();
-        Keyboard.Listen(Key.R, ButtonState.Pressed, ResetGame, "");
+        Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        Debug.Start(this, _car,  _roadMap);
-    }
-    
-    private void CreateMap()
-    {
         _progress = new Progress(this, 6000);
         _car = new Player(this);
         _roadMap = new RoadMap(this, _progress);
-        
-        var speedOMeter = new SpeedOMeter(_roadMap, new Vector(Level.Left+100, Level.Top-100));
-        Add(speedOMeter);
     }
 
     public void AddControls()
     {
-        Controls.Start(_car, _roadMap, this);
+        Controls.Start(this,  _car,  _roadMap);
     }
     
     public void EndGame(PhysicsObject a, PhysicsObject b)
     {
-        _progress.StopTimer();
-        IsPaused = true;
-        CreateSelectionWindow();
+        //StopAll();
+        //var elapsedTime = _progress.StopTimer();
+        //Console.WriteLine(elapsedTime);
+        //CreateSelectionWindow();
     }
 
     private void CreateSelectionWindow()
     {
         string[] options = { "Top List", "Restart", "Quit"};
-        MultiSelectWindow endWindow = new MultiSelectWindow("Finished!", options);
+        var endWindow = new MultiSelectWindow("Finished!", options);
         
         endWindow.AddItemHandler(0, delegate{});
-        endWindow.AddItemHandler(1, ResetGame);
+        endWindow.AddItemHandler(1, Init);
         endWindow.AddItemHandler(2, ConfirmExit);
         
         Add(endWindow);

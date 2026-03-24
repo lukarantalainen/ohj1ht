@@ -34,6 +34,7 @@ public class Debug
     private void Init()
     {
         CreateZoomSlider();
+        CreateSpeedOMeter();
         CreateRoadWidthSlider();
         CreatePlayerPosition();
     }
@@ -51,6 +52,24 @@ public class Debug
     private void ZoomLevel(double oldValue, double newValue)
     {
         _trafficSim.Camera.ZoomFactor = 1+newValue;
+    }
+    
+    private void CreateSpeedOMeter()
+    {
+        DoubleMeter meter = new DoubleMeter(0);
+        var timer = new Timer();
+        timer.Interval = 0.5;
+        timer.Timeout += delegate {UpdateSpeedOMeter(meter);};
+        timer.Start();
+        Label label = new Label();
+        label.BindTo(meter);
+        _trafficSim.Add(label);
+    }
+    
+    private void UpdateSpeedOMeter(DoubleMeter meter)
+    {
+        meter.Value = _roadMap.GetAbsVelocity();
+
     }
 
     private void CreatePlayerPosition()

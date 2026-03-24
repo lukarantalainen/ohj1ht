@@ -18,15 +18,15 @@ public class RoadMap
     private readonly Background _background1;
     private readonly Background _background2;
     
-    private PhysicsObject _borderLeft;
-    private PhysicsObject _borderRight;
+    private readonly PhysicsObject _borderLeft;
+    private readonly PhysicsObject _borderRight;
     
     private readonly double _screenWidth = Game.Screen.Width;
     private readonly double _screenHeight = Game.Screen.Height;
     
     private const double MaxVelocity = 1500;
     private readonly Image _roadTexture = Game.LoadImage("road_texture");
-    private readonly Image _desertTexture = Game.LoadImage("desert_texture");
+    //private readonly Image _desertTexture = Game.LoadImage("desert_texture");
     //private readonly Image _cactusTexture = Game.LoadImage("cactus_texture");
     
     public RoadMap(TrafficSim trafficSim, Progress progress)
@@ -55,7 +55,7 @@ public class RoadMap
         _trafficSim.Add(road, -1);
         PhysicsObject lowerBorder = CreateLowerBorder(Game.Screen.Bottom - _screenHeight);
         _trafficSim.Add(lowerBorder, -1);
-        _trafficSim.AddCollisionHandler(lowerBorder, road, road.MoveRoad);
+        _trafficSim.AddCollisionHandler(lowerBorder, road, road.Cycle);
         return road;
     }
     
@@ -89,7 +89,7 @@ public class RoadMap
         PhysicsObject lowerBorder = CreateLowerBorder(Game.Screen.Bottom - _screenHeight);
         _trafficSim.Add(lowerBorder, -2);
         
-        _trafficSim.AddCollisionHandler(lowerBorder, background, background.MoveBackground);
+        _trafficSim.AddCollisionHandler(lowerBorder, background, background.Cycle);
         return background;
     }
 
@@ -116,21 +116,20 @@ public class RoadMap
         const double drivingForce = 1000;
         const double backgroundRatio = 5;
         _progress.SimulateDriving(drivingForce);
-        _road1.SimulateDriving(drivingForce);
-        _road2.SimulateDriving(drivingForce);
-        _background1.SimulateDriving(drivingForce/backgroundRatio);
-        _background2.SimulateDriving(drivingForce/backgroundRatio);
+        _road1.Drive(drivingForce);
+        _road2.Drive(drivingForce);
+        _background1.Drive(drivingForce/backgroundRatio);
+        _background2.Drive(drivingForce/backgroundRatio);
 
     }
 
     public void Brake()
     {
         if (GetAbsVelocity() < 500) return;
-        _progress.SimulateBraking();
-        _road1.SimulateBraking(5000);
-        _road2.SimulateBraking(5000);
-        _background1.SimulateBraking();
-        _background2.SimulateBraking();
+        _road1.Brake(5000);
+        _road2.Brake(5000);
+        _background1.Brake();
+        _background2.Brake();
     }
     
     public double GetAbsVelocity()

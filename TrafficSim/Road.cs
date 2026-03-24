@@ -15,35 +15,20 @@ public class Road : PhysicsObject
         IgnoresCollisionResponse = true;
         MaxVelocity = maxVelocity;
     }
-
-    /// <summary>
-    /// Moves the road to simulate driving forward
-    /// </summary>
-    /// <param name="force"></param>
-    public void SimulateDriving(double force)
+    
+    public void Drive(double force)
     {
         base.Push(new Vector(0, -Mass*force));
     }
-
-    /// <summary>
-    /// Moves the background to simulate slowing down 
-    /// </summary>
-    /// <param name="force"></param>
-    public void SimulateBraking(double force)
+    
+    public void Brake(double force)
     {
         if (Velocity.Y > -100) return;
         base.Push(new Vector(0, Mass*force));
     }
-
-    /// <summary>
-    /// Used with the two Background objects in a RoadMap
-    /// </summary>
-    /// <param name="border"></param>
-    /// <param name="self"></param>
-    public void MoveRoad(PhysicsObject border, PhysicsObject self)
+    
+    public void Cycle(PhysicsObject border, PhysicsObject self)
     {
         Bottom = Game.Screen.Top;
     }
-    
-    
 }

@@ -10,16 +10,16 @@ public class Controls
     private readonly RoadMap _roadMap;
     private readonly TrafficSim _trafficSim;
 
-    private Controls(Player car,  RoadMap roadMap, TrafficSim trafficSim)
+    private Controls(TrafficSim trafficSim, Player car,  RoadMap roadMap)
     {
         _car = car;
         _roadMap = roadMap;
         _trafficSim = trafficSim;
     }
 
-    public static void Start(Player car,  RoadMap roadMap, TrafficSim trafficSim)
+    public static void Start(TrafficSim trafficSim, Player car,  RoadMap roadMap)
     {
-        var controls = new Controls(car, roadMap, trafficSim);
+        var controls = new Controls(trafficSim, car, roadMap);
         controls.AddControls();
     }
 
