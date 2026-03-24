@@ -49,6 +49,7 @@ public class TrafficSim : PhysicsGame
     
     public void EndGame(PhysicsObject a, PhysicsObject b)
     {
+        _progress.StopTimer();
         IsPaused = true;
         CreateSelectionWindow();
     }

@@ -23,10 +23,10 @@ public class Progress
         _trafficSim = trafficSim;
         _roadLength = new DoubleMeter(roadLength);
         CreateProgressBar();
-        AddStartTimer();
+        AddCountdown();
     }
 
-    private void AddStartTimer()
+    private void AddCountdown()
     {
         _timeMeter = new DoubleMeter(3.9);
         
@@ -53,6 +53,7 @@ public class Progress
             _display.Unbind();
             _trafficSim.AddControls();
             _display.Text = "Go!";
+            StartTimer();
 
         }
 
@@ -61,6 +62,27 @@ public class Progress
             _display.Destroy();
             _startTimer.Stop();
         }
+    }
+
+    private void StartTimer()
+    {
+        DoubleMeter timeMeter = new DoubleMeter(0);
+        Timer timer = new Timer();
+        timer.Interval = 0.1;
+        timer.Timeout += delegate {UpdateTimer(timeMeter);};
+
+        Label currentTime = new Label();
+        currentTime.BindTo(timeMeter);
+    }
+
+    public void StopTimer()
+    {
+        
+    }
+
+    private void UpdateTimer(DoubleMeter timeMeter)
+    {
+        timeMeter.Value += 0.1;
     }
 
     private void CreateProgressBar()
