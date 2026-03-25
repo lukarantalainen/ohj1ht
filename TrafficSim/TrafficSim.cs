@@ -4,6 +4,7 @@ using Jypeli.Widgets;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Jypeli.Assets;
 
@@ -18,9 +19,10 @@ public class TrafficSim : PhysicsGame
 {
     private Progress _progress;
     private Player _car;
-    private RoadMap _roadMap;
-    private TopList _topList;
-    public bool DebugEnabled = false;
+    private Map _map;
+    
+    private ScoreList _topList = new (10, true, 30);
+    
     public override void Begin()
     {
         IsFullScreen = true;
@@ -30,15 +32,14 @@ public class TrafficSim : PhysicsGame
     private void Init()
     {
         ClearAll();
+        _topList = DataStorage.TryLoad<ScoreList>(_topList, "TopList");
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        _progress = new Progress(this, 6000);
-        _car = new Player(this);
-        _roadMap = new RoadMap(this, _progress);
-
-        _topList = new TopList(this);
+        _progress = new Progress(this);
+        _map = new Map(this, _progress);
+        _car = new Player(this, _map);
         
-        Debug.Start(this, _car, _roadMap);
+        Debug.Start(this, _car, _map);
         MessageDisplay.Add("Press SPACE to begin!");
         Keyboard.Listen(Key.Space, ButtonState.Down, _progress.StartGame, "");
         
@@ -46,7 +47,7 @@ public class TrafficSim : PhysicsGame
 
     public void AddControls()
     {
-        Controls.Start(this,  _car,  _roadMap); 
+        Controls.Start(this,  _car,  _map); 
     }
     
     public void EndGame(PhysicsObject a, PhysicsObject b)
@@ -56,17 +57,35 @@ public class TrafficSim : PhysicsGame
         CreateSelectionWindow(elapsedTime);
         RemoveCollisionHandlers();
     }
+
+    private void ShowTopList(double time)
+    {
+        var window = new HighScoreWindow(
+            "Top List", "Your time was %p! Enter a name:",
+            _topList, time);
+        window.Closed += delegate(Window sender) {SaveScores(sender, time);};
+        Add(window);
+        
+    }
     
-    public void CreateSelectionWindow(double finishTime)
+    private void SaveScores(Window sender,double time)
+    {
+        DataStorage.Save<ScoreList>(_topList, "scores.xml");
+        CreateSelectionWindow(time);
+    }
+    
+    private void CreateSelectionWindow(double finishTime=0)
     {
         string[] options = { "Top List", "Restart", "Quit"};
         var endWindow = new MultiSelectWindow($"Finished in! {finishTime}", options);
         
-        endWindow.AddItemHandler(0, delegate { _topList.ShowTopList(finishTime); });
+        endWindow.AddItemHandler(0, delegate { ShowTopList(finishTime); });
         endWindow.AddItemHandler(1, Init);
         endWindow.AddItemHandler(2, Exit);
         
         Add(endWindow);
     }
+    
+    
     
 }

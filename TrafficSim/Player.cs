@@ -5,8 +5,17 @@ namespace TrafficSim;
 public class Player : PhysicsObject
 {
     private const double PlayerSize = 200;
+    private readonly TrafficSim _trafficSim;
+    private readonly Map _map;
 
-    public Player(TrafficSim trafficSim) : base(PlayerSize, PlayerSize)
+    public Player(TrafficSim trafficSim, Map map) : base(PlayerSize, PlayerSize)
+    {
+        _trafficSim = trafficSim;
+        _map = map;
+        CreatePlayer();
+    }
+
+    private void CreatePlayer()
     {
         var carTexture = Game.LoadImage("car_texture");
         Image = carTexture;
@@ -17,8 +26,18 @@ public class Player : PhysicsObject
         Mass = 1000;
         Tag = "player";
         base.Position = new Vector(0, -200);
-        trafficSim.Add(this, 0);
-        trafficSim.AddCollisionHandler(this, "vehicle", CollisionHandler.ExplodeTarget(100, true));
+        _trafficSim.Add(this, 0);
+        _trafficSim.AddCollisionHandler(this, "vehicle", HandleCollision);
+    }
+
+    private void HandleCollision(PhysicsObject colliding, PhysicsObject target)
+    {
+        var e = new Explosion( 50 );
+        e.Position = target.Position;
+        target.Destroy();
+        _trafficSim.Add(e);
+        _map.Slow();
+        
     }
 
     public void SteerRight()

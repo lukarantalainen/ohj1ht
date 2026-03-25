@@ -43,11 +43,10 @@ public class Background : PhysicsObject
         Push(new Vector(0, -Mass*force));
     }
 
-    public void Brake()
+    public void Brake(double force)
     {
-        Push(new Vector(0, Mass*100));
+        Push(new Vector(0, Mass*force));
     }
-    
     public static PhysicsObject CreateLowerBorder(double posY)
     {
         var border = new PhysicsObject(6000, 100);

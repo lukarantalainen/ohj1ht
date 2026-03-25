@@ -8,28 +8,27 @@ public class Debug
 {
     private readonly TrafficSim _trafficSim; 
     private readonly Player _player;
-    private readonly RoadMap _roadMap;
+    private readonly Map _map;
     private readonly Road _road1;
     private readonly Road _road2;
     private readonly PhysicsObject _borderLeft;
     private readonly PhysicsObject _borderRight;
 
     private double _debugDisplayPosY = Game.Screen.Top -100;
-    private Debug(TrafficSim trafficSim, Player player,  RoadMap roadMap)
+    private Debug(TrafficSim trafficSim, Player player,  Map map)
     {
         _trafficSim = trafficSim;
         _player = player;
-        _roadMap = roadMap;
-        _road1 = _roadMap.GetRoad(0);
-        _road2 = _roadMap.GetRoad(1);
-        _borderLeft = _roadMap.GetBorder(0);
-        _borderRight = _roadMap.GetBorder(1);
+        _map = map;
+        _road1 = _map.GetRoad(0);
+        _road2 = _map.GetRoad(1);
+        _borderLeft = _map.GetBorder(0);
+        _borderRight = _map.GetBorder(1);
     }
     
-    public static void Start(TrafficSim trafficSim, Player player, RoadMap roadMap)
+    public static void Start(TrafficSim trafficSim, Player player, Map map)
     {
-        trafficSim.DebugEnabled = true;
-        var debug = new Debug(trafficSim, player, roadMap);
+        var debug = new Debug(trafficSim, player, map);
         debug.Init();
     }
     
@@ -91,7 +90,7 @@ public class Debug
     
     private void UpdateSpeedOMeter(DoubleMeter meter)
     {
-        meter.Value = _roadMap.GetAbsVelocity();
+        meter.Value = _map.GetVelocity();
 
     }
 

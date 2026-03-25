@@ -18,13 +18,14 @@ public class Road : PhysicsObject
     
     public void Drive(double force)
     {
-        base.Push(new Vector(0, -Mass*force));
+        Push(new Vector(0, -Mass*force));
     }
-    
+
     public void Brake(double force)
     {
-        if (Velocity.Y > -100) return;
-        base.Push(new Vector(0, Mass*force));
+
+        Push(new Vector(0, Mass*force));
+        
     }
     
     public void Cycle(PhysicsObject border, PhysicsObject self)

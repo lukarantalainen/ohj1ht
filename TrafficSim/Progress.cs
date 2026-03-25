@@ -18,15 +18,14 @@ public class Progress
     
     private readonly PhysicsObject _finishLine;
     
-    private readonly double _roadLength;
+    private const double RoadLength = 300000;
     
     private bool _started;
     private bool _finished;
     
-    public Progress(TrafficSim trafficSim, double roadLength)
+    public Progress(TrafficSim trafficSim)
     {
         _trafficSim = trafficSim;
-        _roadLength = roadLength;
         _timeMeter = new DoubleMeter(0);
         _distMeter = new DoubleMeter(0);
         _finishLine = new PhysicsObject(Game.Screen.Width, 20, Shape.Rectangle);
@@ -37,7 +36,7 @@ public class Progress
         if (_started) return;
         _trafficSim.MessageDisplay.Clear();
         CreateStartCountdown();
-        CreateProgressBar(_roadLength);
+        CreateProgressBar(RoadLength);
         _started = true;
     }
     
@@ -47,7 +46,7 @@ public class Progress
         {
             _finishLine.Push(new Vector(0, -_finishLine.Mass*force));
         }
-        _distMeter.Value+=10;
+        _distMeter.Value+=force;
     }
     
     public double StopTimer()
