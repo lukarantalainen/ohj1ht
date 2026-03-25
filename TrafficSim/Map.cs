@@ -86,7 +86,7 @@ public class Map
 
     private Background CreateBackground(Vector position)
     {
-        var background = new Background(_screenWidth, _screenHeight, _desertTexture, MaxVelocity);
+        var background = new Background(_screenWidth, _screenHeight*2, _desertTexture, MaxVelocity);
         background.Position = position;
         
         _trafficSim.Add(background, -2);

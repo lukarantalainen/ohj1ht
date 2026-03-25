@@ -35,7 +35,7 @@ public class Background : PhysicsObject
     
     public void Cycle(PhysicsObject a, PhysicsObject b)
     {
-        Y += _height;
+        Bottom = Game.Screen.Top;
     }
 
     public void Drive(double force)
