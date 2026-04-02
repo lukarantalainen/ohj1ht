@@ -9,6 +9,7 @@ public class Road : PhysicsObject
     public Road(double width, double height, Image texture, double maxVelocity) : base(width, height)
     {
         Image = texture;
+        Restitution = 0.8;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
         IgnoresExplosions = true;
@@ -25,7 +26,6 @@ public class Road : PhysicsObject
     {
 
         Push(new Vector(0, Mass*force));
-        
     }
     
     public void Cycle(PhysicsObject border, PhysicsObject self)

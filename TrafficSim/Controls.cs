@@ -56,7 +56,7 @@ public class Controls
         _trafficSim.Keyboard.Listen(Key.A, ButtonState.Down, SteerLeft, "");
         _trafficSim.Keyboard.Listen(Key.D, ButtonState.Down, SteerRight, "");
         _trafficSim.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
-        _trafficSim.Keyboard.Listen(Key.Up, ButtonState.Released, DriveIdle, "");
+        _trafficSim.Keyboard.Listen(Key.Up, ButtonState.Up, DriveIdle, "");
         _trafficSim.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
         _trafficSim.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
         _trafficSim.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");

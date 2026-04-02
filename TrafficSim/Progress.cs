@@ -1,14 +1,18 @@
+using Jypeli;
+using Jypeli.Assets;
+using Jypeli.GameObjects;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Jypeli.GameObjects;
-using Jypeli;
-using Jypeli.Assets;
 
 namespace TrafficSim;
 using Jypeli;
+using Jypeli.Effects;
 using Jypeli.Widgets;
+using Silk.NET.OpenGL;
+
 public class Progress
 {
     private readonly TrafficSim _trafficSim;
@@ -18,10 +22,10 @@ public class Progress
     
     private readonly PhysicsObject _finishLine;
     
-    private const double RoadLength = 300000;
+    private const double RoadLength = 3000;
     
-    private bool _started;
-    private bool _finished;
+    private bool _started = false;
+    private bool _finished = false;
     
     public Progress(TrafficSim trafficSim)
     {
@@ -35,18 +39,18 @@ public class Progress
     {
         if (_started) return;
         _trafficSim.MessageDisplay.Clear();
-        CreateStartCountdown();
+        CreateStartLights();
         CreateProgressBar(RoadLength);
         _started = true;
     }
     
-    public void SimulateDriving(double force)
+    public void Drive(double velocity)
     {
         if (_finished)
         {
-            _finishLine.Push(new Vector(0, -_finishLine.Mass*force));
+            _finishLine.Push(new Vector(0, -_finishLine.Mass*velocity));
         }
-        _distMeter.Value+=force;
+        _distMeter.Value+=velocity/100;
     }
     
     public double StopTimer()
@@ -54,36 +58,108 @@ public class Progress
         return _timeMeter.Value;
     }
 
-    private void CreateStartCountdown()
+    private static List<GameObject> CreateCircles(GameObject background)
     {
-        var countdown = new DoubleMeter(3);
+        var circles = new List<GameObject>();
+        var color = new Color(27,27, 27);
+        var centerCircle = new GameObject(100, 100, Shape.Circle)
+        {
+            Color = color,
+            Position = background.Position
+        };
         
-        var display = new Label(100, 50, "3");
-        display.Color = Color.Orange;
-        display.TextColor = Color.GreenYellow;
-        display.DecimalPlaces = 1;
-        display.BindTo(countdown);
-        display.Position = new Vector(0, 100);
-        _trafficSim.Add(display);
-        
-        var starttimer = new Timer(3);
-        
-        starttimer.Interval = 0.1;
-        starttimer.Timeout += delegate { Countdown(display, countdown, starttimer); };
-        starttimer.Start();
+        var leftCircle = new GameObject(100, 100, Shape.Circle)
+        {
+            Color= color,
+            Position = new Vector((centerCircle.Left + background.Left) / 2, background.Y)
+        };
+
+        var rightCircle = new GameObject(100, 100, Shape.Circle)
+        {
+            Color = color,
+            Position = new Vector((centerCircle.Right + background.Right) / 2, background.Y)
+        };
+
+        circles.Add(leftCircle);
+        circles.Add(centerCircle);
+        circles.Add(rightCircle);
+
+        background.Add(centerCircle);
+        background.Add(leftCircle);
+        background.Add(rightCircle);
+
+        return circles;
     }
 
-    private void Countdown(Label display, DoubleMeter countdown,  Timer starttimer)
+    private void CreateStartLights()
     {
-        countdown.Value -= 0.1;
-        if (countdown.Value <=0.1)
+        var background = new GameObject(500, 200, Shape.Rectangle)
         {
-            starttimer.Stop();
-            display.Unbind();
-            _trafficSim.AddControls();
-            display.Destroy();
-            CreateStartTimer();
+            Position = new Vector(0, Game.Screen.Top - 300),
+            Color = Color.Black,
+        };
+
+        var root = new GameObject(background.Width + 30, background.Height + 30, Shape.Rectangle)
+        {
+            Position = background.Position,
+            Color = Color.DarkGray
+        };
+
+        root.Add(background);
+        _trafficSim.Add(root);
+
+        var lights = CreateCircles(background);
+        CreateStartTimer(lights, root);
+    }
+
+    private void CreateStartTimer(List<GameObject>lights, GameObject root)
+    {
+        var countdown = new IntMeter(0);
+        bool penalty = false;
+        _trafficSim.Keyboard.Listen(Key.W, ButtonState.Down, delegate 
+        { penalty = true;
+            _trafficSim.MessageDisplay.Add("Penalty: false start");
+        }, "");
+
+        var timer = new Timer(1);
+        timer.Timeout += delegate () { UpdateLights(countdown, timer, lights, root, penalty); };
+        timer.Start();
+    }
+
+    private void UpdateLights(IntMeter countdown, Timer timer, List<GameObject> lights, GameObject root, bool penalty)
+    {
+        if (countdown.Value < 3)
+        {
+            lights[countdown.Value].Color = Color.Red;
         }
+
+        else if (countdown.Value == 3)
+        {
+            CreateStartTimer();
+            foreach (var lightObj in lights)
+            {
+                lightObj.Color = Color.Green;
+            }
+
+            if (!penalty)
+            {
+                _trafficSim.AddControls();
+            }
+        }
+
+        else if (countdown.Value == 4 && !penalty)
+        {
+            root.Destroy();
+            timer.Stop();
+        }
+
+        else if (countdown.Value == 5 && penalty)
+        {
+            root.Destroy();
+            timer.Stop();
+            _trafficSim.AddControls();
+        }
+        countdown.Value++;
     }
 
     private void CreateStartTimer()
@@ -141,6 +217,4 @@ public class Progress
 
         _trafficSim.AddCollisionHandler(_finishLine, "player", _trafficSim.EndGame);
     }
-
-    
 }

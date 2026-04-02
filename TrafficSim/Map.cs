@@ -22,11 +22,8 @@ public class Map
     private readonly double _screenHeight = Game.Screen.Height;
     
     private const double MaxVelocity = 1500;
-    private double _drivingForce = 1000; 
-    
-    private readonly Image _roadTexture = Game.LoadImage("road_texture");
-    private readonly Image _desertTexture = Game.LoadImage("desert_texture");
-    //private readonly Image _cactusTexture = Game.LoadImage("cactus_texture");
+    private const double BGMaxVelocity = 600;
+    private const double DrivingForce = 1000; 
 
     private enum Side
     {
@@ -40,8 +37,8 @@ public class Map
         _progress = progress;
         _road1 = CreateRoad(new Vector(0, 0));
         _road2 = CreateRoad(new Vector(0, _screenHeight));
-        _borderLeft = CreateRoadBorder(_road1, Color.Silver, Side.Left);
-        _borderRight = CreateRoadBorder(_road1, Color.Silver, Side.Right);
+        _borderLeft = CreateRoadBorder(Color.Silver, Side.Left);
+        _borderRight = CreateRoadBorder(Color.Silver, Side.Right);
         _background1 = CreateBackground(new Vector(0, 0));
         _background2 = CreateBackground(new Vector(0, _screenHeight));
         InitializeMap();
@@ -49,22 +46,24 @@ public class Map
 
     private void InitializeMap()
     {
-        StartVehicleGenerator();
+        //StartVehicleGenerator();
     }
 
     private Road CreateRoad(Vector position)
     {
         const int roadWidth = 200;
-        var road = new Road(roadWidth, _screenHeight*2, _roadTexture, MaxVelocity);
-        road.Position = position;
+        var road = new Road(roadWidth, _screenHeight * 2, TrafficSim.RoadTexture, MaxVelocity)
+        {
+            Position = position
+        };
         _trafficSim.Add(road, -1);
-        var lowerBorder = CreateLowerBorder(Game.Screen.Bottom - _screenHeight*1.5);
+        var lowerBorder = CreateLowerBorder(Game.Screen.Bottom - _screenHeight);
         _trafficSim.Add(lowerBorder, -1);
         _trafficSim.AddCollisionHandler(lowerBorder, road, road.Cycle);
         return road;
     }
     
-    private PhysicsObject CreateRoadBorder(Road anchor, Color color, Side side)
+    private PhysicsObject CreateRoadBorder(Color color, Side side)
     {
         const double borderWidth = 20;
         var border = new PhysicsObject(borderWidth, _screenHeight);
@@ -86,11 +85,13 @@ public class Map
 
     private Background CreateBackground(Vector position)
     {
-        var background = new Background(_screenWidth, _screenHeight*2, _desertTexture, MaxVelocity);
-        background.Position = position;
-        
+        var background = new Background(_screenWidth, _screenHeight * 2, TrafficSim.DesertTexture, BGMaxVelocity)
+        {
+            Position = position
+        };
+
         _trafficSim.Add(background, -2);
-        var lowerBorder = CreateLowerBorder(Game.Screen.Bottom - _screenHeight*1.5);
+        var lowerBorder = CreateLowerBorder(Game.Screen.Bottom - _screenHeight);
         _trafficSim.Add(lowerBorder, -2);
         
         _trafficSim.AddCollisionHandler(lowerBorder, background, background.Cycle);
@@ -99,8 +100,10 @@ public class Map
 
     private void StartVehicleGenerator()
     {
-        var timer = new Timer();
-        timer.Interval = 1;
+        var timer = new Timer
+        {
+            Interval = 1
+        };
         var vehicleGenerator = new VehicleGenerator(_trafficSim, this, _road1, _road2);
         timer.Timeout += delegate { vehicleGenerator.Generate(); };
         timer.Start();
@@ -108,18 +111,20 @@ public class Map
     
     private static PhysicsObject CreateLowerBorder(double posY)
     {
-        var border = new PhysicsObject(5000, 1);
-        border.Top = posY;
-        border.IgnoresCollisionResponse = true;
-        border.IgnoresGravity = true;
+        var border = new PhysicsObject(5000, 1)
+        {
+            Top = posY,
+            IgnoresCollisionResponse = true,
+            IgnoresGravity = true
+        };
         return border;
     }
     
     public void Drive()
     {
         const double ratio = 2.5;
-        var force = _drivingForce;
-        _progress.SimulateDriving(force);
+        var force = DrivingForce;
+        _progress.Drive(GetVelocity()/100);
         _road1.Drive(force);
         _road2.Drive(force);
         _background1.Drive(force/ratio);
@@ -128,35 +133,59 @@ public class Map
 
     public void DriveIdle()
     {
-        _progress.SimulateDriving(GetVelocity());
+        if (GetVelocity() > 300 && GetBGVelocity() > 200)
+        {
+            _road1.Brake(300);
+            _road2.Brake(300);
+            _background1.Brake(300 / 2.5);
+            _background2.Brake(300 / 2.5);
+        }
+        _progress.Drive(GetVelocity());
     }
 
     public void Brake()
     {
         const double ratio = 2.5;
-        double force = _drivingForce;
-        _road1.Brake(force);
-        _road2.Brake(force);
-        _background1.Brake(force / ratio);
-        _background2.Brake(force / ratio);
+        double force = DrivingForce;
+        if (GetVelocity() > 300)
+        {
+            _road1.Brake(force);
+            _road2.Brake(force);
+           
+        }
+
+        if (GetBGVelocity() > 200)
+        {
+            _background1.Brake(force/ratio);
+            _background2.Brake(force/ratio);
+        }
+            
+        _progress.Drive(GetVelocity());
     }
 
     public void Slow()
     {
-        _trafficSim.MessageDisplay.Add("slow");
-        const double ratio = 3;
-        _drivingForce /= ratio;
-        Timer timer = new Timer();
-        timer.Interval = 5;
-        timer.Timeout += delegate { UnSlow(timer, ratio); };
-        _road1.Hit(new Vector(0, GetVelocity()-300));
-        _road2.Hit(new Vector(0, GetVelocity()-300));
+        Timer timer = new()
+        {
+            Interval = 2
+        };
+        timer.Timeout += delegate { UnSlow(timer); };
+        timer.Start();
+        Brake();
+        _road1.MaxVelocity = 300;
+        _road2.MaxVelocity = 300;
+        _background1.MaxVelocity = 200;
+        _background2.MaxVelocity = 200;
     }
 
-    private void UnSlow(Timer timer, double ratio)
+    private void UnSlow(Timer timer)
     {
+        _trafficSim.MessageDisplay.Add("unslow");
         timer.Stop();
-        _drivingForce /= ratio;
+        _road1.MaxVelocity = MaxVelocity;
+        _road2.MaxVelocity = MaxVelocity;
+        _background1.MaxVelocity = BGMaxVelocity;
+        _background2.MaxVelocity = BGMaxVelocity;
     }
     
     public double GetVelocity()
@@ -164,23 +193,28 @@ public class Map
         return -_road1.Velocity.Y;
     }
 
+    public double GetBGVelocity()
+    {
+        return _background1.Velocity.Y; 
+    }
+
     public Road GetRoad(int road)
     {
-        switch (road)
+        return road switch
         {
-            case 0: return _road1;
-            case 1: return _road2;
-            default: return _road1;
-        }
+            0 => _road1,
+            1 => _road2,
+            _ => _road1,
+        };
     }
 
     public PhysicsObject GetBorder(int border)
     {
-        switch (border)
+        return border switch
         {
-            case 0: return _borderLeft;
-            case 1: return _borderRight;
-            default: return _borderLeft;
-        }
+            0 => _borderLeft,
+            1 => _borderRight,
+            _ => _borderLeft,
+        };
     }
 }

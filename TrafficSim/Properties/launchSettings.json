@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TrafficSim": {
+      "commandName": "Project",
+      "hotReloadEnabled": false
+    }
+  }
+}

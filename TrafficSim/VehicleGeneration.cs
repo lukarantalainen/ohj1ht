@@ -10,21 +10,23 @@ public class VehicleGenerator
     private readonly Road _road1;
     private readonly Road _road2;
     private readonly List<PhysicsObject> _vehicles = [];
+
+    private readonly double x1;
+    private readonly double x2;
     public VehicleGenerator(TrafficSim trafficSim, Map map, Road road1, Road road2)
     {
         _trafficSim = trafficSim;
         _map = map;
         _road1 = road1;
         _road2 = road2;
+        x1 = (_road1.Left+_road1.X)/2;
+        x2 = (_road2.Right + _road2.X) / 2;
     }
     public void Generate()
     {
         var velocity = _map.GetVelocity();
         if (velocity > 100)
         {
-            var x1 = (_road1.Left+_road1.X)/2;
-            var x2 = (_road2.Right+_road2.X)/2;
-        
             var vehicle = new Vehicle(50, 100);
             var lane =  RandomGen.NextInt(0, 2);
             vehicle.Position = (lane==0) ? new Vector(x1, Game.Screen.Top+200) : new Vector(x2, Game.Screen.Top+200);

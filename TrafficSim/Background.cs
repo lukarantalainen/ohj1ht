@@ -42,7 +42,7 @@ public class Background : PhysicsObject
     {
         Push(new Vector(0, -Mass*force));
     }
-
+ 
     public void Brake(double force)
     {
         Push(new Vector(0, Mass*force));

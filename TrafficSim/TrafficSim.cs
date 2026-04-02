@@ -20,19 +20,27 @@ public class TrafficSim : PhysicsGame
     private Progress _progress;
     private Player _car;
     private Map _map;
-    
-    private ScoreList _topList = new (10, true, 30);
+
+    public static readonly Image CarTexture = Game.LoadImage("car_texture");
+    public static readonly Shape CarShape = Shape.FromImage(CarTexture);
+    public static readonly Image RoadTexture = Game.LoadImage("road_texture");
+
+    public static readonly Image DesertTexture = Game.LoadImage("desert_texture");
+    //public static readonly Image _cactusTexture = Game.LoadImage("cactus_texture");
+
+    private ScoreList _topList;
     
     public override void Begin()
     {
-        IsFullScreen = true;
+        //IsFullScreen = true;
         Init();
     }
     
     private void Init()
     {
         ClearAll();
-        _topList = DataStorage.TryLoad<ScoreList>(_topList, "TopList");
+        _topList = new ScoreList(10, true, 30);
+        _topList = DataStorage.TryLoad<ScoreList>(_topList, "scores.xml");
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         _progress = new Progress(this);
@@ -47,6 +55,9 @@ public class TrafficSim : PhysicsGame
 
     public void AddControls()
     {
+        Keyboard.Clear();
+        Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
+        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         Controls.Start(this,  _car,  _map); 
     }
     
@@ -63,9 +74,9 @@ public class TrafficSim : PhysicsGame
         var window = new HighScoreWindow(
             "Top List", "Your time was %p! Enter a name:",
             _topList, time);
-        window.Closed += delegate(Window sender) {SaveScores(sender, time);};
+        window.Closed += delegate (Window sender) { SaveScores(sender, time); };
         Add(window);
-        
+
     }
     
     private void SaveScores(Window sender,double time)
@@ -76,7 +87,7 @@ public class TrafficSim : PhysicsGame
     
     private void CreateSelectionWindow(double finishTime=0)
     {
-        string[] options = { "Top List", "Restart", "Quit"};
+        string[] options = ["Top List", "Restart", "Quit"];
         var endWindow = new MultiSelectWindow($"Finished in! {finishTime}", options);
         
         endWindow.AddItemHandler(0, delegate { ShowTopList(finishTime); });
