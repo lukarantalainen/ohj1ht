@@ -22,7 +22,7 @@ public class Progress
     
     private readonly PhysicsObject _finishLine;
     
-    private const double RoadLength = 3000;
+    private const double RoadLength = 30000;
     
     private bool _started = false;
     private bool _finished = false;

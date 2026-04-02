@@ -25,6 +25,9 @@ public class TrafficSim : PhysicsGame
     public static readonly Shape CarShape = Shape.FromImage(CarTexture);
     public static readonly Image RoadTexture = Game.LoadImage("road_texture");
 
+    public static readonly Image TruckTexture = Game.LoadImage("truck.png");
+    public static readonly Shape TruckShape = Shape.FromImage(TruckTexture);
+
     public static readonly Image DesertTexture = Game.LoadImage("desert_texture");
     //public static readonly Image _cactusTexture = Game.LoadImage("cactus_texture");
 
@@ -74,6 +77,7 @@ public class TrafficSim : PhysicsGame
         var window = new HighScoreWindow(
             "Top List", "Your time was %p! Enter a name:",
             _topList, time);
+        window.Color = Color.GreenYellow;
         window.Closed += delegate (Window sender) { SaveScores(sender, time); };
         Add(window);
 

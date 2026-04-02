@@ -2,50 +2,48 @@ using Jypeli;
 
 namespace TrafficSim;
 
+public enum VehicleType
+{
+    Car,
+    Truck,
+    Taxi,
+}
+
 public class Vehicle : PhysicsObject
 {
-    public enum VehicleType
+    public Vehicle(double size, VehicleType type) : base(size, size)
     {
-        Car,
-        Truck,
-        Taxi,
+        IgnoresCollisionResponse = true;
+        IgnoresGravity = true;
+        IgnoresPhysicsLogics = true;
+        switch (type)
+        {
+            case (VehicleType.Car):
+                CreateCar(); break;
+            case (VehicleType.Truck):
+                CreateTruck(); break;
+            case VehicleType.Taxi:
+                break;
+            default:
+                CreateCar(); break;
+        }
     }
 
-    public Vehicle(double width, double height) : base(width, height)
+    private void CreateCar()
     {
-        
-    }
-    public Vehicle(double width, double height, double topSpeed, Color color) : base(width, height)
-    {
-        
+        Image = TrafficSim.CarTexture;
     }
 
-    public Vehicle(double width, double height, double topSpeed, Image texture, Shape shape) : base(width, height,
-        shape)
+    private void CreateTruck()
     {
-        Image = texture;
+        Image = TrafficSim.TruckTexture;
+
+        Angle = Angle.FromDegrees(-90);
     }
+    private void CreateTaxi()
+    {
+
+    }
+
 }
 
-public class Taxi : Vehicle
-{
-    public Taxi() : base(200, 200, 200, Color.Yellow)
-    {
-    }
-}
-
-public class Truck :  Vehicle
-{
-    public Truck() : base(200, 300, 120, Color.Red)
-    {
-    }
-}
-
-public class Car : Vehicle
-{
-    public Car(double width, double height, double topSpeed, Image texture, Shape shape) : base(200, 200, 200, texture,
-        shape)
-    {
-        
-    }
-}
