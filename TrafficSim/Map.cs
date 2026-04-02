@@ -21,9 +21,8 @@ public class Map
     private readonly double _screenWidth = Game.Screen.Width;
     private readonly double _screenHeight = Game.Screen.Height;
     
-    private const double MaxVelocity = 1500;
-    private const double BGMaxVelocity = 600;
-    private const double DrivingForce = 1000; 
+    
+    private const double DrivingForce = 100; 
 
     private enum Side
     {
@@ -33,6 +32,8 @@ public class Map
     
     public Map(TrafficSim trafficSim, Progress progress)
     {
+        Properties.MaxVelocity = 1500;
+        Properties.BGMaxVelocity = 600;
         _trafficSim = trafficSim;
         _progress = progress;
         _road1 = CreateRoad(new Vector(0, 0));
@@ -46,8 +47,8 @@ public class Map
 
     private Road CreateRoad(Vector position)
     {
-        const int roadWidth = 200;
-        var road = new Road(roadWidth, _screenHeight * 2, TrafficSim.RoadTexture, MaxVelocity)
+        const int roadWidth = 600;
+        var road = new Road(roadWidth, _screenHeight * 2, TrafficSim.RoadTexture, Properties.MaxVelocity)
         {
             Position = position
         };
@@ -80,7 +81,7 @@ public class Map
 
     private Background CreateBackground(Vector position)
     {
-        var background = new Background(_screenWidth, _screenHeight * 2, TrafficSim.DesertTexture, BGMaxVelocity)
+        var background = new Background(_screenWidth, _screenHeight * 2, TrafficSim.DesertTexture, Properties.BGMaxVelocity)
         {
             Position = position
         };
@@ -100,7 +101,7 @@ public class Map
             Interval = 1
         };
         var vehicleGenerator = new VehicleGenerator(_trafficSim, this, _road1, _road2);
-        timer.Timeout += delegate { vehicleGenerator.Generate(); };
+        timer.Timeout += vehicleGenerator.Generate;
         timer.Start();
     }
     
@@ -141,15 +142,17 @@ public class Map
     public void Brake()
     {
         const double ratio = 2.5;
-        double force = DrivingForce;
-        if (GetVelocity() > 300)
+        double force = 1000;
+        double velocity = GetVelocity();
+        double bgVelocity = GetBGVelocity();
+
+        if (velocity>300)
         {
             _road1.Brake(force);
             _road2.Brake(force);
-           
         }
 
-        if (GetBGVelocity() > 200)
+        if (bgVelocity > 200)
         {
             _background1.Brake(force/ratio);
             _background2.Brake(force/ratio);
@@ -167,8 +170,8 @@ public class Map
         timer.Timeout += delegate { UnSlow(timer); };
         timer.Start();
         Brake();
-        _road1.MaxVelocity = 300;
-        _road2.MaxVelocity = 300;
+        _road1.MaxVelocity = 500;
+        _road2.MaxVelocity = 500;
         _background1.MaxVelocity = 200;
         _background2.MaxVelocity = 200;
     }
@@ -177,10 +180,10 @@ public class Map
     {
         _trafficSim.MessageDisplay.Add("unslow");
         timer.Stop();
-        _road1.MaxVelocity = MaxVelocity;
-        _road2.MaxVelocity = MaxVelocity;
-        _background1.MaxVelocity = BGMaxVelocity;
-        _background2.MaxVelocity = BGMaxVelocity;
+        _road1.MaxVelocity = Properties.MaxVelocity;
+        _road2.MaxVelocity = Properties.MaxVelocity;
+        _background1.MaxVelocity = Properties.BGMaxVelocity;
+        _background2.MaxVelocity = Properties.BGMaxVelocity;
     }
     
     public double GetVelocity()

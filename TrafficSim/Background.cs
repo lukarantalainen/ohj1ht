@@ -14,6 +14,7 @@ public class Background : PhysicsObject
         _height = height*2;
         IgnoresGravity = true;
         IgnoresCollisionResponse = true;
+        IgnoresPhysicsLogics = true;
         IgnoresExplosions = true;
         MaxVelocity = maxVelocity;
     }

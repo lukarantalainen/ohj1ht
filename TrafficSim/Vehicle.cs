@@ -11,7 +11,7 @@ public enum VehicleType
 
 public class Vehicle : PhysicsObject
 {
-    public Vehicle(double size, VehicleType type) : base(size, size)
+    public Vehicle(double width, double height, VehicleType type) : base(width, height)
     {
         IgnoresCollisionResponse = true;
         IgnoresGravity = true;
@@ -31,14 +31,16 @@ public class Vehicle : PhysicsObject
 
     private void CreateCar()
     {
-        Image = TrafficSim.CarTexture;
+        //Image = TrafficSim.CarTexture;
+        Color = Color.Blue;
+        Shape = Shape.Rectangle;
     }
 
     private void CreateTruck()
     {
-        Image = TrafficSim.TruckTexture;
-
-        Angle = Angle.FromDegrees(-90);
+        Color = Color.Red;
+        Shape = Shape.Rectangle;
+        //base.Shape = TrafficSim.TruckShape;
     }
     private void CreateTaxi()
     {

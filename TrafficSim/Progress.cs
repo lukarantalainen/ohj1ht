@@ -22,7 +22,6 @@ public class Progress
     
     private readonly PhysicsObject _finishLine;
     
-    private const double RoadLength = 30000;
     
     private bool _started = false;
     private bool _finished = false;
@@ -40,7 +39,7 @@ public class Progress
         if (_started) return;
         _trafficSim.MessageDisplay.Clear();
         CreateStartLights();
-        CreateProgressBar(RoadLength);
+        CreateProgressBar(Properties.RoadLength);
         _started = true;
     }
     
@@ -111,10 +110,10 @@ public class Progress
         _trafficSim.Add(root);
 
         var lights = CreateCircles(background);
-        CreateStartTimer(lights, root);
+        CreateCountdown(lights, root);
     }
 
-    private void CreateStartTimer(List<GameObject>lights, GameObject root)
+    private void CreateCountdown(List<GameObject>lights, GameObject root)
     {
         var countdown = new IntMeter(0);
         bool penalty = false;
@@ -137,7 +136,7 @@ public class Progress
 
         else if (countdown.Value == 3)
         {
-            CreateStartTimer();
+            CreateTimer();
             foreach (var lightObj in lights)
             {
                 lightObj.Color = Color.Green;
@@ -164,19 +163,37 @@ public class Progress
         countdown.Value++;
     }
 
-    private void CreateStartTimer()
+    private void CreateTimer()
     {
-        var timer = new Timer();
-        timer.Interval = 0.1;
+        var timer = new Timer
+        {
+            Interval = 0.1
+        };
         timer.Timeout += UpdateTimer;
         timer.Start();
         
-        var currentTime = new Label();
+        var currentTime = new Label()
+        {
+            Color = Color.Black,
+            TextColor = Color.BrightGreen,
+            Position = new Vector(-300, 200),
+        };
         currentTime.BindTo(_timeMeter);
-        currentTime.Color = Color.Black;
-        currentTime.TextColor = Color.BrightGreen;
-        currentTime.Position = new Vector(-300, 200);
         _trafficSim.Add(currentTime);
+
+        var targetTime = new Label()
+        {
+            Color = Color.Black,
+            TextColor = Color.Orange,
+            X = currentTime.X,
+            Top = currentTime.Bottom,
+            Text = Properties.TargetTime.ToString("0,0")
+        };
+
+        _trafficSim.Add(targetTime);
+
+        
+        
     }
     
     private void UpdateTimer()
@@ -217,6 +234,6 @@ public class Progress
             
         _finished = true;
 
-        _trafficSim.AddCollisionHandler(_finishLine, "player", _trafficSim.EndGame);
+        _trafficSim.AddCollisionHandler(_finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { _trafficSim.EndGame(); }); 
     }
 }
