@@ -34,7 +34,8 @@ public class VehicleGenerator
 
         if (_map.GetVelocity() > 100)
         {
-            var vehicle = new Vehicle(100, VehicleType.Truck);
+            var vehicleType = (VehicleType)RandomGen.NextInt(0, 2);
+            var vehicle = new Vehicle(100, vehicleType);
             var lane =  RandomGen.NextInt(0, 2);
             vehicle.Position = (lane==0) ? new Vector(x1, Game.Screen.Top+200) : new Vector(x2, Game.Screen.Top+200);
             _vehicles.Add(vehicle);
