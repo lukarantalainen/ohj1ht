@@ -32,7 +32,7 @@ public class Player : PhysicsObject
     private void HandleCollision(PhysicsObject colliding, PhysicsObject target)
     {
        
-        target.Destroy();
+        target.Y = Game.Screen.Bottom - 1000;
         _map.Slow();
         
     }

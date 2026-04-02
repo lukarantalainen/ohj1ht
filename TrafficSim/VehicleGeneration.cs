@@ -24,8 +24,15 @@ public class VehicleGenerator
     }
     public void Generate()
     {
-        var velocity = _map.GetVelocity();
-        if (velocity > 100)
+        foreach (var v in _vehicles)
+        {
+            if (v.Y < Game.Screen.Bottom-200)
+            {
+                v.Destroy();
+            }
+        }
+
+        if (_map.GetVelocity() > 100)
         {
             var vehicle = new Vehicle(50, 100);
             var lane =  RandomGen.NextInt(0, 2);
@@ -37,11 +44,8 @@ public class VehicleGenerator
         foreach (var v in _vehicles)
         {
             v.Tag = "vehicle";
-            v.MoveTo(new Vector(v.X, Game.Screen.Bottom-200), velocity);
-            if (v.Y < Game.Screen.Bottom)
-            {
-                v.Destroy();
-            }
+            v.MoveTo(new Vector(v.X, Game.Screen.Bottom-1000), _map.GetVelocity());
+            
         }
     }
 }

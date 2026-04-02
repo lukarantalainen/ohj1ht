@@ -62,19 +62,20 @@ public class Progress
     {
         var circles = new List<GameObject>();
         var color = new Color(27,27, 27);
-        var centerCircle = new GameObject(100, 100, Shape.Circle)
+        const double r = 70;
+        var centerCircle = new GameObject(r, r, Shape.Circle)
         {
             Color = color,
             Position = background.Position
         };
         
-        var leftCircle = new GameObject(100, 100, Shape.Circle)
+        var leftCircle = new GameObject(r, r, Shape.Circle)
         {
             Color= color,
             Position = new Vector((centerCircle.Left + background.Left) / 2, background.Y)
         };
 
-        var rightCircle = new GameObject(100, 100, Shape.Circle)
+        var rightCircle = new GameObject(r, r, Shape.Circle)
         {
             Color = color,
             Position = new Vector((centerCircle.Right + background.Right) / 2, background.Y)
@@ -93,9 +94,10 @@ public class Progress
 
     private void CreateStartLights()
     {
-        var background = new GameObject(500, 200, Shape.Rectangle)
+        var background = new GameObject(400, 150, Shape.Rectangle)
         {
-            Position = new Vector(0, Game.Screen.Top - 300),
+            X = 0,
+            Top = Game.Screen.Top - 50,
             Color = Color.Black,
         };
 

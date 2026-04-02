@@ -41,12 +41,7 @@ public class Map
         _borderRight = CreateRoadBorder(Color.Silver, Side.Right);
         _background1 = CreateBackground(new Vector(0, 0));
         _background2 = CreateBackground(new Vector(0, _screenHeight));
-        InitializeMap();
-    }
-
-    private void InitializeMap()
-    {
-        //StartVehicleGenerator();
+        StartVehicleGenerator();
     }
 
     private Road CreateRoad(Vector position)
