@@ -1,5 +1,6 @@
 using Jypeli;
 using Jypeli.Widgets;
+using System;
 
 namespace TrafficSim;
 
@@ -14,9 +15,9 @@ public struct Properties
 {
     public static double MaxVelocity { get; set; }
     public static double BGMaxVelocity { get; set; }
-    public const double RoadLength = 30000;
+    public const double RoadLength = 3000;
 
-    public const double TargetTime = 80;
+    public const double TargetTime = RoadLength / 60;
 
 }
 public class TrafficSim : PhysicsGame
@@ -38,20 +39,24 @@ public class TrafficSim : PhysicsGame
     public static readonly Image DesertTexture = LoadImage("desert_texture");
     //public static readonly Image _cactusTexture = LoadImage("cactus_texture");
 
+    public static readonly SoundEffect testSound = LoadSoundEffect("test_sound");
+
     private ScoreList _topList;
 
     public override void Begin()
     {
-
-
-        //IsFullScreen = true;
+        System.Diagnostics.Debug.WriteLine("hello");
+        System.Diagnostics.Debug.WriteLine(Color.Orange.ToString());
+        
         Init();
     }
 
     private void Init()
     {
+        IsFullScreen = true;
         ClearAll();
-        _topList = DataStorage.TryLoad<ScoreList>(_topList, "scores.xml");
+        
+        _topList = DataStorage.TryLoad<ScoreList>(_topList, "scores.xml");    
         _topList = new ScoreList(10, true, Properties.TargetTime);
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
@@ -77,6 +82,11 @@ public class TrafficSim : PhysicsGame
     {
         IsPaused = true;
         var elapsedTime = _progress.StopTimer();
+        if (elapsedTime > Properties.TargetTime)
+        {
+            MessageDisplay.Clear();
+            MessageDisplay.Add($"Too slow! Your time was {elapsedTime:0.00} seconds. Try again!");
+        }
         CreateSelectionWindow(elapsedTime);
         RemoveCollisionHandlers();
     }

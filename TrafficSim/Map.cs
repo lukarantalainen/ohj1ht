@@ -165,13 +165,13 @@ public class Map
     {
         Timer timer = new()
         {
-            Interval = 2
+            Interval = 1
         };
         timer.Timeout += delegate { UnSlow(timer); };
         timer.Start();
-        Brake();
-        _road1.MaxVelocity = 500;
-        _road2.MaxVelocity = 500;
+       // Brake();
+        _road1.MaxVelocity = 300;
+        _road2.MaxVelocity = 300;
         _background1.MaxVelocity = 200;
         _background2.MaxVelocity = 200;
     }

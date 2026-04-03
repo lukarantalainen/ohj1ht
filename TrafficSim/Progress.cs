@@ -49,7 +49,7 @@ public class Progress
         {
             _finishLine.Push(new Vector(0, -_finishLine.Mass*velocity));
         }
-        _distMeter.Value+=velocity/100;
+        _distMeter.Value+=velocity/1000;
     }
     
     public double StopTimer()

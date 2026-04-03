@@ -11,7 +11,7 @@ public class VehicleGenerator
     private readonly Map _map;
     private readonly Road _road1;
     private readonly Road _road2;
-    private List<GameObject> _vehicles = [];
+    private List<Vehicle> _vehicles = [];
 
     private readonly double x1;
     private readonly double x2;
@@ -32,7 +32,7 @@ public class VehicleGenerator
     }
     public void Generate()
     {
-        var vehiclesNew = new List<GameObject>(_vehicles);
+        var vehiclesNew = new List<Vehicle>(_vehicles);
         for (int i=0; i<_vehicles.Count; i++)
         {
             if (_vehicles[i].Y > Game.Screen.Bottom-200)
@@ -76,7 +76,7 @@ public class VehicleGenerator
             if (v!=null)
             {
                 v.Tag = "vehicle";
-                v.MoveTo(new Vector(v.X, Game.Screen.Bottom - 1000), _map.GetVelocity());
+                v.MoveTo(new Vector(v.X, Game.Screen.Bottom - 1000), v.PushVelocity+_map.GetVelocity());
             }
             
             
