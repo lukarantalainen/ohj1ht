@@ -6,24 +6,24 @@ using Jypeli;
 using Jypeli.Widgets;
 public class Debug
 {
-    private readonly TrafficSim _trafficSim; 
-    private readonly Player _player;
-    private readonly Map _map;
-    private readonly Road _road1;
-    private readonly Road _road2;
-    private readonly PhysicsObject _borderLeft;
-    private readonly PhysicsObject _borderRight;
+    private readonly TrafficSim trafficSim; 
+    private readonly Player player;
+    private readonly Map map;
+    private readonly PhysicsObject road;
+    private readonly PhysicsObject road2;
+    private readonly PhysicsObject borderLeft;
+    private readonly PhysicsObject borderRight;
 
-    private double _debugDisplayPosY = Game.Screen.Top -100;
-    private Debug(TrafficSim trafficSim, Player player,  Map map)
+    private double _debugDisplayPosY = TrafficSim.Screen.Top -100;
+    private Debug(TrafficSim trafficSim, Player player, Map map)
     {
-        _trafficSim = trafficSim;
-        _player = player;
-        _map = map;
-        _road1 = _map.GetRoad(0);
-        _road2 = _map.GetRoad(1);
-        _borderLeft = _map.GetBorder(0);
-        _borderRight = _map.GetBorder(1);
+        this.trafficSim = trafficSim;
+        this.player = player;
+        this.map = map;
+        road = this.map.GetRoad(0);
+        road2 = this.map.GetRoad(1);
+        borderLeft = this.map.GetBorder(0);
+        borderRight = this.map.GetBorder(1);
     }
     
     public static void Start(TrafficSim trafficSim, Player player, Map map)
@@ -42,23 +42,23 @@ public class Debug
     
     private void AddToScreen(Slider slider, Label label)
     {
-        slider.Left = Game.Screen.Left + 20;
+        slider.Left = TrafficSim.Screen.Left + 20;
         slider.Y = _debugDisplayPosY;
         slider.Color = RandomGen.NextColor();
         _debugDisplayPosY -= 100;
-        _trafficSim.Add(slider);
+        trafficSim.Add(slider);
         label.Position = new Vector(slider.X, slider.Y+50);
-        _trafficSim.Add(label);
+        trafficSim.Add(label);
     }
 
     private void AddToScreen(Label display, Label label)
     {
-        display.Position = new Vector(Game.Screen.Left + 100, _debugDisplayPosY);
+        display.Position = new Vector(TrafficSim.Screen.Left + 100, _debugDisplayPosY);
         display.Color = RandomGen.NextColor();
         _debugDisplayPosY -= 100;
-        _trafficSim.Add(display);
+        trafficSim.Add(display);
         label.Position = new Vector(display.X, display.Y+50);
-        _trafficSim.Add(label);
+        trafficSim.Add(label);
     }
 
     private void CreateZoomSlider()
@@ -73,7 +73,7 @@ public class Debug
 
     private void ZoomLevel(double oldValue, double newValue)
     {
-        _trafficSim.Camera.ZoomFactor = 1+newValue;
+        trafficSim.Camera.ZoomFactor = 1+newValue;
     }
     
     private void CreateSpeedOMeter()
@@ -90,7 +90,7 @@ public class Debug
     
     private void UpdateSpeedOMeter(DoubleMeter meter)
     {
-        meter.Value = _map.GetVelocity();
+        meter.Value = map.GetVelocity();
 
     }
 
@@ -109,7 +109,7 @@ public class Debug
 
     private void UpdatePos(Label label)
     {
-        label.Text = _player.Position.ToString();
+        label.Text = player.Position.ToString();
     }
     
     private void CreateRoadWidthSlider()
@@ -126,15 +126,15 @@ public class Debug
 
     private void ChangeRoadWidth(int oldValue, int newValue)
     {
-        _road1.Width = newValue;
-        _road2.Width = newValue;
+        road.Width = newValue;
+        road2.Width = newValue;
         MoveBorders();
     }
 
     private void MoveBorders()
     {
-        _borderLeft.Right = _road1.Left;
-        _borderRight.Left = _road1.Right;
+        borderLeft.Right = road.Left;
+        borderRight.Left = road.Right;
 
     }
 }

@@ -6,59 +6,64 @@ using Jypeli;
 
 public class Controls
 {
-    private readonly Player _car;
-    private readonly Map _map;
-    private readonly TrafficSim _trafficSim;
+    private readonly TrafficSim trafficSim;
+    private readonly Player car;
+    private readonly Map map;
+    private readonly Progress progress;
 
-    private Controls(TrafficSim trafficSim, Player car,  Map map)
+    private Controls(TrafficSim trafficSim, Player car,  Map map, Progress progress)
     {
-        _car = car;
-        _map = map;
-        _trafficSim = trafficSim;
+        this.trafficSim = trafficSim;
+        this.car = car;
+        this.map = map;
+        this.progress = progress;
     }
 
-    public static void Start(TrafficSim trafficSim, Player car,  Map map)
+    public static void Start(TrafficSim trafficSim, Player car,  Map map, Progress progress)
     {
-        var controls = new Controls(trafficSim, car, map);
+        var controls = new Controls(trafficSim, car, map, progress);
         controls.AddControls();
     }
 
     private void Drive()
     {
-        _map.Drive();
+        map.Drive();
+        progress.Drive(map.GetVelocity());
     }
 
     private void Brake()
     {
-        _map.Brake();
+        map.Brake();
+        progress.Drive(map.GetVelocity());
     }
 
     private void DriveIdle()
     {
-        _map.DriveIdle();
+        map.DriveIdle();
+        progress.Drive(map.GetVelocity());
     }
 
     private void SteerLeft()
     {
-        _car.SteerLeft();
+        car.SteerLeft();
     }
 
     private void SteerRight()
     {
-        _car.SteerRight();
+        car.SteerRight();
     }
     
     private void AddControls()
     {
-        _trafficSim.Keyboard.Listen(Key.W, ButtonState.Down, Drive, "");
-        _trafficSim.Keyboard.Listen(Key.W, ButtonState.Up, DriveIdle, "");
-        _trafficSim.Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
-        _trafficSim.Keyboard.Listen(Key.A, ButtonState.Down, SteerLeft, "");
-        _trafficSim.Keyboard.Listen(Key.D, ButtonState.Down, SteerRight, "");
-        _trafficSim.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
-        _trafficSim.Keyboard.Listen(Key.Up, ButtonState.Up, DriveIdle, "");
-        _trafficSim.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
-        _trafficSim.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
-        _trafficSim.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
+        trafficSim.Keyboard.Listen(Key.W, ButtonState.Down, Drive, "");
+        trafficSim.Keyboard.Listen(Key.W, ButtonState.Up, DriveIdle, "");
+        trafficSim.Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
+        trafficSim.Keyboard.Listen(Key.A, ButtonState.Down, SteerLeft, "");
+        trafficSim.Keyboard.Listen(Key.D, ButtonState.Down, SteerRight, "");
+        trafficSim.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
+        trafficSim.Keyboard.Listen(Key.Up, ButtonState.Up, DriveIdle, "");
+        trafficSim.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
+        trafficSim.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
+        trafficSim.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
     }
 }

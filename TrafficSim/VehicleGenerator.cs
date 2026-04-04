@@ -9,25 +9,24 @@ public class VehicleGenerator
 {
     private readonly TrafficSim _trafficSim;
     private readonly Map _map;
-    private readonly Road _road1;
-    private readonly Road _road2;
     private List<Vehicle> _vehicles = [];
 
     private readonly double x1;
     private readonly double x2;
     private readonly double x3;
     private readonly double x4;
-    public VehicleGenerator(TrafficSim trafficSim, Map map, Road road1, Road road2)
+    public VehicleGenerator(TrafficSim trafficSim, Map map, Road road)
     {
         _trafficSim = trafficSim;
         _map = map;
-        _road1 = road1;
-        _road2 = road2;
-        double laneWidth = _road1.Width / 5.5;
-        x1 = _road1.Left+laneWidth*0.8;
-        x2 = _road1.Left + laneWidth*2;
-        x3 = _road1.Right - laneWidth*0.8;
-        x4 = _road1.Right - laneWidth*2;
+
+        var road0 = road.GetRoad(0);
+
+        double laneWidth = road0.Width / 5.5;
+        x1 = road0.Left+ laneWidth * 0.8;
+        x2 = road0.Left + laneWidth*2;
+        x3 = road0.Right - laneWidth*0.8;
+        x4 = road0.Right - laneWidth*2;
 
     }
     public void Generate()
@@ -35,7 +34,7 @@ public class VehicleGenerator
         var vehiclesNew = new List<Vehicle>(_vehicles);
         for (int i=0; i<_vehicles.Count; i++)
         {
-            if (_vehicles[i].Y > Game.Screen.Bottom-200)
+            if (_vehicles[i].Y > TrafficSim.Screen.Bottom-200)
             {
                 vehiclesNew.Add(_vehicles[i]);
             }
@@ -49,24 +48,30 @@ public class VehicleGenerator
         if (_map.GetVelocity() > 100)
         {
             var vehicleType = (VehicleType)RandomGen.NextInt(0, 2);
-            var vehicle = new Vehicle(100, 200, vehicleType);
+            var vehicle = new Vehicle(100, 100, vehicleType);
             var lane =  RandomGen.NextInt(0, 4);
             switch(lane)
             {
                 case 0:
+                    vehicle.Direction = Direction.Opposite;
                     vehicle.X = x1;
+                    vehicle.Angle = Angle.FromDegrees(180);
                     break;
                 case 1:
+                    vehicle.Direction = Direction.Opposite;
                     vehicle.X = x2;
+                    vehicle.Angle = Angle.FromDegrees(180);
                     break;
                 case 2:
+                    vehicle.Direction = Direction.Same;
                     vehicle.X = x3;
                     break;
                 case 3:
+                    vehicle.Direction = Direction.Same;
                     vehicle.X = x4;
                     break;
             }
-            vehicle.Y = Game.Screen.Top + 100;
+            vehicle.Y = TrafficSim.Screen.Top + 100;
             _vehicles.Add(vehicle);
             _trafficSim.Add(vehicle);
         }
@@ -76,7 +81,7 @@ public class VehicleGenerator
             if (v!=null)
             {
                 v.Tag = "vehicle";
-                v.MoveTo(new Vector(v.X, Game.Screen.Bottom - 1000), v.PushVelocity+_map.GetVelocity());
+                v.MoveTo(new Vector(v.X, TrafficSim.Screen.Bottom - 1000), v.PushVelocity+_map.GetVelocity());
             }
             
             

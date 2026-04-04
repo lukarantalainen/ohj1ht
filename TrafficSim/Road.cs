@@ -1,35 +1,141 @@
 using Jypeli;
+using System;
+using Jypeli.Effects;
+using SixLabors.ImageSharp.Processing;
 namespace TrafficSim;
 
 /// <summary>
 /// Creates Road objects based on PhysicsObject class
 /// </summary>
-public class Road : PhysicsObject
+public class Road
 {
-    public Road(double width, double height, Image texture, double maxVelocity) : base(width, height)
+    private readonly PhysicsObject upperRoad;
+    private readonly PhysicsObject lowerRoad;
+
+    private readonly PhysicsObject borderLeft;
+    private readonly PhysicsObject borderRight;
+    private enum Side
     {
-        Image = texture;
-        Restitution = 0.8;
-        IgnoresGravity = true;
-        IgnoresCollisionResponse = true;
-        IgnoresExplosions = true;
-        IgnoresCollisionResponse = true;
-        MaxVelocity = maxVelocity;
+        Left,
+        Right,
     }
+
+    public Road(double width, double height, Image texture, TrafficSim trafficSim)
+    {
+        upperRoad = CreateRoad(width, height, new Vector(0, Game.Screen.Height), texture, Properties.MaxVelocity);
+        lowerRoad = CreateRoad(width, height, new Vector(0, 0), texture, Properties.MaxVelocity);
+
+        borderLeft = CreateRoadBorder(Color.Silver, Side.Left);
+        borderRight = CreateRoadBorder(Color.Silver, Side.Right);
+
+        var lowerBorder = new PhysicsObject(Game.Screen.Width, 1)
+        {
+            Position = new Vector(0, Game.Screen.Bottom - Game.Screen.Height),
+            IgnoresCollisionResponse = true,
+            IgnoresGravity = true,
+            IgnoresExplosions = true,
+        };
+
+        trafficSim.Add(upperRoad, -1);
+        trafficSim.Add(lowerRoad, -1);
+        trafficSim.Add(borderLeft, -1);
+        trafficSim.Add(borderRight, -1);
+        trafficSim.Add(lowerBorder, -1);
+
+        trafficSim.AddCollisionHandler(lowerBorder, upperRoad, Cycle);
+        trafficSim.AddCollisionHandler(lowerBorder, lowerRoad, Cycle);
+    }
+
+
+    private static PhysicsObject CreateRoad(double width, double height, Vector position, Image image, double maxVelocity)
+    {
+        var road = new PhysicsObject(width, height)
+        {
+            Position = position,
+            Image = image,
+            Restitution = 0.8,
+            IgnoresGravity = true,
+            IgnoresCollisionResponse = true,
+            IgnoresExplosions = true,
+            MaxVelocity = maxVelocity
+        };
+        return road;
+    }
+
     
+    private PhysicsObject CreateRoadBorder(Color color, Side side)
+    {
+        const double borderWidth = 20;
+        var border = new PhysicsObject(borderWidth, Game.Screen.Height)
+        {
+            Restitution = 0,
+            Color = color,
+        };
+        switch (side)
+        {
+            case Side.Left:
+                border.Right = upperRoad.Left;
+                break;
+            case Side.Right:
+                border.Left = upperRoad.Right;
+                break;
+        }
+        border.MakeStatic();
+
+        return border;
+    }
+
+    private static void Cycle(PhysicsObject border, PhysicsObject road)
+    {
+        road.Y += Game.Screen.Height;
+    }
+
     public void Drive(double force)
     {
-        Push(new Vector(0, -Mass*force));
+        upperRoad.Push(new Vector(0, -upperRoad.Mass*force));
+        lowerRoad.Push(new Vector(0, -lowerRoad.Mass * force));
     }
 
     public void Brake(double force)
     {
 
-        Push(new Vector(0, Mass*force));
+        upperRoad.Push(new Vector(0, upperRoad.Mass * force));
+        lowerRoad.Push(new Vector(0, lowerRoad.Mass * force));
     }
-    
-    public void Cycle(PhysicsObject border, PhysicsObject self)
+
+    public void SetMaxVelocity(double maxVelocity)
     {
-        Bottom = Game.Screen.Top;
+        upperRoad.MaxVelocity = maxVelocity;
+        lowerRoad.MaxVelocity = maxVelocity;
+    }
+
+    public double GetVelocity()
+    {
+        return -upperRoad.Velocity.Y;
+    }
+
+    public double GetWidth()
+    {
+        return upperRoad.Width;
+    }
+
+    public PhysicsObject GetRoad(int road)
+    {
+        return road switch
+        {
+            0 => upperRoad,
+            1 => lowerRoad,
+            _ => throw new ArgumentException("Invalid road number. Must be 0 or 1.")
+        };
+    }
+
+    public PhysicsObject GetBorder(int road)
+    {
+        return road switch
+        {
+            0 => borderLeft,
+            1 => borderRight,
+            _ => throw new ArgumentException("Invalid border number. Must be 0 or 1.")
+        };
     }
 }

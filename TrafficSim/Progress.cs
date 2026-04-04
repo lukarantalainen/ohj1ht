@@ -15,46 +15,41 @@ using Silk.NET.OpenGL;
 
 public class Progress
 {
-    private readonly TrafficSim _trafficSim;
+    private readonly TrafficSim trafficSim;
     
-    private readonly DoubleMeter _distMeter;
-    private readonly DoubleMeter _timeMeter;
+    private readonly DoubleMeter distMeter;
+    private readonly DoubleMeter timeMeter;
     
-    private readonly PhysicsObject _finishLine;
+    private readonly PhysicsObject finishLine;
     
-    
-    private bool _started = false;
-    private bool _finished = false;
+    private bool finished = false;
     
     public Progress(TrafficSim trafficSim)
     {
-        _trafficSim = trafficSim;
-        _timeMeter = new DoubleMeter(0);
-        _distMeter = new DoubleMeter(0);
-        _finishLine = new PhysicsObject(Game.Screen.Width, 20, Shape.Rectangle);
+        this.trafficSim = trafficSim;
+        timeMeter = new DoubleMeter(0);
+        distMeter = new DoubleMeter(0);
+        finishLine = new PhysicsObject(TrafficSim.Screen.Width, 20, Shape.Rectangle);
     }
 
     public void StartGame()
     {
-        if (_started) return;
-        _trafficSim.MessageDisplay.Clear();
         CreateStartLights();
         CreateProgressBar(Properties.RoadLength);
-        _started = true;
     }
     
     public void Drive(double velocity)
     {
-        if (_finished)
+        if (finished)
         {
-            _finishLine.Push(new Vector(0, -_finishLine.Mass*velocity));
+            finishLine.Push(new Vector(0, -finishLine.Mass*velocity));
         }
-        _distMeter.Value+=velocity/1000;
+        distMeter.Value+=velocity/1000;
     }
     
     public double StopTimer()
     {
-        return _timeMeter.Value;
+        return timeMeter.Value;
     }
 
     private static List<GameObject> CreateCircles(GameObject background)
@@ -96,7 +91,7 @@ public class Progress
         var background = new GameObject(400, 150, Shape.Rectangle)
         {
             X = 0,
-            Top = Game.Screen.Top - 50,
+            Top = TrafficSim.Screen.Top - 50,
             Color = Color.Black,
         };
 
@@ -107,7 +102,7 @@ public class Progress
         };
 
         root.Add(background);
-        _trafficSim.Add(root);
+        trafficSim.Add(root);
 
         var lights = CreateCircles(background);
         CreateCountdown(lights, root);
@@ -117,9 +112,9 @@ public class Progress
     {
         var countdown = new IntMeter(0);
         bool penalty = false;
-        _trafficSim.Keyboard.Listen(Key.W, ButtonState.Down, delegate 
+        trafficSim.Keyboard.Listen(Key.W, ButtonState.Down, delegate 
         { penalty = true;
-            _trafficSim.MessageDisplay.Add("Penalty: false start");
+            trafficSim.MessageDisplay.Add("Penalty: false start");
         }, "");
 
         var timer = new Timer(1);
@@ -144,7 +139,7 @@ public class Progress
 
             if (!penalty)
             {
-                _trafficSim.AddControls();
+                trafficSim.AddControls();
             }
         }
 
@@ -158,7 +153,7 @@ public class Progress
         {
             root.Destroy();
             timer.Stop();
-            _trafficSim.AddControls();
+            trafficSim.AddControls();
         }
         countdown.Value++;
     }
@@ -167,7 +162,7 @@ public class Progress
     {
         var timer = new Timer
         {
-            Interval = 0.1
+            Interval = 0.01
         };
         timer.Timeout += UpdateTimer;
         timer.Start();
@@ -176,10 +171,11 @@ public class Progress
         {
             Color = Color.Black,
             TextColor = Color.BrightGreen,
+            DecimalPlaces = 2,
             Position = new Vector(-300, 200),
         };
-        currentTime.BindTo(_timeMeter);
-        _trafficSim.Add(currentTime);
+        currentTime.BindTo(timeMeter);
+        trafficSim.Add(currentTime);
 
         var targetTime = new Label()
         {
@@ -190,34 +186,32 @@ public class Progress
             Text = Properties.TargetTime.ToString("0,0")
         };
 
-        _trafficSim.Add(targetTime);
+        trafficSim.Add(targetTime);
 
-        
-        
     }
     
     private void UpdateTimer()
     {
-        _timeMeter.Value += 0.1;
+        timeMeter.Value += 0.01;
     }
     
     private void CreateProgressBar(double roadLength)
     {
-        _distMeter.MaxValue = roadLength;
-        _distMeter.Changed += delegate(double old, double current) { CheckLimit(old, current, roadLength); };
+        distMeter.MaxValue = roadLength;
+        distMeter.Changed += delegate(double old, double current) { CheckLimit(old, current, roadLength); };
 
         var progressBar = new ProgressBar(100, 40);
         progressBar.Angle = Angle.FromDegrees(-90);
-        progressBar.BindTo(_distMeter);
-        progressBar.Position = new Vector(Game.Screen.Right-100, 100);
+        progressBar.BindTo(distMeter);
+        progressBar.Position = new Vector(TrafficSim.Screen.Right-100, 100);
         progressBar.BarColor = Color.Red;
         progressBar.Color = Color.Black;
-        _trafficSim.Add(progressBar);
+        trafficSim.Add(progressBar);
     }
 
     private void CheckLimit(double old, double current, double roadLength)
     {
-        if (current >= roadLength && !_finished)
+        if (current >= roadLength && !finished)
         {
             CreateFinishLine();
         }
@@ -225,15 +219,15 @@ public class Progress
 
     private void CreateFinishLine()
     {
-        _finishLine.Color = Color.Black;
-        _finishLine.Position = new Vector(0, Game.Screen.Top);
-        _finishLine.IgnoresCollisionResponse = true;
-        _finishLine.IgnoresExplosions = true;
-        _finishLine.IgnoresPhysicsLogics = true;
-        _trafficSim.Add(_finishLine, 3);
+        finishLine.Color = Color.Black;
+        finishLine.Position = new Vector(0, TrafficSim.Screen.Top);
+        finishLine.IgnoresCollisionResponse = true;
+        finishLine.IgnoresExplosions = true;
+        finishLine.IgnoresPhysicsLogics = true;
+        trafficSim.Add(finishLine, 3);
             
-        _finished = true;
+        finished = true;
 
-        _trafficSim.AddCollisionHandler(_finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { _trafficSim.EndGame(); }); 
+        trafficSim.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { trafficSim.EndGame(); }); 
     }
 }

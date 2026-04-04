@@ -1,6 +1,7 @@
 using Jypeli;
 using Jypeli.Widgets;
 using System;
+using System.Collections.Generic;
 
 namespace TrafficSim;
 
@@ -15,59 +16,62 @@ public struct Properties
 {
     public static double MaxVelocity { get; set; }
     public static double BGMaxVelocity { get; set; }
-    public const double RoadLength = 3000;
+    public const double RoadLength = 300;
 
-    public const double TargetTime = RoadLength / 60;
+    public const double TargetTime = RoadLength / 30;
 
 }
 public class TrafficSim : PhysicsGame
 {
-    private Progress _progress;
-    private Player _car;
-    private Map _map;
+    private Progress progress;
+    private Player car;
+    private Map map;
 
     public static readonly Image PlayerTexture = LoadImage("player_texture");
     public static readonly Shape PlayerShape = Shape.FromImage(PlayerTexture);
 
     public static readonly Image CarTexture = LoadImage("car_texture");
     public static readonly Shape CarShape = Shape.FromImage(CarTexture);
-    public static readonly Image RoadTexture = LoadImage("road_texture");
+    public static readonly Image CarImageGreen = LoadImage("sports-car-green");
 
     public static readonly Image TruckTexture = LoadImage("truck.png");
     public static readonly Shape TruckShape = Shape.FromImage(TruckTexture);
 
+    public static readonly Image RoadTexture = LoadImage("road_texture");
     public static readonly Image DesertTexture = LoadImage("desert_texture");
     //public static readonly Image _cactusTexture = LoadImage("cactus_texture");
 
-    public static readonly SoundEffect testSound = LoadSoundEffect("test_sound");
-
-    private ScoreList _topList;
+    private ScoreList topList;
 
     public override void Begin()
     {
-        System.Diagnostics.Debug.WriteLine("hello");
-        System.Diagnostics.Debug.WriteLine(Color.Orange.ToString());
-        
         Init();
     }
 
     private void Init()
     {
-        IsFullScreen = true;
+        //IsFullScreen = true;
         ClearAll();
+
+        CreateTopList();
         
-        _topList = DataStorage.TryLoad<ScoreList>(_topList, "scores.xml");    
-        _topList = new ScoreList(10, true, Properties.TargetTime);
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        _progress = new Progress(this);
-        _map = new Map(this, _progress);
-        _car = new Player(this, _map);
 
-        Debug.Start(this, _car, _map);
+        progress = new Progress(this);
+        map = new Map(this);
+        car = new Player(this, map);
+
         MessageDisplay.Add("Press SPACE to begin!");
-        Keyboard.Listen(Key.Space, ButtonState.Down, _progress.StartGame, "");
+        Keyboard.Listen(Key.Space, ButtonState.Down, StartGame, "");
 
+        Debug.Start(this, car, map);
+    }
+
+    public void CreateTopList()
+    {
+        topList = DataStorage.TryLoad<ScoreList>(topList, "scores.xml");
+        topList = new ScoreList(10, true, Properties.TargetTime);
     }
 
     public void AddControls()
@@ -75,44 +79,54 @@ public class TrafficSim : PhysicsGame
         Keyboard.Clear();
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        Controls.Start(this, _car, _map);
+        Controls.Start(this, car, map, progress);
+    }
+
+    public void StartGame()
+    {
+        Keyboard.Clear();
+        MessageDisplay.Clear();
+        progress.StartGame();
     }
 
     public void EndGame()
     {
         IsPaused = true;
-        var elapsedTime = _progress.StopTimer();
-        if (elapsedTime > Properties.TargetTime)
+        var time = progress.StopTimer();
+        if (time > Properties.TargetTime)
         {
             MessageDisplay.Clear();
-            MessageDisplay.Add($"Too slow! Your time was {elapsedTime:0.00} seconds. Try again!");
+            MessageDisplay.Add($"Too slow! Your time was {time:0.00}. Try again!");
         }
-        CreateSelectionWindow(elapsedTime);
+        CreateSelectionWindow(time);
         RemoveCollisionHandlers();
     }
 
     private void ShowTopList(double time)
     {
         var window = new HighScoreWindow(
-            "Top List", "Your time was %p! Enter a name:",
-            _topList, time);
-        window.Color = Color.Blue;
+            "Top List", $"Your time was {time:0.00}! Enter a name:",
+            topList, time)
+        {
+            Color = Color.FromHexCode("fffdcc")
+        };
+        window.List.ScoreFormat = "{0:0.00}";
         window.Closed += delegate (Window sender) { SaveScores(sender, time); };
         Add(window);
     }
 
     private void SaveScores(Window _, double time)
     {
-        DataStorage.Save<ScoreList>(_topList, "scores.xml");
+        DataStorage.Save<ScoreList>(topList, "scores.xml");
         CreateSelectionWindow(time);
     }
 
-    private void CreateSelectionWindow(double finishTime = 0)
+    private void CreateSelectionWindow(double time)
     {
         string[] options = ["Top List", "Restart", "Quit"];
-        var endWindow = new MultiSelectWindow($"Finished in! {finishTime}", options);
+        var endWindow = new MultiSelectWindow($"Finished in {time:0.00}!", options);
 
-        endWindow.AddItemHandler(0, delegate { ShowTopList(finishTime); });
+        endWindow.AddItemHandler(0, delegate { ShowTopList(time); });
         endWindow.AddItemHandler(1, Init);
         endWindow.AddItemHandler(2, Exit);
 

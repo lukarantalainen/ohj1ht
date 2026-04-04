@@ -6,55 +6,71 @@ namespace TrafficSim;
 
 public class Background : PhysicsObject
 {
-    private static double _height;
-    private readonly Image _backgroundItemTexture;
+    private readonly PhysicsObject upperBackground;
+    private readonly PhysicsObject lowerBackground;
 
-    private Background(double width, double height, double maxVelocity) : base(width, height) 
+    public Background(double width, double height, Image image, TrafficSim trafficSim) : base(width, height) 
     {
-        _height = height*2;
-        IgnoresGravity = true;
-        IgnoresCollisionResponse = true;
-        IgnoresPhysicsLogics = true;
-        IgnoresExplosions = true;
-        MaxVelocity = maxVelocity;
+        upperBackground = CreateBackground(width, height, new Vector(0, 0), image);
+        lowerBackground = CreateBackground(width, height, new Vector(0, 0), image);
+
+        var lowerBorder = new PhysicsObject(Game.Screen.Width, 1)
+        {
+            Position = new Vector(0, Game.Screen.Bottom - Game.Screen.Height),
+            IgnoresCollisionResponse = true,
+            IgnoresGravity = true,
+            IgnoresExplosions = true,
+        };
+
+        trafficSim.Add(upperBackground, -2);
+        trafficSim.Add(lowerBackground, -2);
+        trafficSim.Add(lowerBorder, 2);
+
+        trafficSim.AddCollisionHandler(lowerBorder, upperBackground, Cycle);
+        trafficSim.AddCollisionHandler(lowerBorder, lowerBackground, Cycle);
+
     }
 
-    public Background(double width, double height, Color color, double maxVelocity) :  this(width, height, maxVelocity)
+    private static PhysicsObject CreateBackground(double width, double height, Vector position, Image image)
     {
-        base.Color = color;
+        var background = new PhysicsObject(width, height)
+        {
+            Image = image,
+            Position = position,
+            IgnoresCollisionResponse = true,
+            IgnoresGravity = true,
+            IgnoresExplosions = true,
+            MaxVelocity = Properties.BGMaxVelocity,
+
+        };
+        return background;
     }
     
-    public Background(double width, double height, Image backgroundTexture, double maxVelocity) : this(width, height, maxVelocity)
+    private void Cycle(PhysicsObject border, PhysicsObject background)
     {
-        Image = backgroundTexture;
-    }
-    public Background(double width, double height, Image backgroundTexture, Image backgroundItemTexture, double maxVelocity) : this(width, height, maxVelocity)
-    {
-        Image = backgroundTexture;
-        _backgroundItemTexture = backgroundItemTexture;
-    }
-    
-    public void Cycle(PhysicsObject a, PhysicsObject b)
-    {
-        Bottom = Game.Screen.Top;
+        background.Y += Game.Screen.Height;
     }
 
     public void Drive(double force)
     {
-        Push(new Vector(0, -Mass*force));
+        upperBackground.Push(new Vector(0, -Mass*force));
+        lowerBackground.Push(new Vector(0, -Mass * force));
     }
  
     public void Brake(double force)
     {
-        Push(new Vector(0, Mass*force));
+        upperBackground.Push(new Vector(0, Mass*force));
+        lowerBackground.Push(new Vector(0, Mass * force));
     }
-    public static PhysicsObject CreateLowerBorder(double posY)
+
+    public void SetMaxVelocity(double maxVelocity)
     {
-        var border = new PhysicsObject(6000, 100);
-        border.Color = Color.Black;
-        border.Top = posY;
-        border.IgnoresCollisionResponse = true;
-        border.IgnoresGravity = true;
-        return border;
+        upperBackground.MaxVelocity = maxVelocity;
+        upperBackground.MaxVelocity = maxVelocity;
+    }
+
+    public double GetVelocity()
+    {
+        return -upperBackground.Velocity.Y;
     }
 }

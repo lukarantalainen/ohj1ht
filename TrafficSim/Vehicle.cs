@@ -9,9 +9,16 @@ public enum VehicleType
     Taxi,
 }
 
+public enum Direction
+{
+    Same,
+    Opposite,
+}
+
 public class Vehicle : PhysicsObject
 {
     public double PushVelocity {  get; set; }
+    public Direction Direction { get; set; }
     public Vehicle(double width, double height, VehicleType type) : base(width, height)
     {
         IgnoresCollisionResponse = true;
@@ -32,19 +39,30 @@ public class Vehicle : PhysicsObject
 
     private void CreateCar()
     {
-        Width = 100;
-        Height = 100;
-        Image = TrafficSim.CarTexture;
-        PushVelocity = 1000;
-        Color = Color.Blue;
+        Image = global::TrafficSim.TrafficSim.CarImageGreen;
+        if (Direction==Direction.Opposite)
+        {
+            PushVelocity = 1000;
+        }
+        else
+        {
+            PushVelocity = -200;
+        }
+
     }
 
     private void CreateTruck()
     {
-        Width = 100;
-        Height = 100;
-        Image = TrafficSim.CarTexture;
-        PushVelocity = 800;
+        Image = global::TrafficSim.TrafficSim.CarTexture;
+
+        if (Direction == Direction.Opposite)
+        {
+            PushVelocity = 800;
+        }
+        else
+        {
+            PushVelocity = -100;
+        }
         Color = Color.Red;
     }
     private void CreateTaxi()
