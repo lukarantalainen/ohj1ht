@@ -1,26 +1,26 @@
 using Jypeli;
 using System;
 
-namespace TrafficSim;
+namespace RacingGame;
 using Jypeli.Widgets;
 
 public class Map
 {
-    private readonly TrafficSim trafficSim;
+    private readonly RacingGame game;
     private readonly Road road;
     private readonly Background background;
     
     private const double DrivingForce = 500; 
 
-    public Map(TrafficSim trafficSim)
+    public Map(RacingGame game)
     {
         Properties.MaxVelocity = 1500;
         Properties.BGMaxVelocity = 600;
-        this.trafficSim = trafficSim;
+        this.game = game;
 
-        road = new Road(600, Game.Screen.Height * 2, TrafficSim.RoadTexture, trafficSim);
+        road = new Road(600, Game.Screen.Height * 2, RacingGame.RoadImage, game);
 
-        background = new Background(Game.Screen.Width, Game.Screen.Height*2, TrafficSim.DesertTexture, trafficSim);
+        background = new Background(Game.Screen.Width, Game.Screen.Height*2, RacingGame.DesertImage, game);
 
         StartVehicleGenerator();
     }
@@ -31,14 +31,14 @@ public class Map
         {
             Interval = 1
         };
-        var vehicleGenerator = new VehicleGenerator(trafficSim, this, road);
+        var vehicleGenerator = new VehicleGenerator(game, this, road);
         timer.Timeout += vehicleGenerator.Generate;
         timer.Start();
     }
 
     private void UnSlow(Timer timer)
     {
-        trafficSim.MessageDisplay.Add("unslow");
+        game.MessageDisplay.Add("unslow");
         timer.Stop();
         road.SetMaxVelocity(Properties.MaxVelocity);
         background.SetMaxVelocity(Properties.BGMaxVelocity);

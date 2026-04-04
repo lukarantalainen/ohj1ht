@@ -2,7 +2,7 @@ using Jypeli;
 using System;
 using Jypeli.Effects;
 using SixLabors.ImageSharp.Processing;
-namespace TrafficSim;
+namespace RacingGame;
 
 /// <summary>
 /// Creates Road objects based on PhysicsObject class
@@ -20,7 +20,7 @@ public class Road
         Right,
     }
 
-    public Road(double width, double height, Image texture, TrafficSim trafficSim)
+    public Road(double width, double height, Image texture, RacingGame game)
     {
         upperRoad = CreateRoad(width, height, new Vector(0, Game.Screen.Height), texture, Properties.MaxVelocity);
         lowerRoad = CreateRoad(width, height, new Vector(0, 0), texture, Properties.MaxVelocity);
@@ -36,14 +36,14 @@ public class Road
             IgnoresExplosions = true,
         };
 
-        trafficSim.Add(upperRoad, -1);
-        trafficSim.Add(lowerRoad, -1);
-        trafficSim.Add(borderLeft, -1);
-        trafficSim.Add(borderRight, -1);
-        trafficSim.Add(lowerBorder, -1);
+        game.Add(upperRoad, -1);
+        game.Add(lowerRoad, -1);
+        game.Add(borderLeft, -1);
+        game.Add(borderRight, -1);
+        game.Add(lowerBorder, -1);
 
-        trafficSim.AddCollisionHandler(lowerBorder, upperRoad, Cycle);
-        trafficSim.AddCollisionHandler(lowerBorder, lowerRoad, Cycle);
+        game.AddCollisionHandler(lowerBorder, upperRoad, Cycle);
+        game.AddCollisionHandler(lowerBorder, lowerRoad, Cycle);
     }
 
 

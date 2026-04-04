@@ -1,15 +1,14 @@
 using Jypeli;
-using System;
-using System.Collections.Generic;
 
-namespace TrafficSim;
+
+namespace RacingGame;
 
 public class Background : PhysicsObject
 {
     private readonly PhysicsObject upperBackground;
     private readonly PhysicsObject lowerBackground;
 
-    public Background(double width, double height, Image image, TrafficSim trafficSim) : base(width, height) 
+    public Background(double width, double height, Image image, RacingGame game) : base(width, height)
     {
         upperBackground = CreateBackground(width, height, new Vector(0, 0), image);
         lowerBackground = CreateBackground(width, height, new Vector(0, 0), image);
@@ -22,12 +21,12 @@ public class Background : PhysicsObject
             IgnoresExplosions = true,
         };
 
-        trafficSim.Add(upperBackground, -2);
-        trafficSim.Add(lowerBackground, -2);
-        trafficSim.Add(lowerBorder, 2);
+        game.Add(upperBackground, -2);
+        game.Add(lowerBackground, -2);
+        game.Add(lowerBorder, 2);
 
-        trafficSim.AddCollisionHandler(lowerBorder, upperBackground, Cycle);
-        trafficSim.AddCollisionHandler(lowerBorder, lowerBackground, Cycle);
+        game.AddCollisionHandler(lowerBorder, upperBackground, Cycle);
+        game.AddCollisionHandler(lowerBorder, lowerBackground, Cycle);
 
     }
 
@@ -45,21 +44,22 @@ public class Background : PhysicsObject
         };
         return background;
     }
-    
+
     private void Cycle(PhysicsObject border, PhysicsObject background)
     {
-        background.Y += Game.Screen.Height;
+        background.Y += Game.Screen.Height
+            ;
     }
 
     public void Drive(double force)
     {
-        upperBackground.Push(new Vector(0, -Mass*force));
+        upperBackground.Push(new Vector(0, -Mass * force));
         lowerBackground.Push(new Vector(0, -Mass * force));
     }
- 
+
     public void Brake(double force)
     {
-        upperBackground.Push(new Vector(0, Mass*force));
+        upperBackground.Push(new Vector(0, Mass * force));
         lowerBackground.Push(new Vector(0, Mass * force));
     }
 

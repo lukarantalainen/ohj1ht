@@ -1,12 +1,12 @@
 
 using System;
 using System.Collections;
-namespace TrafficSim;
+namespace RacingGame;
 using Jypeli;
 using Jypeli.Widgets;
 public class Debug
 {
-    private readonly TrafficSim trafficSim; 
+    private readonly RacingGame game; 
     private readonly Player player;
     private readonly Map map;
     private readonly PhysicsObject road;
@@ -14,10 +14,10 @@ public class Debug
     private readonly PhysicsObject borderLeft;
     private readonly PhysicsObject borderRight;
 
-    private double _debugDisplayPosY = TrafficSim.Screen.Top -100;
-    private Debug(TrafficSim trafficSim, Player player, Map map)
+    private double _debugDisplayPosY = RacingGame.Screen.Top -100;
+    private Debug(RacingGame game, Player player, Map map)
     {
-        this.trafficSim = trafficSim;
+        this.game = game;
         this.player = player;
         this.map = map;
         road = this.map.GetRoad(0);
@@ -26,9 +26,9 @@ public class Debug
         borderRight = this.map.GetBorder(1);
     }
     
-    public static void Start(TrafficSim trafficSim, Player player, Map map)
+    public static void Start(RacingGame game, Player player, Map map)
     {
-        var debug = new Debug(trafficSim, player, map);
+        var debug = new Debug(game, player, map);
         debug.Init();
     }
     
@@ -42,23 +42,23 @@ public class Debug
     
     private void AddToScreen(Slider slider, Label label)
     {
-        slider.Left = TrafficSim.Screen.Left + 20;
+        slider.Left = RacingGame.Screen.Left + 20;
         slider.Y = _debugDisplayPosY;
         slider.Color = RandomGen.NextColor();
         _debugDisplayPosY -= 100;
-        trafficSim.Add(slider);
+        game.Add(slider);
         label.Position = new Vector(slider.X, slider.Y+50);
-        trafficSim.Add(label);
+        game.Add(label);
     }
 
     private void AddToScreen(Label display, Label label)
     {
-        display.Position = new Vector(TrafficSim.Screen.Left + 100, _debugDisplayPosY);
+        display.Position = new Vector(RacingGame.Screen.Left + 100, _debugDisplayPosY);
         display.Color = RandomGen.NextColor();
         _debugDisplayPosY -= 100;
-        trafficSim.Add(display);
+        game.Add(display);
         label.Position = new Vector(display.X, display.Y+50);
-        trafficSim.Add(label);
+        game.Add(label);
     }
 
     private void CreateZoomSlider()
@@ -73,7 +73,7 @@ public class Debug
 
     private void ZoomLevel(double oldValue, double newValue)
     {
-        trafficSim.Camera.ZoomFactor = 1+newValue;
+        game.Camera.ZoomFactor = 1+newValue;
     }
     
     private void CreateSpeedOMeter()

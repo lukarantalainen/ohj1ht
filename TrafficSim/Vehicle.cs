@@ -1,6 +1,6 @@
 using Jypeli;
 
-namespace TrafficSim;
+namespace RacingGame;
 
 public enum VehicleType
 {
@@ -39,7 +39,7 @@ public class Vehicle : PhysicsObject
 
     private void CreateCar()
     {
-        Image = global::TrafficSim.TrafficSim.CarImageGreen;
+        Image = RacingGame.CarImageGreen;
         if (Direction==Direction.Opposite)
         {
             PushVelocity = 1000;
@@ -53,7 +53,7 @@ public class Vehicle : PhysicsObject
 
     private void CreateTruck()
     {
-        Image = global::TrafficSim.TrafficSim.CarTexture;
+        Image = RacingGame.CarImage;
 
         if (Direction == Direction.Opposite)
         {

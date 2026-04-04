@@ -5,7 +5,7 @@ using System;
 
 #endregion
 
-namespace TrafficSim
+namespace RacingGame
 {
     /// <summary>
     /// The main class.
@@ -18,7 +18,7 @@ namespace TrafficSim
         [STAThread]
         static void Main()
         {
-            using var game = new TrafficSim();
+            using var game = new RacingGame();
             game.Run();
         }
     }

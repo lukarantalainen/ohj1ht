@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace TrafficSim;
+namespace RacingGame;
 using Jypeli;
 using Silk.NET.Maths;
 
 public class VehicleGenerator
 {
-    private readonly TrafficSim _trafficSim;
+    private readonly RacingGame _game;
     private readonly Map _map;
     private List<Vehicle> _vehicles = [];
 
@@ -15,9 +15,9 @@ public class VehicleGenerator
     private readonly double x2;
     private readonly double x3;
     private readonly double x4;
-    public VehicleGenerator(TrafficSim trafficSim, Map map, Road road)
+    public VehicleGenerator(RacingGame game, Map map, Road road)
     {
-        _trafficSim = trafficSim;
+        _game = game;
         _map = map;
 
         var road0 = road.GetRoad(0);
@@ -34,7 +34,7 @@ public class VehicleGenerator
         var vehiclesNew = new List<Vehicle>(_vehicles);
         for (int i=0; i<_vehicles.Count; i++)
         {
-            if (_vehicles[i].Y > TrafficSim.Screen.Bottom-200)
+            if (_vehicles[i].Y > RacingGame.Screen.Bottom-200)
             {
                 vehiclesNew.Add(_vehicles[i]);
             }
@@ -71,9 +71,9 @@ public class VehicleGenerator
                     vehicle.X = x4;
                     break;
             }
-            vehicle.Y = TrafficSim.Screen.Top + 100;
+            vehicle.Y = RacingGame.Screen.Top + 100;
             _vehicles.Add(vehicle);
-            _trafficSim.Add(vehicle);
+            _game.Add(vehicle);
         }
         
         foreach (var v in _vehicles)
@@ -81,7 +81,7 @@ public class VehicleGenerator
             if (v!=null)
             {
                 v.Tag = "vehicle";
-                v.MoveTo(new Vector(v.X, TrafficSim.Screen.Bottom - 1000), v.PushVelocity+_map.GetVelocity());
+                v.MoveTo(new Vector(v.X, RacingGame.Screen.Bottom - 1000), v.PushVelocity+_map.GetVelocity());
             }
             
             

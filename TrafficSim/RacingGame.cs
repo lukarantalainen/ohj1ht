@@ -3,7 +3,7 @@ using Jypeli.Widgets;
 using System;
 using System.Collections.Generic;
 
-namespace TrafficSim;
+namespace RacingGame;
 
 /// @author lukar
 /// @version 16.01.2026
@@ -21,38 +21,37 @@ public struct Properties
     public const double TargetTime = RoadLength / 30;
 
 }
-public class TrafficSim : PhysicsGame
+public class RacingGame : PhysicsGame
 {
     private Progress progress;
     private Player car;
     private Map map;
 
-    public static readonly Image PlayerTexture = LoadImage("player_texture");
-    public static readonly Shape PlayerShape = Shape.FromImage(PlayerTexture);
+    public static readonly Image PlayerImage = LoadImage("player_texture");
+    public static readonly Shape PlayerShape = Shape.FromImage(PlayerImage);
 
-    public static readonly Image CarTexture = LoadImage("car_texture");
-    public static readonly Shape CarShape = Shape.FromImage(CarTexture);
+    public static readonly Image CarImage = LoadImage("car_texture");
+    public static readonly Shape CarShape = Shape.FromImage(CarImage);
     public static readonly Image CarImageGreen = LoadImage("sports-car-green");
 
-    public static readonly Image TruckTexture = LoadImage("truck.png");
-    public static readonly Shape TruckShape = Shape.FromImage(TruckTexture);
+    public static readonly Image TruckImage = LoadImage("truck.png");
+    public static readonly Shape TruckShape = Shape.FromImage(TruckImage);
 
-    public static readonly Image RoadTexture = LoadImage("road_texture");
-    public static readonly Image DesertTexture = LoadImage("desert_texture");
+    public static readonly Image RoadImage = LoadImage("road_texture");
+    public static readonly Image DesertImage = LoadImage("desert_texture");
     //public static readonly Image _cactusTexture = LoadImage("cactus_texture");
 
     private ScoreList topList;
 
     public override void Begin()
     {
+        IsFullScreen = true;
         Init();
     }
 
     private void Init()
     {
-        //IsFullScreen = true;
         ClearAll();
-
         CreateTopList();
         
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
@@ -68,38 +67,17 @@ public class TrafficSim : PhysicsGame
         Debug.Start(this, car, map);
     }
 
-    public void CreateTopList()
+    private void CreateTopList()
     {
         topList = DataStorage.TryLoad<ScoreList>(topList, "scores.xml");
         topList = new ScoreList(10, true, Properties.TargetTime);
     }
 
-    public void AddControls()
-    {
-        Keyboard.Clear();
-        Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
-        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        Controls.Start(this, car, map, progress);
-    }
-
-    public void StartGame()
+    private void StartGame()
     {
         Keyboard.Clear();
         MessageDisplay.Clear();
         progress.StartGame();
-    }
-
-    public void EndGame()
-    {
-        IsPaused = true;
-        var time = progress.StopTimer();
-        if (time > Properties.TargetTime)
-        {
-            MessageDisplay.Clear();
-            MessageDisplay.Add($"Too slow! Your time was {time:0.00}. Try again!");
-        }
-        CreateSelectionWindow(time);
-        RemoveCollisionHandlers();
     }
 
     private void ShowTopList(double time)
@@ -133,6 +111,25 @@ public class TrafficSim : PhysicsGame
         Add(endWindow);
     }
 
+    public void AddControls()
+    {
+        Keyboard.Clear();
+        Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
+        Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
+        Controls.Start(this, car, map, progress);
+    }
 
+    public void End()
+    {
+        IsPaused = true;
+        var time = progress.StopTimer();
+        if (time > Properties.TargetTime)
+        {
+            MessageDisplay.Clear();
+            MessageDisplay.Add($"Too slow! Your time was {time:0.00}. Try again!");
+        }
+        CreateSelectionWindow(time);
+        RemoveCollisionHandlers();
+    }
 
 }
