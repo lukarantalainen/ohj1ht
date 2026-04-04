@@ -5,14 +5,21 @@ namespace RacingGame;
 using Jypeli;
 using Jypeli.Widgets;
 
-public class Progress(RacingGame game)
+public class Progress
 {
+    private readonly RacingGame game;
+
     private readonly DoubleMeter distMeter = new(0);
     private readonly DoubleMeter timeMeter = new(0);
     
     private readonly PhysicsObject finishLine = new(RacingGame.Screen.Width, 20, Shape.Rectangle);
     
     private bool finished = false;
+
+    public Progress(RacingGame game)
+    {
+        this.game = game;
+    }
 
     public void StartGame()
     {
@@ -102,10 +109,16 @@ public class Progress(RacingGame game)
         var timer = new Timer(1);
         timer.Timeout += delegate () { UpdateLights(countdown, timer, lights, root, penalty); };
         timer.Start();
+        
     }
 
     private void UpdateLights(IntMeter countdown, Timer timer, List<GameObject> lights, GameObject root, bool penalty)
     {
+        if (countdown.Value==0)
+        {
+            RacingGame.StartSound.Play();
+        }
+
         if (countdown.Value < 3)
         {
             lights[countdown.Value].Color = Color.Red;

@@ -16,7 +16,7 @@ public struct Properties
 {
     public static double MaxVelocity { get; set; }
     public static double BGMaxVelocity { get; set; }
-    public const double RoadLength = 300;
+    public const double RoadLength = 3000;
 
     public const double TargetTime = RoadLength / 30;
 
@@ -39,13 +39,18 @@ public class RacingGame : PhysicsGame
 
     public static readonly Image RoadImage = LoadImage("road_texture");
     public static readonly Image DesertImage = LoadImage("desert_texture");
+
+    public static readonly SoundEffect StartSound = LoadSoundEffect("start-countdown");
+    //https://freesound.org/people/Pastew/sounds/813525/
+
     //public static readonly Image _cactusTexture = LoadImage("cactus_texture");
+
 
     private ScoreList topList;
 
     public override void Begin()
     {
-        IsFullScreen = true;
+        //IsFullScreen = true;
         Init();
     }
 

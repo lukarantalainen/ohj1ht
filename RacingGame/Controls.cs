@@ -29,6 +29,8 @@ public class Controls
         progress.Drive(map.GetVelocity());
     }
 
+
+
     private void Brake()
     {
         map.Brake();
@@ -58,10 +60,10 @@ public class Controls
         game.Keyboard.Listen(Key.S, ButtonState.Down, Brake, "");
         game.Keyboard.Listen(Key.A, ButtonState.Down, SteerLeft, "");
         game.Keyboard.Listen(Key.D, ButtonState.Down, SteerRight, "");
-        game.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
-        game.Keyboard.Listen(Key.Up, ButtonState.Up, DriveIdle, "");
-        game.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
-        game.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
-        game.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
+        //game.Keyboard.Listen(Key.Up, ButtonState.Down, Drive, "");
+        //game.Keyboard.Listen(Key.Up, ButtonState.Up, DriveIdle, "");
+        //game.Keyboard.Listen(Key.Down, ButtonState.Down, Brake, "");
+        //game.Keyboard.Listen(Key.Left, ButtonState.Down, SteerLeft, "");
+        //game.Keyboard.Listen(Key.Right, ButtonState.Down, SteerRight, "");
     }
 }
