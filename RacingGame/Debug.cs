@@ -14,7 +14,7 @@ public class Debug
     private readonly PhysicsObject borderLeft;
     private readonly PhysicsObject borderRight;
 
-    private double _debugDisplayPosY = RacingGame.Screen.Top -100;
+    private double Y = Game.Screen.Top - 100;
     private Debug(RacingGame game, Player player, Map map)
     {
         this.game = game;
@@ -24,6 +24,13 @@ public class Debug
         road2 = this.map.GetRoad(1);
         borderLeft = this.map.GetBorder(0);
         borderRight = this.map.GetBorder(1);
+
+        game.Mouse.Listen(MouseButton.Left, ButtonState.Pressed, ShowClickPosition, "");
+    }
+
+    private void ShowClickPosition()
+    {
+        game.MessageDisplay.Add(game.Mouse.PositionOnWorld.ToString());
     }
     
     public static void Start(RacingGame game, Player player, Map map)
@@ -42,10 +49,10 @@ public class Debug
     
     private void AddToScreen(Slider slider, Label label)
     {
-        slider.Left = RacingGame.Screen.Left + 20;
-        slider.Y = _debugDisplayPosY;
+        slider.Left = Game.Screen.Left + 20;
+        slider.Y = Y;
         slider.Color = RandomGen.NextColor();
-        _debugDisplayPosY -= 100;
+        Y -= 100;
         game.Add(slider);
         label.Position = new Vector(slider.X, slider.Y+50);
         game.Add(label);
@@ -53,9 +60,9 @@ public class Debug
 
     private void AddToScreen(Label display, Label label)
     {
-        display.Position = new Vector(RacingGame.Screen.Left + 100, _debugDisplayPosY);
+        display.Position = new Vector(Game.Screen.Left + 100, Y);
         display.Color = RandomGen.NextColor();
-        _debugDisplayPosY -= 100;
+        Y -= 100;
         game.Add(display);
         label.Position = new Vector(display.X, display.Y+50);
         game.Add(label);

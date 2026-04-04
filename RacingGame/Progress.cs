@@ -11,8 +11,11 @@ public class Progress
 
     private readonly DoubleMeter distMeter = new(0);
     private readonly DoubleMeter timeMeter = new(0);
-    
-    private readonly PhysicsObject finishLine = new(RacingGame.Screen.Width, 20, Shape.Rectangle);
+
+    private readonly PhysicsObject finishLine = new(Properties.RoadWidth, 35, Shape.Rectangle)
+    {
+        Image = RacingGame.Finishline,
+    };
     
     private bool finished = false;
 
@@ -80,18 +83,35 @@ public class Progress
         var background = new GameObject(400, 150, Shape.Rectangle)
         {
             X = 0,
-            Top = RacingGame.Screen.Top - 50,
+            Top = Game.Screen.Top - 50,
             Color = Color.Black,
         };
 
-        var root = new GameObject(background.Width + 30, background.Height + 30, Shape.Rectangle)
+        var root = new GameObject(background.Width + 10, background.Height + 10, Shape.Rectangle)
         {
             Position = background.Position,
-            Color = Color.DarkGray
+            Color = Color.LightGray
         };
 
+        var holderLeft = new GameObject(10, 200, Shape.Rectangle)
+        {
+            X = background.Left + 50,
+            Bottom = background.Top,
+            Color = Color.Black
+        };
+
+        var holderRight = new GameObject(10, 200, Shape.Rectangle)
+        {
+            X = background.Right - 50,
+            Bottom = background.Top,
+            Color = Color.Black
+        };
+
+        root.Add(holderLeft);
+        root.Add(holderRight);
         root.Add(background);
         game.Add(root);
+        
 
         var lights = CreateCircles(background);
         CreateCountdown(lights, root);
@@ -150,6 +170,7 @@ public class Progress
             timer.Stop();
             game.AddControls();
         }
+        
         countdown.Value++;
     }
 
@@ -197,7 +218,7 @@ public class Progress
 
         var progressBar = new ProgressBar(100, 40) {
             Angle = Angle.FromDegrees(-90),
-            Position = new Vector(RacingGame.Screen.Right - 100, 100),
+            Position = new Vector(Game.Screen.Right - 100, 100),
             BarColor = Color.Red,
             Color = Color.Black,
         };
@@ -216,7 +237,7 @@ public class Progress
     private void CreateFinishLine()
     {
         finishLine.Color = Color.Black;
-        finishLine.Position = new Vector(0, RacingGame.Screen.Top);
+        finishLine.Position = new Vector(0, Game.Screen.Top);
         finishLine.IgnoresCollisionResponse = true;
         finishLine.IgnoresExplosions = true;
         finishLine.IgnoresPhysicsLogics = true;

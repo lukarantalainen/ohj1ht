@@ -4,11 +4,10 @@ namespace RacingGame;
 
 public class Player : PhysicsObject
 {
-    private const double PlayerSize = 150;
     private readonly RacingGame game;
     private readonly Map map;
 
-    public Player(RacingGame game, Map map) : base(PlayerSize, PlayerSize)
+    public Player(RacingGame game, Map map) : base(Properties.CarSize, Properties.CarSize)
     {
         this.game = game;
         this.map = map;
@@ -32,6 +31,7 @@ public class Player : PhysicsObject
     private void HandleCollision(PhysicsObject colliding, PhysicsObject target)
     {
         target.Y = Game.Screen.Bottom - 1000;
+        game.MediaPlayer.Play("quack");
         map.Slow();
     }
 

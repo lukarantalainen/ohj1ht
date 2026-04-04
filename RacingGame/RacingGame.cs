@@ -16,7 +16,10 @@ public struct Properties
 {
     public static double MaxVelocity { get; set; }
     public static double BGMaxVelocity { get; set; }
+    public const double RoadWidth = 600;
     public const double RoadLength = 3000;
+
+    public const double CarSize = 150;
 
     public const double TargetTime = RoadLength / 30;
 
@@ -40,8 +43,12 @@ public class RacingGame : PhysicsGame
     public static readonly Image RoadImage = LoadImage("road_texture");
     public static readonly Image DesertImage = LoadImage("desert_texture");
 
+    public static readonly Image Finishline = LoadImage("finishline");
+
     public static readonly SoundEffect StartSound = LoadSoundEffect("start-countdown");
     //https://freesound.org/people/Pastew/sounds/813525/
+
+    public static readonly SoundEffect Quack = LoadSoundEffect("quack");
 
     //public static readonly Image _cactusTexture = LoadImage("cactus_texture");
 

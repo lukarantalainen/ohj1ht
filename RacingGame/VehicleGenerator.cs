@@ -7,9 +7,9 @@ using Silk.NET.Maths;
 
 public class VehicleGenerator
 {
-    private readonly RacingGame _game;
-    private readonly Map _map;
-    private List<Vehicle> _vehicles = [];
+    private readonly RacingGame game;
+    private readonly Map map;
+    private List<Vehicle> vehicles = [];
 
     private readonly double x1;
     private readonly double x2;
@@ -17,38 +17,37 @@ public class VehicleGenerator
     private readonly double x4;
     public VehicleGenerator(RacingGame game, Map map, Road road)
     {
-        _game = game;
-        _map = map;
+        this.game = game;
+        this.map = map;
 
         var road0 = road.GetRoad(0);
 
-        double laneWidth = road0.Width / 5.5;
-        x1 = road0.Left+ laneWidth * 0.8;
-        x2 = road0.Left + laneWidth*2;
-        x3 = road0.Right - laneWidth*0.8;
-        x4 = road0.Right - laneWidth*2;
+        x1 = -225;
+        x2 = -85;
+        x3 = 85;
+        x4 = 225;
 
     }
     public void Generate()
     {
-        var vehiclesNew = new List<Vehicle>(_vehicles);
-        for (int i=0; i<_vehicles.Count; i++)
+        var vehiclesNew = new List<Vehicle>(vehicles);
+        for (int i=0; i<vehicles.Count; i++)
         {
-            if (_vehicles[i].Y > RacingGame.Screen.Bottom-200)
+            if (vehicles[i].Y > Game.Screen.Bottom-200)
             {
-                vehiclesNew.Add(_vehicles[i]);
+                vehiclesNew.Add(vehicles[i]);
             }
             else
             {
-                _vehicles[i].Destroy();
+                vehicles[i].Destroy();
             }
         }
-        _vehicles = vehiclesNew;
+        vehicles = vehiclesNew;
 
-        if (_map.GetVelocity() > 100)
+        if (map.GetVelocity() > 100)
         {
             var vehicleType = (VehicleType)RandomGen.NextInt(0, 2);
-            var vehicle = new Vehicle(100, 100, vehicleType);
+            var vehicle = new Vehicle(Properties.CarSize, Properties.CarSize, vehicleType);
             var lane =  RandomGen.NextInt(0, 4);
             switch(lane)
             {
@@ -71,17 +70,17 @@ public class VehicleGenerator
                     vehicle.X = x4;
                     break;
             }
-            vehicle.Y = RacingGame.Screen.Top + 100;
-            _vehicles.Add(vehicle);
-            _game.Add(vehicle);
+            vehicle.Y = Game.Screen.Top + 100;
+            vehicles.Add(vehicle);
+            game.Add(vehicle);
         }
         
-        foreach (var v in _vehicles)
+        foreach (var v in vehicles)
         {
             if (v!=null)
             {
                 v.Tag = "vehicle";
-                v.MoveTo(new Vector(v.X, RacingGame.Screen.Bottom - 1000), v.PushVelocity+_map.GetVelocity());
+                v.MoveTo(new Vector(v.X, Game.Screen.Bottom - 1000), v.PushVelocity+map.GetVelocity());
             }
             
             

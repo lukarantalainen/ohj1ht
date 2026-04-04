@@ -18,7 +18,7 @@ public class Map
         Properties.BGMaxVelocity = 600;
         this.game = game;
 
-        road = new Road(600, Game.Screen.Height * 2, RacingGame.RoadImage, game);
+        road = new Road(Properties.RoadWidth, Game.Screen.Height * 2, RacingGame.RoadImage, game);
 
         background = new Background(Game.Screen.Width, Game.Screen.Height*2, RacingGame.DesertImage, game);
 
