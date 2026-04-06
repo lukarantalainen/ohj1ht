@@ -3,87 +3,59 @@ using System.Collections.Generic;
 
 namespace RacingGame;
 using Jypeli;
+using Jypeli.Assets;
 using Silk.NET.Maths;
 
 public class VehicleGenerator
 {
     private readonly RacingGame game;
-    private readonly Map map;
-    private List<Vehicle> vehicles = [];
+    private readonly Road road;
 
-    private readonly double x1;
-    private readonly double x2;
-    private readonly double x3;
-    private readonly double x4;
-    public VehicleGenerator(RacingGame game, Map map, Road road)
+    public VehicleGenerator(RacingGame game, Road road)
     {
         this.game = game;
-        this.map = map;
-
-        var road0 = road.GetRoad(0);
-
-        x1 = -225;
-        x2 = -85;
-        x3 = 85;
-        x4 = 225;
+        this.road = road;
 
     }
-    public void Generate()
-    {
-        var vehiclesNew = new List<Vehicle>(vehicles);
-        for (int i=0; i<vehicles.Count; i++)
-        {
-            if (vehicles[i].Y > Game.Screen.Bottom-200)
-            {
-                vehiclesNew.Add(vehicles[i]);
-            }
-            else
-            {
-                vehicles[i].Destroy();
-            }
-        }
-        vehicles = vehiclesNew;
 
-        if (map.GetVelocity() > 100)
+    public static void Start(RacingGame game, Road road)
+    {
+        var generator = new VehicleGenerator(game, road);
         {
-            var vehicleType = (VehicleType)RandomGen.NextInt(0, 2);
-            var vehicle = new Vehicle(Properties.CarSize, Properties.CarSize, vehicleType);
-            var lane =  RandomGen.NextInt(0, 4);
-            switch(lane)
+            var timer = new Timer(1);
+            timer.Timeout += delegate { generator.Generate(timer);  };
+            timer.Start();
+
+            var lowerBorder = new PhysicsObject(Game.Screen.Width, 1)
             {
-                case 0:
-                    vehicle.Direction = Direction.Opposite;
-                    vehicle.X = x1;
-                    vehicle.Angle = Angle.FromDegrees(180);
-                    break;
-                case 1:
-                    vehicle.Direction = Direction.Opposite;
-                    vehicle.X = x2;
-                    vehicle.Angle = Angle.FromDegrees(180);
-                    break;
-                case 2:
-                    vehicle.Direction = Direction.Same;
-                    vehicle.X = x3;
-                    break;
-                case 3:
-                    vehicle.Direction = Direction.Same;
-                    vehicle.X = x4;
-                    break;
-            }
-            vehicle.Y = Game.Screen.Top + 100;
-            vehicles.Add(vehicle);
-            game.Add(vehicle);
+                Position = new Vector(0, Game.Screen.Bottom - 500),
+            };
+            game.Add(lowerBorder);
+
+            game.AddCollisionHandler(lowerBorder, "vehicle", CollisionHandler.DestroyTarget);
+        }
+    }
+
+    private void Generate(Timer timer)
+    {
+        timer.Interval = RandomGen.NextDouble(0.5, 1.5);
+        int lane = RandomGen.NextInt(0, 4);
+
+        var vehicle = new Vehicle(Properties.CarSize, Properties.CarSize, (VehicleType)RandomGen.NextInt(0, 2))
+        {
+            Position = new Vector(road.Lanes[lane], Game.Screen.Top + 200),
+            Tag = "vehicle",
+        };
+
+        if (lane == 0 || lane == 1)
+        {
+            vehicle.MoveTo(new Vector(vehicle.X, Game.Screen.Bottom - 1000), vehicle.PushVelocity+road.GetVelocity());
+            vehicle.Angle = Angle.FromDegrees(180);
+        } else
+        {
+            vehicle.MoveTo(new Vector(vehicle.X, Game.Screen.Bottom - 1000), road.GetVelocity()+200);
         }
         
-        foreach (var v in vehicles)
-        {
-            if (v!=null)
-            {
-                v.Tag = "vehicle";
-                v.MoveTo(new Vector(v.X, Game.Screen.Bottom - 1000), v.PushVelocity+map.GetVelocity());
-            }
-            
-            
-        }
+        game.Add(vehicle);
     }
 }

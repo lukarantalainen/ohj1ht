@@ -24,73 +24,19 @@ public class Progress
         this.game = game;
     }
 
-    public void StartGame()
+    public void Start()
     {
         CreateStartLights();
         CreateProgressBar(Properties.RoadLength);
     }
-    
-    public void Drive(double velocity)
-    {
-        if (finished)
-        {
-            finishLine.Push(new Vector(0, -finishLine.Mass*velocity));
-        }
-        distMeter.Value+=velocity/1000;
-    }
-    
-    public double StopTimer()
-    {
-        return timeMeter.Value;
-    }
 
-    private static List<GameObject> CreateCircles(GameObject background)
-    {
-        var circles = new List<GameObject>();
-        var color = new Color(27,27, 27);
-        const double r = 70;
-        var centerCircle = new GameObject(r, r, Shape.Circle)
-        {
-            Color = color,
-            Position = background.Position
-        };
-        
-        var leftCircle = new GameObject(r, r, Shape.Circle)
-        {
-            Color= color,
-            Position = new Vector((centerCircle.Left + background.Left) / 2, background.Y)
-        };
-
-        var rightCircle = new GameObject(r, r, Shape.Circle)
-        {
-            Color = color,
-            Position = new Vector((centerCircle.Right + background.Right) / 2, background.Y)
-        };
-
-        circles.Add(leftCircle);
-        circles.Add(centerCircle);
-        circles.Add(rightCircle);
-
-        background.Add(centerCircle);
-        background.Add(leftCircle);
-        background.Add(rightCircle);
-
-        return circles;
-    }
-
-    private void CreateStartLights()
+    private static GameObject CreateBackground()
     {
         var background = new GameObject(400, 150, Shape.Rectangle)
         {
             X = 0,
             Top = Game.Screen.Top - 50,
             Color = Color.Black,
-        };
-
-        var root = new GameObject(background.Width + 10, background.Height + 10, Shape.Rectangle)
-        {
-            Position = background.Position,
-            Color = Color.LightGray
         };
 
         var holderLeft = new GameObject(10, 200, Shape.Rectangle)
@@ -107,17 +53,45 @@ public class Progress
             Color = Color.Black
         };
 
-        root.Add(holderLeft);
-        root.Add(holderRight);
-        root.Add(background);
-        game.Add(root);
-        
-
-        var lights = CreateCircles(background);
-        CreateCountdown(lights, root);
+        background.Add(holderLeft);
+        background.Add(holderRight);
+        return background;
     }
 
-    private void CreateCountdown(List<GameObject>lights, GameObject root)
+
+    private void CreateStartLights()
+    {
+        var background = CreateBackground();
+
+        var lights = new List<GameObject>();
+        var color = new Color(27, 27, 27);
+        const double r = 70;
+        double gap = (background.Width - (3 * r)) / 4;
+
+        for (int i = 1; i < 4; i++)
+        {
+            var light = new GameObject(r, r, Shape.Circle)
+            {
+                Color = color,
+                Position = new Vector(background.Left + i * gap + (2*i-1)*r/2, background.Y)
+            };
+            lights.Add(light);
+            background.Add(light);
+        }
+
+        var root = new GameObject(background.Width + 10, background.Height + 10, Shape.Rectangle)
+        {
+            Position = background.Position,
+            Color = Color.LightGray
+        };
+
+        root.Add(background);
+        game.Add(root);
+
+        StartCountdown(lights, root);
+    }
+
+    private void StartCountdown(List<GameObject>lights, GameObject root)
     {
         var countdown = new IntMeter(0);
         bool penalty = false;
@@ -129,7 +103,6 @@ public class Progress
         var timer = new Timer(1);
         timer.Timeout += delegate () { UpdateLights(countdown, timer, lights, root, penalty); };
         timer.Start();
-        
     }
 
     private void UpdateLights(IntMeter countdown, Timer timer, List<GameObject> lights, GameObject root, bool penalty)
@@ -155,6 +128,7 @@ public class Progress
             if (!penalty)
             {
                 game.AddControls();
+                game.Start();
             }
         }
 
@@ -168,7 +142,7 @@ public class Progress
         {
             root.Destroy();
             timer.Stop();
-            game.AddControls();
+            game.Start();
         }
         
         countdown.Value++;
@@ -185,6 +159,7 @@ public class Progress
         
         var currentTime = new Label()
         {
+            Width = 20,
             Color = Color.Black,
             TextColor = Color.BrightGreen,
             DecimalPlaces = 2,
@@ -193,17 +168,26 @@ public class Progress
         currentTime.BindTo(timeMeter);
         game.Add(currentTime);
 
+        var timeLeftMeter = new DoubleMeter(Properties.TargetTime);
+        var timeLeft = new Timer(0.01);
+        {
+            timeLeft.Timeout += delegate { timeLeftMeter.Value -= 0.01; };
+        }
+        timeLeft.Start();
+
+
         var targetTime = new Label()
         {
+            Width = 20,
             Color = Color.Black,
             TextColor = Color.Orange,
             X = currentTime.X,
             Top = currentTime.Bottom,
-            Text = Properties.TargetTime.ToString("0,0")
+            Text = Properties.TargetTime.ToString("0")
         };
+        targetTime.BindTo(timeLeftMeter);
 
         game.Add(targetTime);
-
     }
     
     private void UpdateTimer()
@@ -226,7 +210,7 @@ public class Progress
         game.Add(progressBar);
     }
 
-    private void CheckLimit(double old, double current, double roadLength)
+    private void CheckLimit(double _, double current, double roadLength)
     {
         if (current >= roadLength && !finished)
         {
@@ -246,5 +230,19 @@ public class Progress
         finished = true;
 
         game.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { game.End(); }); 
+    }
+
+    public void Drive(double velocity)
+    {
+        if (finished)
+        {
+            finishLine.Push(new Vector(0, -finishLine.Mass * velocity));
+        }
+        distMeter.Value += velocity / 1000;
+    }
+
+    public double StopTimer()
+    {
+        return timeMeter.Value;
     }
 }

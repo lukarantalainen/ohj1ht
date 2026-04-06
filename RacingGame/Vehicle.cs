@@ -9,12 +9,6 @@ public enum VehicleType
     Taxi,
 }
 
-public enum Direction
-{
-    Same,
-    Opposite,
-}
-
 public class Vehicle : PhysicsObject
 {
     public double PushVelocity {  get; set; }
@@ -24,6 +18,7 @@ public class Vehicle : PhysicsObject
         IgnoresCollisionResponse = true;
         IgnoresGravity = true;
         IgnoresPhysicsLogics = true;
+
         switch (type)
         {
             case (VehicleType.Car):
@@ -39,32 +34,18 @@ public class Vehicle : PhysicsObject
 
     private void CreateCar()
     {
-        Image = RacingGame.CarImageGreen;
-        if (Direction==Direction.Opposite)
-        {
-            PushVelocity = 1000;
-        }
-        else
-        {
-            PushVelocity = -200;
-        }
+        Color = Color.Blue;
+        PushVelocity = 1000;
+
 
     }
 
     private void CreateTruck()
     {
-        Image = RacingGame.CarImage;
-
-        if (Direction == Direction.Opposite)
-        {
-            PushVelocity = 800;
-        }
-        else
-        {
-            PushVelocity = -100;
-        }
         Color = Color.Red;
+        PushVelocity = 800;
     }
+
     private void CreateTaxi()
     {
 

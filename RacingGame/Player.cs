@@ -30,7 +30,7 @@ public class Player : PhysicsObject
 
     private void HandleCollision(PhysicsObject colliding, PhysicsObject target)
     {
-        target.Y = Game.Screen.Bottom - 1000;
+        target.Destroy();
         game.MediaPlayer.Play("quack");
         map.Slow();
     }

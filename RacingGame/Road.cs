@@ -1,7 +1,8 @@
 using Jypeli;
-using System;
 using Jypeli.Effects;
 using SixLabors.ImageSharp.Processing;
+using System;
+using System.Collections.Generic;
 namespace RacingGame;
 
 /// <summary>
@@ -14,6 +15,8 @@ public class Road
 
     private readonly PhysicsObject borderLeft;
     private readonly PhysicsObject borderRight;
+
+    public List<double> Lanes { get; }
     private enum Side
     {
         Left,
@@ -35,6 +38,8 @@ public class Road
             IgnoresGravity = true,
             IgnoresExplosions = true,
         };
+
+        Lanes = [ -225, -85, 85, 225 ];
 
         game.Add(upperRoad, -1);
         game.Add(lowerRoad, -1);

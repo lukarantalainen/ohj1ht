@@ -20,28 +20,7 @@ public class Map
 
         road = new Road(Properties.RoadWidth, Game.Screen.Height * 2, RacingGame.RoadImage, game);
 
-        background = new Background(Game.Screen.Width, Game.Screen.Height*2, RacingGame.DesertImage, game);
-
-        StartVehicleGenerator();
-    }
-
-    private void StartVehicleGenerator()
-    {
-        var timer = new Timer
-        {
-            Interval = 1
-        };
-        var vehicleGenerator = new VehicleGenerator(game, this, road);
-        timer.Timeout += vehicleGenerator.Generate;
-        timer.Start();
-    }
-
-    private void UnSlow(Timer timer)
-    {
-        game.MessageDisplay.Add("unslow");
-        timer.Stop();
-        road.SetMaxVelocity(Properties.MaxVelocity);
-        background.SetMaxVelocity(Properties.BGMaxVelocity);
+        background = new Background(Game.Screen.Width, Game.Screen.Height * 2, RacingGame.DesertImage, game);
     }
     
     public double GetVelocity()
@@ -52,6 +31,11 @@ public class Map
     public double GetBGVelocity()
     {
         return background.GetVelocity(); 
+    }
+
+    public Road GetRoad()
+    {
+        return road;
     }
 
     public void Drive()
@@ -99,6 +83,13 @@ public class Map
         timer.Start();
         road.SetMaxVelocity(300);
         background.SetMaxVelocity(200);
+    }
+
+    private void UnSlow(Timer timer)
+    {
+        timer.Stop();
+        road.SetMaxVelocity(Properties.MaxVelocity);
+        background.SetMaxVelocity(Properties.BGMaxVelocity);
     }
 
     public PhysicsObject GetRoad(int num)

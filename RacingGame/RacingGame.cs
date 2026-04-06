@@ -89,7 +89,7 @@ public class RacingGame : PhysicsGame
     {
         Keyboard.Clear();
         MessageDisplay.Clear();
-        progress.StartGame();
+        progress.Start();
     }
 
     private void ShowTopList(double time)
@@ -129,6 +129,12 @@ public class RacingGame : PhysicsGame
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         Controls.Start(this, car, map, progress);
+    }
+
+    public void Start()
+    {
+        AddControls();
+        VehicleGenerator.Start(this, map.GetRoad());
     }
 
     public void End()
