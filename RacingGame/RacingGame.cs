@@ -19,7 +19,7 @@ public struct Properties
     public const double RoadWidth = 600;
     public const double RoadBorderWidth = 20;
 
-    public const double RoadLength = 3000;
+    public const double RoadLength = 300;
 
     public const double CarSize = 150;
 
@@ -61,6 +61,7 @@ public class RacingGame : PhysicsGame
     {
         //IsFullScreen = true;
         Init();
+
     }
 
     private void Init()
@@ -70,17 +71,24 @@ public class RacingGame : PhysicsGame
         
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-
         map = new Map(this);
         player = new Player(this, map);
         progress = new Progress(this);
         var dashboard = new Dashboard(this, player, progress);
 
 
-        MessageDisplay.Add("Press SPACE to begin!");
         Keyboard.Listen(Key.Space, ButtonState.Down, StartGame, "");
 
-        //Debug.Start(this, car, map);
+        ConfigureMessageDisplay();
+
+        Debug.Start(this, player, map);
+    }
+
+    private void ConfigureMessageDisplay()
+
+    {
+        MessageDisplay.Add("Press SPACE to begin!");
+        MessageDisplay.Color = Color.Blue;
     }
 
     private void CreateTopList()

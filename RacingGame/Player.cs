@@ -8,7 +8,7 @@ public class Player : PhysicsObject
     private readonly RacingGame game;
     private readonly Map map;
 
-    private readonly IntMeter healthMeter = new IntMeter(0);
+    private readonly IntMeter healthMeter;
     private readonly ProgressBar healthBar;
 
     public Player(RacingGame game, Map map) : base(Properties.CarSize, Properties.CarSize)
@@ -16,9 +16,11 @@ public class Player : PhysicsObject
         this.game = game;
         this.map = map;
 
-        healthMeter.MaxValue = 100;
-        healthMeter.MinValue = 0;
-        healthMeter.Value = 100;
+        healthMeter = new IntMeter(100)
+        {
+            MaxValue = 100,
+            MinValue = 0,
+        };
 
         CreatePlayer();
         healthBar = CreateHealthBar(healthMeter);
@@ -28,8 +30,8 @@ public class Player : PhysicsObject
     {
         Image = RacingGame.PlayerImage;
         base.Shape = RacingGame.PlayerShape;
-        LinearDamping = 0.998;
-        Restitution = 1;
+        LinearDamping = 0.8;
+        Restitution = 0;
         CanRotate = false;
         Mass = 1000;
         Tag = "player";
@@ -41,7 +43,7 @@ public class Player : PhysicsObject
     private void HandleCollision(PhysicsObject colliding, PhysicsObject target)
     {
         target.Destroy();
-        healthMeter.Value -= 5;
+        healthMeter.Value -= 10;
         game.MediaPlayer.Play("quack");
         map.Slow();
     }
@@ -60,12 +62,12 @@ public class Player : PhysicsObject
 
     public void SteerRight()
     {
-        Push(new Vector(Mass*5000, 0));
+        Push(new Vector(Mass*1000, 0));
     }
 
     public void SteerLeft()
     {
-        Push(new Vector(-Mass*5000, 0));
+        Push(new Vector(-Mass*1000, 0));
     }
 
     public ProgressBar GetHealthBar()

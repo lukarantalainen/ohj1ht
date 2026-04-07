@@ -14,30 +14,92 @@ public class Progress
     private readonly DoubleMeter timeMeter = new(0);
     private readonly DoubleMeter timeLeftMeter = new(Properties.TargetTime);
 
-    private Label timeLabel;
-    private Label targetTimeLabel;
-
+    private readonly Label timeLabel;
+    private readonly Label targetTimeLabel;
     private ProgressBar progressBar;
 
-    private readonly PhysicsObject finishLine = new(Properties.RoadWidth, 35, Shape.Rectangle)
-    {
-        Image = RacingGame.Finishline,
-    };
-    
     private bool finished = false;
 
     public Progress(RacingGame game)
     {
         this.game = game;
+
+        timeLabel = CreateTimeLabel();
+        targetTimeLabel = CreateTargetTimeLabel();
+        progressBar = CreateProgressBar();
     }
 
     public void Start()
     {
         CreateStartLights();
-        CreateProgressBar(Properties.RoadLength);
     }
 
-    private static GameObject CreateBackground()
+    private Label CreateTimeLabel()
+    {
+        var label = new Label()
+        {
+            Width = 20,
+            Color = Color.Black,
+            TextColor = Color.BrightGreen,
+            DecimalPlaces = 2,
+        };
+        label.BindTo(timeMeter);
+        return label;
+    }
+
+    private Label CreateTargetTimeLabel()
+    {
+        var label = new Label()
+        {
+            Width = 20,
+            Color = Color.Black,
+            TextColor = Color.Orange,
+            Text = Properties.TargetTime.ToString("0")
+        };
+        label.BindTo(timeLeftMeter);
+        return label;
+    }
+
+    private ProgressBar CreateProgressBar()
+    {
+        distMeter.MaxValue = Properties.RoadLength;
+        distMeter.UpperLimit += AddFinishLine;
+
+        progressBar = new ProgressBar(100, 40)
+        {
+            Angle = Angle.FromDegrees(-90),
+            Position = new Vector(Game.Screen.Right - 100, 100),
+            BarColor = Color.GreenYellow,
+            Color = Color.Orange,
+        };
+        progressBar.BindTo(distMeter);
+        return progressBar;
+    }
+
+    private void AddFinishLine()
+    {
+        if (!finished)
+        {
+            finished = true;
+            var finishLine = new PhysicsObject(Properties.RoadWidth, 35, Shape.Rectangle)
+            {
+                Image = RacingGame.Finishline,
+                Position = new Vector(0, Game.Screen.Top),
+                IgnoresCollisionResponse = true,
+                IgnoresExplosions = true,
+                IgnoresPhysicsLogics = true,
+            };
+
+            game.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { game.End(); });
+            game.Add(finishLine, 3);
+
+            finishLine.MoveTo(new Vector(finishLine.X, Game.Screen.Bottom), Properties.MaxVelocity);
+        }
+        
+        
+    }
+
+    private static GameObject CreateStartLightBackground()
     {
         var background = new GameObject(400, 150, Shape.Rectangle)
         {
@@ -68,7 +130,7 @@ public class Progress
 
     private void CreateStartLights()
     {
-        var background = CreateBackground();
+        var background = CreateStartLightBackground();
 
         var lights = new List<GameObject>();
         var color = new Color(27, 27, 27);
@@ -170,110 +232,35 @@ public class Progress
         }
         timeLeft.Start();
     }
-
-    public Label GetTimeLabel()
-    {
-        if (timeLabel == null)
-        {
-            var currentTime = new Label()
-            {
-                Width = 20,
-                Color = Color.Black,
-                TextColor = Color.BrightGreen,
-                DecimalPlaces = 2,
-            };
-            currentTime.BindTo(timeMeter);
-            timeLabel = currentTime;
-        }
-        return timeLabel;
-    }
-
-    public Label GetTargetTimeLabel()
-    {
-        if (targetTimeLabel == null)
-        {
-            var targetTime = new Label()
-            {
-                Width = 20,
-                Color = Color.Black,
-                TextColor = Color.Orange,
-                Text = Properties.TargetTime.ToString("0")
-            };
-            targetTime.BindTo(timeLeftMeter);
-            targetTimeLabel = targetTime;
-        }
-        return targetTimeLabel;
-    }
     
     private void UpdateTimer()
     {
         timeMeter.Value += 0.01;
     }
-    
-    private void CreateProgressBar(double roadLength)
-    {
-        distMeter.MaxValue = roadLength;
-        distMeter.Changed += delegate(double old, double current) { CheckLimit(old, current, roadLength); };
-
-        progressBar = new ProgressBar(100, 40) {
-            Angle = Angle.FromDegrees(-90),
-            Position = new Vector(Game.Screen.Right - 100, 100),
-            BarColor = Color.GreenYellow,
-            Color = Color.Orange,
-        };
-        progressBar.BindTo(distMeter);
-    }
-
-    public ProgressBar GetProgressBar()
-    {
-        if (progressBar == null)
-        {
-            progressBar = new ProgressBar(100, 40)
-            {
-                Angle = Angle.FromDegrees(-90),
-                Position = new Vector(Game.Screen.Right - 100, 100),
-                BarColor = Color.GreenYellow,
-                Color = Color.Orange,
-            };
-            progressBar.BindTo(distMeter);
-        }
-
-        return progressBar;
-    }
-
-    private void CheckLimit(double _, double current, double roadLength)
-    {
-        if (current >= roadLength && !finished)
-        {
-            CreateFinishLine();
-        }
-    }
-
-    private void CreateFinishLine()
-    {
-        finishLine.Color = Color.Black;
-        finishLine.Position = new Vector(0, Game.Screen.Top);
-        finishLine.IgnoresCollisionResponse = true;
-        finishLine.IgnoresExplosions = true;
-        finishLine.IgnoresPhysicsLogics = true;
-        game.Add(finishLine, 3);
-            
-        finished = true;
-
-        game.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { game.End(); }); 
-    }
 
     public void Drive(double velocity)
     {
-        if (finished)
-        {
-            finishLine.Push(new Vector(0, -finishLine.Mass * velocity));
-        }
         distMeter.Value += velocity / 1000;
     }
 
     public double StopTimer()
     {
         return timeMeter.Value;
+    }
+
+    public Label GetTimeLabel()
+    {
+
+        return timeLabel;
+    }
+
+    public Label GetTargetTimeLabel()
+    {
+        return targetTimeLabel;
+    }
+
+    public ProgressBar GetProgressBar()
+    {
+        return progressBar;
     }
 }

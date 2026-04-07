@@ -59,6 +59,7 @@ public class Road
             Position = position,
             Image = image,
             Restitution = 0.8,
+            LinearDamping = 0.75,
             IgnoresGravity = true,
             IgnoresCollisionResponse = true,
             IgnoresExplosions = true,

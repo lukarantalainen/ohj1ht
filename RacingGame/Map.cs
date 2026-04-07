@@ -81,8 +81,8 @@ public class Map
         };
         timer.Timeout += delegate { UnSlow(timer); };
         timer.Start();
-        road.SetMaxVelocity(300);
-        background.SetMaxVelocity(200);
+        road.SetMaxVelocity(700);
+        background.SetMaxVelocity(400);
     }
 
     private void UnSlow(Timer timer)

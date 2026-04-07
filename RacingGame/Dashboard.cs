@@ -47,7 +47,7 @@ namespace RacingGame
         }
 
 
-        private GameObject CreateBackground()
+        private static GameObject CreateBackground()
         {
             var background = new GameObject(Properties.RoadWidth+2*Properties.RoadBorderWidth, 150, Shape.Rectangle)
             {
@@ -58,9 +58,9 @@ namespace RacingGame
             return background;
         }
 
-        private GameObject CreateTopBar()
+        private static GameObject CreateTopBar()
         {
-            var topBar = new GameObject(Game.Screen.Width, 40)
+            var topBar = new GameObject(Properties.RoadWidth + 2 * Properties.RoadBorderWidth, 40)
             {
                 Color = Color.Black,
                 Top = Game.Screen.Top,
@@ -70,7 +70,5 @@ namespace RacingGame
         }
 
 
-    }
-
-    
+    }    
 }

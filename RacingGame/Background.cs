@@ -35,6 +35,7 @@ public class Background : PhysicsObject
         var background = new PhysicsObject(width, height)
         {
             Image = image,
+            LinearDamping = 0.75,
             Position = position,
             IgnoresCollisionResponse = true,
             IgnoresGravity = true,
