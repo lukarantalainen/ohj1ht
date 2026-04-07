@@ -15,5 +15,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Content\Dashboard.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="Dashboard.cs" />
+    </ItemGroup>
 
 </Project>

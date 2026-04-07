@@ -70,8 +70,7 @@ public class Road
     
     private PhysicsObject CreateRoadBorder(Color color, Side side)
     {
-        const double borderWidth = 20;
-        var border = new PhysicsObject(borderWidth, Game.Screen.Height)
+        var border = new PhysicsObject(Properties.RoadBorderWidth, Game.Screen.Height)
         {
             Restitution = 0,
             Color = color,

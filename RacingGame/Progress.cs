@@ -4,6 +4,7 @@ namespace RacingGame;
 
 using Jypeli;
 using Jypeli.Widgets;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 public class Progress
 {
@@ -11,6 +12,12 @@ public class Progress
 
     private readonly DoubleMeter distMeter = new(0);
     private readonly DoubleMeter timeMeter = new(0);
+    private readonly DoubleMeter timeLeftMeter = new(Properties.TargetTime);
+
+    private Label timeLabel;
+    private Label targetTimeLabel;
+
+    private ProgressBar progressBar;
 
     private readonly PhysicsObject finishLine = new(Properties.RoadWidth, 35, Shape.Rectangle)
     {
@@ -156,38 +163,46 @@ public class Progress
         };
         timer.Timeout += UpdateTimer;
         timer.Start();
-        
-        var currentTime = new Label()
-        {
-            Width = 20,
-            Color = Color.Black,
-            TextColor = Color.BrightGreen,
-            DecimalPlaces = 2,
-            Position = new Vector(-300, 200),
-        };
-        currentTime.BindTo(timeMeter);
-        game.Add(currentTime);
 
-        var timeLeftMeter = new DoubleMeter(Properties.TargetTime);
         var timeLeft = new Timer(0.01);
         {
             timeLeft.Timeout += delegate { timeLeftMeter.Value -= 0.01; };
         }
         timeLeft.Start();
+    }
 
-
-        var targetTime = new Label()
+    public Label GetTimeLabel()
+    {
+        if (timeLabel == null)
         {
-            Width = 20,
-            Color = Color.Black,
-            TextColor = Color.Orange,
-            X = currentTime.X,
-            Top = currentTime.Bottom,
-            Text = Properties.TargetTime.ToString("0")
-        };
-        targetTime.BindTo(timeLeftMeter);
+            var currentTime = new Label()
+            {
+                Width = 20,
+                Color = Color.Black,
+                TextColor = Color.BrightGreen,
+                DecimalPlaces = 2,
+            };
+            currentTime.BindTo(timeMeter);
+            timeLabel = currentTime;
+        }
+        return timeLabel;
+    }
 
-        game.Add(targetTime);
+    public Label GetTargetTimeLabel()
+    {
+        if (targetTimeLabel == null)
+        {
+            var targetTime = new Label()
+            {
+                Width = 20,
+                Color = Color.Black,
+                TextColor = Color.Orange,
+                Text = Properties.TargetTime.ToString("0")
+            };
+            targetTime.BindTo(timeLeftMeter);
+            targetTimeLabel = targetTime;
+        }
+        return targetTimeLabel;
     }
     
     private void UpdateTimer()
@@ -200,14 +215,30 @@ public class Progress
         distMeter.MaxValue = roadLength;
         distMeter.Changed += delegate(double old, double current) { CheckLimit(old, current, roadLength); };
 
-        var progressBar = new ProgressBar(100, 40) {
+        progressBar = new ProgressBar(100, 40) {
             Angle = Angle.FromDegrees(-90),
             Position = new Vector(Game.Screen.Right - 100, 100),
-            BarColor = Color.Red,
-            Color = Color.Black,
+            BarColor = Color.GreenYellow,
+            Color = Color.Orange,
         };
         progressBar.BindTo(distMeter);
-        game.Add(progressBar);
+    }
+
+    public ProgressBar GetProgressBar()
+    {
+        if (progressBar == null)
+        {
+            progressBar = new ProgressBar(100, 40)
+            {
+                Angle = Angle.FromDegrees(-90),
+                Position = new Vector(Game.Screen.Right - 100, 100),
+                BarColor = Color.GreenYellow,
+                Color = Color.Orange,
+            };
+            progressBar.BindTo(distMeter);
+        }
+
+        return progressBar;
     }
 
     private void CheckLimit(double _, double current, double roadLength)

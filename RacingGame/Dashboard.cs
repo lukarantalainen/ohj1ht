@@ -1,0 +1,76 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using Jypeli;
+
+namespace RacingGame
+{
+    public class Dashboard
+    {
+        private readonly RacingGame game;
+        private readonly Progress progress;
+
+        public Dashboard(RacingGame game, Player player, Progress progress)
+        {
+            this.game = game;
+            this.progress = progress;
+            var background = CreateBackground();
+
+            var topBar = CreateTopBar();
+            game.Add(topBar);
+
+            var healthBar = player.GetHealthBar();
+            healthBar.Left = background.Left + 10;
+            healthBar.Top = background.Top - 10;
+
+            var timeLabel = progress.GetTimeLabel();
+            timeLabel.Position = new Vector(topBar.X-30, topBar.Y);
+            var targetTimeLabel = progress.GetTargetTimeLabel();
+            targetTimeLabel.Position = new Vector(topBar.X + 30, topBar.Y);
+
+            var progressBar = progress.GetProgressBar();
+            progressBar.Right = background.Right - 10;
+            progressBar.Top = background.Top - 50;
+
+            game.Add(progressBar);
+
+            game.Add(timeLabel, 1);
+            game.Add(targetTimeLabel, 1);
+
+            game.Add(healthBar, 2);
+
+            game.Add(background);
+        }
+
+
+        private GameObject CreateBackground()
+        {
+            var background = new GameObject(Properties.RoadWidth+2*Properties.RoadBorderWidth, 150, Shape.Rectangle)
+            {
+                X = 0,
+                Bottom = Game.Screen.Bottom,
+                Color = Color.Black,
+            };
+            return background;
+        }
+
+        private GameObject CreateTopBar()
+        {
+            var topBar = new GameObject(Game.Screen.Width, 40)
+            {
+                Color = Color.Black,
+                Top = Game.Screen.Top,
+
+            };
+            return topBar;
+        }
+
+
+    }
+
+    
+}

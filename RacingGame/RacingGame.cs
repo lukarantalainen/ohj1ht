@@ -17,6 +17,8 @@ public struct Properties
     public static double MaxVelocity { get; set; }
     public static double BGMaxVelocity { get; set; }
     public const double RoadWidth = 600;
+    public const double RoadBorderWidth = 20;
+
     public const double RoadLength = 3000;
 
     public const double CarSize = 150;
@@ -27,7 +29,7 @@ public struct Properties
 public class RacingGame : PhysicsGame
 {
     private Progress progress;
-    private Player car;
+    private Player player;
     private Map map;
 
     public static readonly Image PlayerImage = LoadImage("player_texture");
@@ -69,14 +71,16 @@ public class RacingGame : PhysicsGame
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
 
-        progress = new Progress(this);
         map = new Map(this);
-        car = new Player(this, map);
+        player = new Player(this, map);
+        progress = new Progress(this);
+        var dashboard = new Dashboard(this, player, progress);
+
 
         MessageDisplay.Add("Press SPACE to begin!");
         Keyboard.Listen(Key.Space, ButtonState.Down, StartGame, "");
 
-        Debug.Start(this, car, map);
+        //Debug.Start(this, car, map);
     }
 
     private void CreateTopList()
@@ -128,7 +132,7 @@ public class RacingGame : PhysicsGame
         Keyboard.Clear();
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
-        Controls.Start(this, car, map, progress);
+        Controls.Start(this, player, map, progress);
     }
 
     public void Start()
