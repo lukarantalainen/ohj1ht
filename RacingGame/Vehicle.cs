@@ -9,15 +9,23 @@ public enum VehicleType
     Taxi,
 }
 
+public enum Side
+{
+    Left,
+    Right,
+}
+
 public class Vehicle : PhysicsObject
 {
     public double PushVelocity {  get; set; }
-    public Direction Direction { get; set; }
+    public Side Side { get; set; }
     public Vehicle(double width, double height, VehicleType type) : base(width, height)
     {
         IgnoresCollisionResponse = true;
         IgnoresGravity = true;
         IgnoresPhysicsLogics = true;
+        LinearDamping = 0.9;
+        Mass = 1000;
 
         switch (type)
         {

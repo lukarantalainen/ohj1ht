@@ -2,6 +2,7 @@ using Jypeli;
 using Jypeli.Widgets;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace RacingGame;
 
@@ -41,6 +42,7 @@ public class RacingGame : PhysicsGame
     private Progress progress;
     private Player player;
     private Map map;
+    private VehicleGenerator vehicleGenerator;
 
     public static readonly Image PlayerImage = LoadImage("player-texture");
 
@@ -117,6 +119,9 @@ public class RacingGame : PhysicsGame
         progress.Start();
     }
 
+    
+    
+
     private void ShowTopList(double time)
     {
         var window = new HighScoreWindow(
@@ -157,7 +162,6 @@ public class RacingGame : PhysicsGame
             endWindow.AddItemHandler(2, Exit);
             Add(endWindow);
         }
-
     }
 
     public void AddControls()
@@ -171,7 +175,8 @@ public class RacingGame : PhysicsGame
     public void Start()
     {
         AddControls();
-        VehicleGenerator.Start(this, map.GetRoad());
+        
+        vehicleGenerator = new VehicleGenerator(this, map.GetRoad());
     }
 
     public void End(bool failed)
@@ -188,6 +193,22 @@ public class RacingGame : PhysicsGame
 
         CreateSelectionWindow(failed, time);
 
+    }
+
+    protected override void Update(Time time)
+    {
+        double totalSeconds = time.SinceLastUpdate.TotalSeconds;
+        if (PhysicsEnabled)
+        {
+            Engine.Update(totalSeconds);
+        }
+
+        base.Update(time);
+        Joints.Update(time);
+        if (vehicleGenerator != null)
+        {
+            vehicleGenerator.Update();
+        }
     }
 
 }

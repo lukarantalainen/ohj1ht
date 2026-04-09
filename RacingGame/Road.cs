@@ -58,8 +58,7 @@ public class Road
         {
             Position = position,
             Image = image,
-            Restitution = 0.8,
-            LinearDamping = 0.92,
+            LinearDamping = 0.9,
             IgnoresGravity = true,
             IgnoresCollisionResponse = true,
             IgnoresExplosions = true,
@@ -73,7 +72,7 @@ public class Road
     {
         var border = new PhysicsObject(Properties.RoadBorderWidth, Game.Screen.Height)
         {
-            Restitution = 0,
+            Restitution = 0.5,
             Color = color,
         };
         switch (side)

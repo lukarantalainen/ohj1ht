@@ -10,7 +10,7 @@ public class Map
     private readonly Road road;
     private readonly Background background;
     
-    private const double DrivingForce = 500; 
+    private const double DrivingForce = 1500; 
 
     public Map(RacingGame game)
     {
