@@ -21,7 +21,7 @@ namespace RacingGame
             var background = CreateBackground();
 
             var topBar = CreateTopBar();
-            game.Add(topBar);
+            game.Add(topBar, 2);
 
             var healthBar = player.GetHealthBar();
             healthBar.Left = background.Left + 10;
@@ -38,8 +38,8 @@ namespace RacingGame
 
             game.Add(progressBar);
 
-            game.Add(timeLabel, 1);
-            game.Add(targetTimeLabel, 1);
+            game.Add(timeLabel, 3);
+            game.Add(targetTimeLabel, 3);
 
             game.Add(healthBar, 2);
 

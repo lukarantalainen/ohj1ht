@@ -11,6 +11,8 @@ public class VehicleGenerator
     private readonly RacingGame game;
     private readonly Road road;
 
+    private int previousLane = -1;
+
     public VehicleGenerator(RacingGame game, Road road)
     {
         this.game = game;
@@ -40,6 +42,10 @@ public class VehicleGenerator
     {
         timer.Interval = RandomGen.NextDouble(0.5, 1.5);
         int lane = RandomGen.NextInt(0, 4);
+        while (previousLane == lane)
+        {
+            lane = RandomGen.NextInt(0, 4);
+        }
 
         var vehicle = new Vehicle(Properties.CarSize, Properties.CarSize, (VehicleType)RandomGen.NextInt(0, 2))
         {
@@ -53,8 +59,10 @@ public class VehicleGenerator
             vehicle.Angle = Angle.FromDegrees(180);
         } else
         {
-            vehicle.MoveTo(new Vector(vehicle.X, Game.Screen.Bottom - 1000), road.GetVelocity()+200);
+            vehicle.MoveTo(new Vector(vehicle.X, Game.Screen.Bottom - 1000), 200);
         }
+
+        previousLane = lane;
         
         game.Add(vehicle);
     }

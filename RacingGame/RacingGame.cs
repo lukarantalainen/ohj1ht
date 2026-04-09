@@ -19,11 +19,14 @@ public struct Properties
     public const double RoadWidth = 600;
     public const double RoadBorderWidth = 20;
 
-    public const double RoadLength = 300;
+    public const double RoadLength = 3000;
 
     public const double CarSize = 150;
 
     public const double TargetTime = RoadLength / 30;
+
+    public const int PlayerHealth = 100;
+    public const int DamageFromCar = 5;
 
 }
 public class RacingGame : PhysicsGame
@@ -59,7 +62,7 @@ public class RacingGame : PhysicsGame
 
     public override void Begin()
     {
-        //IsFullScreen = true;
+        IsFullScreen = true;
         Init();
 
     }
@@ -79,16 +82,9 @@ public class RacingGame : PhysicsGame
 
         Keyboard.Listen(Key.Space, ButtonState.Down, StartGame, "");
 
-        ConfigureMessageDisplay();
-
-        Debug.Start(this, player, map);
-    }
-
-    private void ConfigureMessageDisplay()
-
-    {
         MessageDisplay.Add("Press SPACE to begin!");
-        MessageDisplay.Color = Color.Blue;
+
+        //Debug.Start(this, player, map);
     }
 
     private void CreateTopList()

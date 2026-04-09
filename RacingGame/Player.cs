@@ -16,14 +16,21 @@ public class Player : PhysicsObject
         this.game = game;
         this.map = map;
 
-        healthMeter = new IntMeter(100)
+        healthMeter = new IntMeter(Properties.PlayerHealth)
         {
-            MaxValue = 100,
+            MaxValue = Properties.PlayerHealth,
             MinValue = 0,
         };
+        healthMeter.LowerLimit += HealthMeter_LowerLimit;
 
         CreatePlayer();
         healthBar = CreateHealthBar(healthMeter);
+    }
+
+    private void HealthMeter_LowerLimit()
+    {
+        game.MessageDisplay.Add("Failed: you were hit by a car too many times!");
+        game.End();
     }
 
     private void CreatePlayer()
@@ -43,7 +50,7 @@ public class Player : PhysicsObject
     private void HandleCollision(PhysicsObject colliding, PhysicsObject target)
     {
         target.Destroy();
-        healthMeter.Value -= 10;
+        healthMeter.Value -= Properties.DamageFromCar;
         game.MediaPlayer.Play("quack");
         map.Slow();
     }

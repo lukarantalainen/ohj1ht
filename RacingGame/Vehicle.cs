@@ -34,7 +34,7 @@ public class Vehicle : PhysicsObject
 
     private void CreateCar()
     {
-        Color = Color.Blue;
+        Image = RacingGame.CarImageGreen;
         PushVelocity = 500;
 
 
@@ -42,7 +42,7 @@ public class Vehicle : PhysicsObject
 
     private void CreateTruck()
     {
-        Color = Color.Red;
+        Image = RacingGame.CarImage;
         PushVelocity = 300;
     }
 
