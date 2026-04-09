@@ -63,8 +63,14 @@ public class RacingGame : PhysicsGame
     public override void Begin()
     {
         IsFullScreen = true;
+        PaintImages();
         Init();
 
+    }
+
+    private void PaintImages()
+    {
+        CarImage.ReplaceColor(Color.FromHexCode("fefefe"), Color.FromHexCode("25438f"));
     }
 
     private void Init()
