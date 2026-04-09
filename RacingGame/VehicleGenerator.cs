@@ -18,6 +18,7 @@ public class VehicleGenerator
         this.game = game;
         this.road = road;
 
+        
     }
 
     public static void Start(RacingGame game, Road road)
@@ -38,6 +39,25 @@ public class VehicleGenerator
         }
     }
 
+    private static VehicleType GetRandomVehicle()
+    {
+        int number = RandomGen.NextInt(0, 20);
+
+        if (number <= 1)
+        {
+            return VehicleType.Taxi;
+        }
+        else if (number > 1 && number <= 7)
+        {
+            return VehicleType.Truck;
+        } else if (number > 7 && number < 20)
+        {
+            return VehicleType.Car;
+        }
+
+        return VehicleType.Car;
+    }
+
     private void Generate(Timer timer)
     {
         timer.Interval = RandomGen.NextDouble(0.5, 1.5);
@@ -47,7 +67,7 @@ public class VehicleGenerator
             lane = RandomGen.NextInt(0, 4);
         }
 
-        var vehicle = new Vehicle(Properties.CarSize, Properties.CarSize, (VehicleType)RandomGen.NextInt(0, 2))
+        var vehicle = new Vehicle(Properties.CarSize, Properties.CarSize, GetRandomVehicle())
         {
             Position = new Vector(road.Lanes[lane], Game.Screen.Top + 200),
             Tag = "vehicle",

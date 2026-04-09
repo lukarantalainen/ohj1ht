@@ -29,16 +29,15 @@ public class Player : PhysicsObject
 
     private void HealthMeter_LowerLimit()
     {
-        game.MessageDisplay.Add("Failed: you were hit by a car too many times!");
-        game.End();
+        game.End(true);
     }
 
     private void CreatePlayer()
     {
         Image = RacingGame.PlayerImage;
-        base.Shape = RacingGame.PlayerShape;
+        base.Shape = RacingGame.CarShape;
         LinearDamping = 0.8;
-        Restitution = 0;
+        Restitution = 1;
         CanRotate = false;
         Mass = 1000;
         Tag = "player";
@@ -59,8 +58,8 @@ public class Player : PhysicsObject
     {
        var healthbar = new ProgressBar(280, 20)
         {
-            Image = Game.LoadImage("health_bar_empty"),
-            BarImage = Game.LoadImage("health_bar_full"),
+            Image = Game.LoadImage("health-bar-empty"),
+            BarImage = Game.LoadImage("health-bar-full"),
         };
 
         healthbar.BindTo(healthMeter);

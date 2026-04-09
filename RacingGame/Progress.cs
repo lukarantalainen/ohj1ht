@@ -11,6 +11,7 @@ public class Progress
     private readonly RacingGame game;
 
     private readonly DoubleMeter distMeter = new(0);
+    private readonly DoubleMeter distPercentage = new(0);
     private readonly DoubleMeter timeMeter = new(0);
     private readonly DoubleMeter timeLeftMeter = new(Properties.TargetTime);
 
@@ -65,14 +66,24 @@ public class Progress
         distMeter.MaxValue = Properties.RoadLength;
         distMeter.UpperLimit += AddFinishLine;
 
-        progressBar = new ProgressBar(100, 40)
+        progressBar = new ProgressBar(100, 50)
         {
-            Angle = Angle.FromDegrees(-90),
+            Angle = -Angle.RightAngle,
             Position = new Vector(Game.Screen.Right - 100, 100),
-            BarColor = Color.GreenYellow,
+            BarColor = Color.BrightGreen,
             Color = Color.Orange,
         };
         progressBar.BindTo(distMeter);
+
+        var progressLabel = new Label()
+        {
+            Position = progressBar.Position,
+            TextColor = Color.White,
+            DecimalPlaces = 0,
+        };
+        progressLabel.BindTo(distPercentage);
+        progressBar.Add(progressLabel);
+
         return progressBar;
     }
 
@@ -90,13 +101,11 @@ public class Progress
                 IgnoresPhysicsLogics = true,
             };
 
-            game.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { game.End(); });
+            game.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { game.End(false); });
             game.Add(finishLine, 3);
 
             finishLine.MoveTo(new Vector(finishLine.X, Game.Screen.Bottom), Properties.MaxVelocity);
         }
-        
-        
     }
 
     private static GameObject CreateStartLightBackground()
@@ -241,6 +250,7 @@ public class Progress
     public void Drive(double velocity)
     {
         distMeter.Value += velocity / 1000;
+        distPercentage.Value = distMeter.Value / Properties.RoadLength*100;
     }
 
     public double StopTimer()

@@ -26,7 +26,7 @@ public class Vehicle : PhysicsObject
             case (VehicleType.Truck):
                 CreateTruck(); break;
             case VehicleType.Taxi:
-                break;
+                CreateTaxi();  break;
             default:
                 CreateCar(); break;
         }
@@ -35,6 +35,7 @@ public class Vehicle : PhysicsObject
     private void CreateCar()
     {
         Image = RacingGame.CarImageGreen;
+        Shape = RacingGame.CarShape;
         PushVelocity = 500;
 
 
@@ -42,13 +43,16 @@ public class Vehicle : PhysicsObject
 
     private void CreateTruck()
     {
-        Image = RacingGame.CarImage;
+        Image = RacingGame.PlayerImage;
+        Shape = RacingGame.CarShape;
         PushVelocity = 300;
     }
 
     private void CreateTaxi()
     {
-
+        Image = RacingGame.TaxiImage;
+        Shape = RacingGame.CarShape;
+        PushVelocity = 500;
     }
 
 }

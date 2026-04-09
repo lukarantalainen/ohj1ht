@@ -32,9 +32,10 @@ namespace RacingGame
             var targetTimeLabel = progress.GetTargetTimeLabel();
             targetTimeLabel.Position = new Vector(topBar.X + 30, topBar.Y);
 
+
             var progressBar = progress.GetProgressBar();
             progressBar.Right = background.Right - 10;
-            progressBar.Top = background.Top - 50;
+            progressBar.Y = background.Y;
 
             game.Add(progressBar);
 
@@ -43,13 +44,13 @@ namespace RacingGame
 
             game.Add(healthBar, 2);
 
-            game.Add(background);
+            game.Add(background, 2);
         }
 
 
         private static GameObject CreateBackground()
         {
-            var background = new GameObject(Properties.RoadWidth+2*Properties.RoadBorderWidth, 150, Shape.Rectangle)
+            var background = new GameObject(Properties.RoadWidth+2*Properties.RoadBorderWidth, 125, Shape.Rectangle)
             {
                 X = 0,
                 Bottom = Game.Screen.Bottom,

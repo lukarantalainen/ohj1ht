@@ -19,34 +19,41 @@ public struct Properties
     public const double RoadWidth = 600;
     public const double RoadBorderWidth = 20;
 
-    public const double RoadLength = 3000;
+    public const double RoadLength = 1000;
 
     public const double CarSize = 150;
 
     public const double TargetTime = RoadLength / 30;
 
     public const int PlayerHealth = 100;
-    public const int DamageFromCar = 5;
+    public const int DamageFromCar = 10;
 
 }
+
+public struct CarColors
+{
+    public static Color red = Color.FromHexCode("ff000");
+
+}
+
 public class RacingGame : PhysicsGame
 {
     private Progress progress;
     private Player player;
     private Map map;
 
-    public static readonly Image PlayerImage = LoadImage("player_texture");
-    public static readonly Shape PlayerShape = Shape.FromImage(PlayerImage);
+    public static readonly Image PlayerImage = LoadImage("player-texture");
 
-    public static readonly Image CarImage = LoadImage("car_texture");
-    public static readonly Shape CarShape = Shape.FromImage(CarImage);
+    public static readonly Image CarImage = LoadImage("car-texture");
     public static readonly Image CarImageGreen = LoadImage("sports-car-green");
 
-    public static readonly Image TruckImage = LoadImage("truck.png");
-    public static readonly Shape TruckShape = Shape.FromImage(TruckImage);
+    public static readonly Image CarShapeImage = LoadImage("rectangle-car-shape");
+    public static readonly Shape CarShape = Shape.FromImage(CarShapeImage);
 
-    public static readonly Image RoadImage = LoadImage("road_texture");
-    public static readonly Image DesertImage = LoadImage("desert_texture");
+    public static readonly Image TaxiImage = LoadImage("taxi-texture");
+
+    public static readonly Image RoadImage = LoadImage("road-texture");
+    public static readonly Image DesertImage = LoadImage("desert-texture");
 
     public static readonly Image Finishline = LoadImage("finishline");
 
@@ -55,22 +62,15 @@ public class RacingGame : PhysicsGame
 
     public static readonly SoundEffect Quack = LoadSoundEffect("quack");
 
-    //public static readonly Image _cactusTexture = LoadImage("cactus_texture");
+    //public static readonly Image _cactusTexture = LoadImage("cactus-texture");
 
 
     private ScoreList topList;
 
     public override void Begin()
     {
-        IsFullScreen = true;
-        PaintImages();
+        //IsFullScreen = true;
         Init();
-
-    }
-
-    private void PaintImages()
-    {
-        CarImage.ReplaceColor(Color.FromHexCode("fefefe"), Color.FromHexCode("25438f"));
     }
 
     private void Init()
@@ -86,11 +86,22 @@ public class RacingGame : PhysicsGame
         var dashboard = new Dashboard(this, player, progress);
 
 
-        Keyboard.Listen(Key.Space, ButtonState.Down, StartGame, "");
 
-        MessageDisplay.Add("Press SPACE to begin!");
+        var startLabel = new Label(300, 100)
+        {
+            Text = "Press SPACE to begin!",
+            Color = Color.Black,
+            TextColor = Color.YellowGreen
+        };
+        Add(startLabel);
 
-        //Debug.Start(this, player, map);
+        Keyboard.Listen(Key.Space, ButtonState.Down, delegate
+        {
+            startLabel.Destroy();
+            StartGame();
+        }, "");
+
+        Debug.Start(this, player, map);
     }
 
     private void CreateTopList()
@@ -122,19 +133,31 @@ public class RacingGame : PhysicsGame
     private void SaveScores(Window _, double time)
     {
         DataStorage.Save<ScoreList>(topList, "scores.xml");
-        CreateSelectionWindow(time);
+        CreateSelectionWindow(false, time);
     }
 
-    private void CreateSelectionWindow(double time)
+    private void CreateSelectionWindow(bool failed, double time)
     {
-        string[] options = ["Top List", "Restart", "Quit"];
-        var endWindow = new MultiSelectWindow($"Finished in {time:0.00}!", options);
+        
+        if (failed)
+        {
+            string[] options = ["Restart", "Quit"];
+            var endWindow = new MultiSelectWindow($"Failed: you crashed too many times.", options);
+            endWindow.AddItemHandler(0, Init);
+            endWindow.AddItemHandler(1, Exit);
+            Add(endWindow);
+        }
 
-        endWindow.AddItemHandler(0, delegate { ShowTopList(time); });
-        endWindow.AddItemHandler(1, Init);
-        endWindow.AddItemHandler(2, Exit);
+        else
+        {
+            string[] options = ["Top List", "Restart", "Quit"];
+            var endWindow = new MultiSelectWindow($"Finished in {time:0.00}!", options);
+            endWindow.AddItemHandler(0, delegate { ShowTopList(time); });
+            endWindow.AddItemHandler(1, Init);
+            endWindow.AddItemHandler(2, Exit);
+            Add(endWindow);
+        }
 
-        Add(endWindow);
     }
 
     public void AddControls()
@@ -151,17 +174,20 @@ public class RacingGame : PhysicsGame
         VehicleGenerator.Start(this, map.GetRoad());
     }
 
-    public void End()
+    public void End(bool failed)
     {
         IsPaused = true;
+        RemoveCollisionHandlers();
+
         var time = progress.StopTimer();
         if (time > Properties.TargetTime)
         {
             MessageDisplay.Clear();
             MessageDisplay.Add($"Too slow! Your time was {time:0.00}. Try again!");
         }
-        CreateSelectionWindow(time);
-        RemoveCollisionHandlers();
+
+        CreateSelectionWindow(failed, time);
+
     }
 
 }
