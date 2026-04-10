@@ -42,6 +42,10 @@ public class VehicleGenerator
 
     }
 
+    /// <summary>
+    /// Selects a vehicle type randomly
+    /// </summary>
+    /// <returns></returns>
     private static VehicleType GetRandomVehicle()
     {
         int number = RandomGen.NextInt(0, 20);
@@ -60,7 +64,9 @@ public class VehicleGenerator
 
         return VehicleType.Car;
     }
-
+    /// <summary>
+    /// Updates vehicle positions on map
+    /// </summary>
     public void Update()
     {
         foreach (var vehicle in vehicles)
@@ -73,7 +79,10 @@ public class VehicleGenerator
             vehicle.Push(new Vector(0, vehicle.Mass*vehicle.PushVelocity-vehicle.Mass*road.GetVelocity()));   
         }
     }
-
+    /// <summary>
+    /// Starts generating vehicles on a random interval
+    /// </summary>
+    /// <param name="timer"></param>
     private void Generate(Timer timer)
     {
         timer.Interval = RandomGen.NextDouble(0.5, 1.5);

@@ -119,9 +119,6 @@ public class RacingGame : PhysicsGame
         progress.Start();
     }
 
-    
-    
-
     private void ShowTopList(double time)
     {
         var window = new HighScoreWindow(
