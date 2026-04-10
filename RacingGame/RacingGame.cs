@@ -31,12 +31,6 @@ public struct Properties
 
 }
 
-public struct CarColors
-{
-    public static Color red = Color.FromHexCode("ff000");
-
-}
-
 public class RacingGame : PhysicsGame
 {
     private Progress progress;
@@ -75,6 +69,9 @@ public class RacingGame : PhysicsGame
         Init();
     }
 
+    /// <summary>
+    /// Initializes the game
+    /// </summary>
     private void Init()
     {
         ClearAll();
@@ -86,8 +83,6 @@ public class RacingGame : PhysicsGame
         player = new Player(this, map);
         progress = new Progress(this);
         var dashboard = new Dashboard(this, player, progress);
-
-
 
         var startLabel = new Label(300, 100)
         {
@@ -106,12 +101,18 @@ public class RacingGame : PhysicsGame
         Debug.Start(this, player, map);
     }
 
+    /// <summary>
+    /// Creates a toplist
+    /// </summary>
     private void CreateTopList()
     {
         topList = DataStorage.TryLoad<ScoreList>(topList, "scores.xml");
         topList = new ScoreList(10, true, Properties.TargetTime);
     }
 
+    /// <summary>
+    /// Starts the countdown
+    /// </summary>
     private void StartGame()
     {
         Keyboard.Clear();
@@ -119,6 +120,10 @@ public class RacingGame : PhysicsGame
         progress.Start();
     }
 
+    /// <summary>
+    /// Shows the name input window
+    /// </summary>
+    /// <param name="time"></param>
     private void ShowTopList(double time)
     {
         var window = new HighScoreWindow(
@@ -132,12 +137,22 @@ public class RacingGame : PhysicsGame
         Add(window);
     }
 
+    /// <summary>
+    /// Saves the toplist scores to a file
+    /// </summary>
+    /// <param name="_"></param>
+    /// <param name="time"></param>
     private void SaveScores(Window _, double time)
     {
         DataStorage.Save<ScoreList>(topList, "scores.xml");
         CreateSelectionWindow(false, time);
     }
 
+    /// <summary>
+    /// Creates the seletion window at the end of a game
+    /// </summary>
+    /// <param name="failed"></param>
+    /// <param name="time"></param>
     private void CreateSelectionWindow(bool failed, double time)
     {
         
@@ -161,6 +176,9 @@ public class RacingGame : PhysicsGame
         }
     }
 
+    /// <summary>
+    /// Adds all controls
+    /// </summary>
     public void AddControls()
     {
         Keyboard.Clear();
@@ -169,13 +187,19 @@ public class RacingGame : PhysicsGame
         Controls.Start(this, player, map, progress);
     }
 
+    /// <summary>
+    /// Starts the game
+    /// </summary>
     public void Start()
     {
         AddControls();
-        
         vehicleGenerator = new VehicleGenerator(this, map.GetRoad());
     }
 
+    /// <summary>
+    /// Ends the game
+    /// </summary>
+    /// <param name="failed"></param>
     public void End(bool failed)
     {
         IsPaused = true;
@@ -189,9 +213,12 @@ public class RacingGame : PhysicsGame
         }
 
         CreateSelectionWindow(failed, time);
-
     }
 
+    /// <summary>
+    /// Updates vehicle positions
+    /// </summary>
+    /// <param name="time"></param>
     protected override void Update(Time time)
     {
         double totalSeconds = time.SinceLastUpdate.TotalSeconds;
@@ -202,10 +229,7 @@ public class RacingGame : PhysicsGame
 
         base.Update(time);
         Joints.Update(time);
-        if (vehicleGenerator != null)
-        {
-            vehicleGenerator.Update();
-        }
+        vehicleGenerator?.Update();
     }
 
 }

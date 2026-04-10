@@ -23,6 +23,13 @@ public class Road
         Right,
     }
 
+    /// <summary>
+    /// Initializes a road
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="texture"></param>
+    /// <param name="game"></param>
     public Road(double width, double height, Image texture, RacingGame game)
     {
         upperRoad = CreateRoad(width, height, new Vector(0, Game.Screen.Height), texture, Properties.MaxVelocity);
@@ -51,7 +58,15 @@ public class Road
         game.AddCollisionHandler(lowerBorder, lowerRoad, Cycle);
     }
 
-
+    /// <summary>
+    /// Creates a PhysicsObject for the road
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="position"></param>
+    /// <param name="image"></param>
+    /// <param name="maxVelocity"></param>
+    /// <returns></returns>
     private static PhysicsObject CreateRoad(double width, double height, Vector position, Image image, double maxVelocity)
     {
         var road = new PhysicsObject(width, height)
@@ -67,7 +82,12 @@ public class Road
         return road;
     }
 
-    
+    /// <summary>
+    /// Creates borders to the road
+    /// </summary>
+    /// <param name="color"></param>
+    /// <param name="side"></param>
+    /// <returns></returns>
     private PhysicsObject CreateRoadBorder(Color color, Side side)
     {
         var border = new PhysicsObject(Properties.RoadBorderWidth, Game.Screen.Height)
@@ -89,17 +109,30 @@ public class Road
         return border;
     }
 
+    /// <summary>
+    /// Moves the roads to create an illusion
+    /// </summary>
+    /// <param name="border"></param>
+    /// <param name="road"></param>
     private static void Cycle(PhysicsObject border, PhysicsObject road)
     {
         road.Y += Game.Screen.Height;
     }
 
+    /// <summary>
+    /// Handle driving
+    /// </summary>
+    /// <param name="force"></param>
     public void Drive(double force)
     {
         upperRoad.Push(new Vector(0, -upperRoad.Mass*force));
         lowerRoad.Push(new Vector(0, -lowerRoad.Mass * force));
     }
 
+    /// <summary>
+    /// Handle braking
+    /// </summary>
+    /// <param name="force"></param>
     public void Brake(double force)
     {
 
@@ -107,22 +140,40 @@ public class Road
         lowerRoad.Push(new Vector(0, lowerRoad.Mass * force));
     }
 
+    /// <summary>
+    /// Set road max velocity
+    /// </summary>
+    /// <param name="maxVelocity"></param>
     public void SetMaxVelocity(double maxVelocity)
     {
         upperRoad.MaxVelocity = maxVelocity;
         lowerRoad.MaxVelocity = maxVelocity;
     }
 
+    /// <summary>
+    /// Get road velocity
+    /// </summary>
+    /// <returns></returns>
     public double GetVelocity()
     {
         return -upperRoad.Velocity.Y;
     }
 
+    /// <summary>
+    /// Get road width
+    /// </summary>
+    /// <returns></returns>
     public double GetWidth()
     {
         return upperRoad.Width;
     }
 
+    /// <summary>
+    /// Get a road PhysicsObject instance
+    /// </summary>
+    /// <param name="road"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public PhysicsObject GetRoad(int road)
     {
         return road switch
@@ -133,6 +184,12 @@ public class Road
         };
     }
 
+    /// <summary>
+    /// Get road border instance
+    /// </summary>
+    /// <param name="road"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public PhysicsObject GetBorder(int road)
     {
         return road switch

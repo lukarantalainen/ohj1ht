@@ -21,6 +21,10 @@ public class Progress
 
     private bool finished = false;
 
+    /// <summary>
+    /// Initializes progress indicators
+    /// </summary>
+    /// <param name="game"></param>
     public Progress(RacingGame game)
     {
         this.game = game;
@@ -30,11 +34,18 @@ public class Progress
         progressBar = CreateProgressBar();
     }
 
+    /// <summary>
+    /// Start the game
+    /// </summary>
     public void Start()
     {
         CreateStartLights();
     }
 
+    /// <summary>
+    /// Creates a label to show elapsed time
+    /// </summary>
+    /// <returns></returns>
     private Label CreateTimeLabel()
     {
         var label = new Label()
@@ -48,6 +59,10 @@ public class Progress
         return label;
     }
 
+    /// <summary>
+    /// Creates a label to show time remaining
+    /// </summary>
+    /// <returns></returns>
     private Label CreateTargetTimeLabel()
     {
         var label = new Label()
@@ -61,6 +76,10 @@ public class Progress
         return label;
     }
 
+    /// <summary>
+    /// Creates a progress bar 
+    /// </summary>
+    /// <returns></returns>
     private ProgressBar CreateProgressBar()
     {
         distMeter.MaxValue = Properties.RoadLength;
@@ -87,6 +106,9 @@ public class Progress
         return progressBar;
     }
 
+    /// <summary>
+    /// Creates and adds a finishline to the screen
+    /// </summary>
     private void AddFinishLine()
     {
         if (!finished)
@@ -108,6 +130,10 @@ public class Progress
         }
     }
 
+    /// <summary>
+    /// Creates background for the start lights
+    /// </summary>
+    /// <returns></returns>
     private static GameObject CreateStartLightBackground()
     {
         var background = new GameObject(400, 150, Shape.Rectangle)
@@ -136,7 +162,9 @@ public class Progress
         return background;
     }
 
-
+    /// <summary>
+    /// Creates the start lights
+    /// </summary>
     private void CreateStartLights()
     {
         var background = CreateStartLightBackground();
@@ -169,6 +197,11 @@ public class Progress
         StartCountdown(lights, root);
     }
 
+    /// <summary>
+    /// Starts a countdown
+    /// </summary>
+    /// <param name="lights"></param>
+    /// <param name="root"></param>
     private void StartCountdown(List<GameObject>lights, GameObject root)
     {
         var countdown = new IntMeter(0);
@@ -183,6 +216,14 @@ public class Progress
         timer.Start();
     }
 
+    /// <summary>
+    /// Updates the start lights based on time
+    /// </summary>
+    /// <param name="countdown"></param>
+    /// <param name="timer"></param>
+    /// <param name="lights"></param>
+    /// <param name="root"></param>
+    /// <param name="penalty"></param>
     private void UpdateLights(IntMeter countdown, Timer timer, List<GameObject> lights, GameObject root, bool penalty)
     {
         if (countdown.Value==0)
@@ -226,6 +267,9 @@ public class Progress
         countdown.Value++;
     }
 
+    /// <summary>
+    /// Creates a time to count elapsed time
+    /// </summary>
     private void CreateTimer()
     {
         var timer = new Timer
@@ -234,41 +278,59 @@ public class Progress
         };
         timer.Timeout += UpdateTimer;
         timer.Start();
-
-        var timeLeft = new Timer(0.01);
-        {
-            timeLeft.Timeout += delegate { timeLeftMeter.Value -= 0.01; };
-        }
-        timeLeft.Start();
     }
     
+    /// <summary>
+    /// Updates time elapsed
+    /// </summary>
     private void UpdateTimer()
     {
         timeMeter.Value += 0.01;
+        timeLeftMeter.Value -= 0.01;
     }
 
+    /// <summary>
+    /// Stop the timer
+    /// </summary>
+    /// <returns></returns>
+    public double StopTimer()
+    {
+        return timeMeter.Value;
+    }
+
+    /// <summary>
+    /// Handle driving
+    /// </summary>
+    /// <param name="velocity"></param>
     public void Drive(double velocity)
     {
         distMeter.Value += velocity / 1000;
         distPercentage.Value = distMeter.Value / Properties.RoadLength*100;
     }
 
-    public double StopTimer()
-    {
-        return timeMeter.Value;
-    }
-
+    /// <summary>
+    /// Get time label instance
+    /// </summary>
+    /// <returns></returns>
     public Label GetTimeLabel()
     {
 
         return timeLabel;
     }
 
+    /// <summary>
+    /// Get target time label instance
+    /// </summary>
+    /// <returns></returns>
     public Label GetTargetTimeLabel()
     {
         return targetTimeLabel;
     }
 
+    /// <summary>
+    /// Get progress bar instance
+    /// </summary>
+    /// <returns></returns>
     public ProgressBar GetProgressBar()
     {
         return progressBar;

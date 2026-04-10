@@ -16,6 +16,11 @@ public class VehicleGenerator
 
     private readonly List<Vehicle> vehicles = new();
 
+    /// <summary>
+    /// Initialize a vehicle generator
+    /// </summary>
+    /// <param name="game"></param>
+    /// <param name="road"></param>
     public VehicleGenerator(RacingGame game, Road road)
     {
         this.game = game;

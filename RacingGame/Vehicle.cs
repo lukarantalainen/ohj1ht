@@ -19,6 +19,13 @@ public class Vehicle : PhysicsObject
 {
     public double PushVelocity {  get; set; }
     public Side Side { get; set; }
+
+    /// <summary>
+    /// Initialize a vehicle
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="type"></param>
     public Vehicle(double width, double height, VehicleType type) : base(width, height)
     {
         IgnoresCollisionResponse = true;
@@ -32,7 +39,7 @@ public class Vehicle : PhysicsObject
             case (VehicleType.Car):
                 CreateCar(); break;
             case (VehicleType.Truck):
-                CreateTruck(); break;
+                CreateSuperCar(); break;
             case VehicleType.Taxi:
                 CreateTaxi();  break;
             default:
@@ -40,6 +47,9 @@ public class Vehicle : PhysicsObject
         }
     }
 
+    /// <summary>
+    /// Create a car
+    /// </summary>
     private void CreateCar()
     {
         Image = RacingGame.CarImageGreen;
@@ -49,13 +59,19 @@ public class Vehicle : PhysicsObject
 
     }
 
-    private void CreateTruck()
+    /// <summary>
+    /// Create a supercar
+    /// </summary>
+    private void CreateSuperCar()
     {
         Image = RacingGame.PlayerImage;
         Shape = RacingGame.CarShape;
         PushVelocity = 300;
     }
 
+    /// <summary>
+    /// Create a taxi
+    /// </summary>
     private void CreateTaxi()
     {
         Image = RacingGame.TaxiImage;
