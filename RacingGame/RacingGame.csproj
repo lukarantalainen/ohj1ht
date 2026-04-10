@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Jypeli.NET" Version="11.*" />
-        <PackageReference Include="Jypeli.FarseerPhysics.NET" Version="2.*" />
+        <PackageReference Include="Jypeli.NET" Version="11.*"/>
+        <PackageReference Include="Jypeli.FarseerPhysics.NET" Version="2.*"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="Content/*.*">
@@ -16,10 +16,10 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <Compile Remove="Content\Dashboard.cs" />
+        <Compile Remove="Content\Dashboard.cs"/>
     </ItemGroup>
     <ItemGroup>
-      <Content Include="Dashboard.cs" />
+        <Content Include="Dashboard.cs"/>
     </ItemGroup>
 
 </Project>

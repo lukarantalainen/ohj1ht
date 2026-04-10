@@ -1,34 +1,31 @@
 using Jypeli;
-using System;
 
 namespace RacingGame;
-using Jypeli.Widgets;
 
 public class Map
 {
+    private const double DrivingForce = 1500;
+    private readonly Background background;
     private readonly RacingGame game;
     private readonly Road road;
-    private readonly Background background;
-    
-    private const double DrivingForce = 1500; 
 
     /// <summary>
-    /// Initializes the map
+    ///     Initializes the map
     /// </summary>
     /// <param name="game"></param>
     public Map(RacingGame game)
     {
         Properties.MaxVelocity = 1500;
-        Properties.BGMaxVelocity = 600;
+        Properties.BgMaxVelocity = 600;
         this.game = game;
 
         road = new Road(Properties.RoadWidth, Game.Screen.Height * 2, RacingGame.RoadImage, game);
 
         background = new Background(Game.Screen.Width, Game.Screen.Height * 2, RacingGame.DesertImage, game);
     }
-    
+
     /// <summary>
-    /// Get current velocity
+    ///     Get current velocity
     /// </summary>
     /// <returns></returns>
     public double GetVelocity()
@@ -37,25 +34,25 @@ public class Map
     }
 
     /// <summary>
-    /// Get current background velocity (background velocity is lower than road velocity to create a better illusion)
+    ///     Get current background velocity (background velocity is lower than road velocity to create a better illusion)
     /// </summary>
     /// <returns></returns>
-    public double GetBGVelocity()
+    public double GetBgVelocity()
     {
-        return background.GetVelocity(); 
+        return background.GetVelocity();
     }
 
     /// <summary>
-    /// Get the road object
+    ///     Get the road object
     /// </summary>
     /// <returns></returns>
     public Road GetRoad()
     {
         return road;
     }
-    
+
     /// <summary>
-    /// Handle driving
+    ///     Handle driving
     /// </summary>
     public void Drive()
     {
@@ -66,28 +63,22 @@ public class Map
     }
 
     /// <summary>
-    /// Handle braking
+    ///     Handle braking
     /// </summary>
     public void Brake()
     {
         const double ratio = 2.5;
         double force = 1000;
-        double velocity = GetVelocity();
-        double bgVelocity = GetBGVelocity();
+        var velocity = GetVelocity();
+        var bgVelocity = GetBgVelocity();
 
-        if (velocity > 300)
-        {
-            road.Brake(force);
-        }
+        if (velocity > 300) road.Brake(force);
 
-        if (bgVelocity > 200)
-        {
-            background.Brake(force / ratio);
-        }
+        if (bgVelocity > 200) background.Brake(force / ratio);
     }
 
     /// <summary>
-    /// Slow on collision
+    ///     Slow on collision
     /// </summary>
     public void Slow()
     {
@@ -102,18 +93,18 @@ public class Map
     }
 
     /// <summary>
-    /// Cancel slow effects
+    ///     Cancel slow effects
     /// </summary>
     /// <param name="timer"></param>
     private void UnSlow(Timer timer)
     {
         timer.Stop();
         road.SetMaxVelocity(Properties.MaxVelocity);
-        background.SetMaxVelocity(Properties.BGMaxVelocity);
+        background.SetMaxVelocity(Properties.BgMaxVelocity);
     }
 
     /// <summary>
-    /// Get a specific road
+    ///     Get a specific road
     /// </summary>
     /// <param name="num"></param>
     /// <returns></returns>
@@ -123,7 +114,7 @@ public class Map
     }
 
     /// <summary>
-    /// Get a specific border
+    ///     Get a specific border
     /// </summary>
     /// <param name="num"></param>
     /// <returns></returns>
@@ -131,5 +122,4 @@ public class Map
     {
         return road.GetBorder(num);
     }
-
 }

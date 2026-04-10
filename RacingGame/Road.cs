@@ -1,30 +1,21 @@
-using Jypeli;
-using Jypeli.Effects;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using Jypeli;
+
 namespace RacingGame;
 
 /// <summary>
-/// Creates Road objects based on PhysicsObject class
+///     Creates Road objects based on PhysicsObject class
 /// </summary>
 public class Road
 {
-    private readonly PhysicsObject upperRoad;
-    private readonly PhysicsObject lowerRoad;
-
     private readonly PhysicsObject borderLeft;
     private readonly PhysicsObject borderRight;
-
-    public List<double> Lanes { get; }
-    private enum Side
-    {
-        Left,
-        Right,
-    }
+    private readonly PhysicsObject lowerRoad;
+    private readonly PhysicsObject upperRoad;
 
     /// <summary>
-    /// Initializes a road
+    ///     Initializes a road
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
@@ -43,10 +34,10 @@ public class Road
             Position = new Vector(0, Game.Screen.Bottom - Game.Screen.Height),
             IgnoresCollisionResponse = true,
             IgnoresGravity = true,
-            IgnoresExplosions = true,
+            IgnoresExplosions = true
         };
 
-        Lanes = [ -225, -85, 85, 225 ];
+        Lanes = [-225, -85, 85, 225];
 
         game.Add(upperRoad, -1);
         game.Add(lowerRoad, -1);
@@ -58,8 +49,10 @@ public class Road
         game.AddCollisionHandler(lowerBorder, lowerRoad, Cycle);
     }
 
+    public List<double> Lanes { get; }
+
     /// <summary>
-    /// Creates a PhysicsObject for the road
+    ///     Creates a PhysicsObject for the road
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
@@ -67,7 +60,8 @@ public class Road
     /// <param name="image"></param>
     /// <param name="maxVelocity"></param>
     /// <returns></returns>
-    private static PhysicsObject CreateRoad(double width, double height, Vector position, Image image, double maxVelocity)
+    private static PhysicsObject CreateRoad(double width, double height, Vector position, Image image,
+        double maxVelocity)
     {
         var road = new PhysicsObject(width, height)
         {
@@ -83,7 +77,7 @@ public class Road
     }
 
     /// <summary>
-    /// Creates borders to the road
+    ///     Creates borders to the road
     /// </summary>
     /// <param name="color"></param>
     /// <param name="side"></param>
@@ -93,7 +87,7 @@ public class Road
         var border = new PhysicsObject(Properties.RoadBorderWidth, Game.Screen.Height)
         {
             Restitution = 0.5,
-            Color = color,
+            Color = color
         };
         switch (side)
         {
@@ -104,13 +98,14 @@ public class Road
                 border.Left = upperRoad.Right;
                 break;
         }
+
         border.MakeStatic();
 
         return border;
     }
 
     /// <summary>
-    /// Moves the roads to create an illusion
+    ///     Moves the roads to create an illusion
     /// </summary>
     /// <param name="border"></param>
     /// <param name="road"></param>
@@ -120,28 +115,27 @@ public class Road
     }
 
     /// <summary>
-    /// Handle driving
+    ///     Handle driving
     /// </summary>
     /// <param name="force"></param>
     public void Drive(double force)
     {
-        upperRoad.Push(new Vector(0, -upperRoad.Mass*force));
+        upperRoad.Push(new Vector(0, -upperRoad.Mass * force));
         lowerRoad.Push(new Vector(0, -lowerRoad.Mass * force));
     }
 
     /// <summary>
-    /// Handle braking
+    ///     Handle braking
     /// </summary>
     /// <param name="force"></param>
     public void Brake(double force)
     {
-
         upperRoad.Push(new Vector(0, upperRoad.Mass * force));
         lowerRoad.Push(new Vector(0, lowerRoad.Mass * force));
     }
 
     /// <summary>
-    /// Set road max velocity
+    ///     Set road max velocity
     /// </summary>
     /// <param name="maxVelocity"></param>
     public void SetMaxVelocity(double maxVelocity)
@@ -151,7 +145,7 @@ public class Road
     }
 
     /// <summary>
-    /// Get road velocity
+    ///     Get road velocity
     /// </summary>
     /// <returns></returns>
     public double GetVelocity()
@@ -160,7 +154,7 @@ public class Road
     }
 
     /// <summary>
-    /// Get road width
+    ///     Get road width
     /// </summary>
     /// <returns></returns>
     public double GetWidth()
@@ -169,7 +163,7 @@ public class Road
     }
 
     /// <summary>
-    /// Get a road PhysicsObject instance
+    ///     Get a road PhysicsObject instance
     /// </summary>
     /// <param name="road"></param>
     /// <returns></returns>
@@ -185,7 +179,7 @@ public class Road
     }
 
     /// <summary>
-    /// Get road border instance
+    ///     Get road border instance
     /// </summary>
     /// <param name="road"></param>
     /// <returns></returns>
@@ -198,5 +192,11 @@ public class Road
             1 => borderRight,
             _ => throw new ArgumentException("Invalid border number. Must be 0 or 1.")
         };
+    }
+
+    private enum Side
+    {
+        Left,
+        Right
     }
 }

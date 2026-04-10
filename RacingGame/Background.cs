@@ -1,15 +1,14 @@
 using Jypeli;
 
-
 namespace RacingGame;
 
 public class Background : PhysicsObject
 {
-    private readonly PhysicsObject upperBackground;
     private readonly PhysicsObject lowerBackground;
+    private readonly PhysicsObject upperBackground;
 
     /// <summary>
-    /// Constructs the whole background object that's shown on screen
+    ///     Constructs the whole background object that's shown on screen
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
@@ -25,7 +24,7 @@ public class Background : PhysicsObject
             Position = new Vector(0, Game.Screen.Bottom - Game.Screen.Height),
             IgnoresCollisionResponse = true,
             IgnoresGravity = true,
-            IgnoresExplosions = true,
+            IgnoresExplosions = true
         };
 
         game.Add(upperBackground, -2);
@@ -34,11 +33,10 @@ public class Background : PhysicsObject
 
         game.AddCollisionHandler(lowerBorder, upperBackground, Cycle);
         game.AddCollisionHandler(lowerBorder, lowerBackground, Cycle);
-
     }
 
     /// <summary>
-    /// Creates a PhysicsObject
+    ///     Creates a PhysicsObject
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
@@ -55,14 +53,13 @@ public class Background : PhysicsObject
             IgnoresCollisionResponse = true,
             IgnoresGravity = true,
             IgnoresExplosions = true,
-            MaxVelocity = Properties.BGMaxVelocity,
-
+            MaxVelocity = Properties.BgMaxVelocity
         };
         return background;
     }
 
     /// <summary>
-    /// Moves the backgrounds to create an illusion
+    ///     Moves the backgrounds to create an illusion
     /// </summary>
     /// <param name="border"></param>
     /// <param name="background"></param>
@@ -73,7 +70,7 @@ public class Background : PhysicsObject
     }
 
     /// <summary>
-    /// Pushes the background as you drive
+    ///     Pushes the background as you drive
     /// </summary>
     /// <param name="force"></param>
     public void Drive(double force)
@@ -83,7 +80,7 @@ public class Background : PhysicsObject
     }
 
     /// <summary>
-    /// Slows down the background
+    ///     Slows down the background
     /// </summary>
     /// <param name="force"></param>
     public void Brake(double force)
@@ -93,7 +90,7 @@ public class Background : PhysicsObject
     }
 
     /// <summary>
-    /// Sets maximum velocity for the backgrounds
+    ///     Sets maximum velocity for the backgrounds
     /// </summary>
     /// <param name="maxVelocity"></param>
     public void SetMaxVelocity(double maxVelocity)
@@ -103,7 +100,7 @@ public class Background : PhysicsObject
     }
 
     /// <summary>
-    /// Gets background velocity
+    ///     Gets background velocity
     /// </summary>
     /// <returns></returns>
     public double GetVelocity()

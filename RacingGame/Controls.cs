@@ -1,16 +1,16 @@
-namespace RacingGame;
-
 using Jypeli;
+
+namespace RacingGame;
 
 public class Controls
 {
-    private readonly RacingGame game;
     private readonly Player car;
+    private readonly RacingGame game;
     private readonly Map map;
     private readonly Progress progress;
 
     /// <summary>
-    /// Initializes the class variables
+    ///     Initializes the class variables
     /// </summary>
     /// <param name="game"></param>
     /// <param name="car"></param>
@@ -25,7 +25,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Adds controls to the game 
+    ///     Adds controls to the game
     /// </summary>
     /// <param name="game"></param>
     /// <param name="car"></param>
@@ -38,7 +38,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Handles driving
+    ///     Handles driving
     /// </summary>
     private void Drive()
     {
@@ -48,7 +48,7 @@ public class Controls
 
 
     /// <summary>
-    /// Handles braking
+    ///     Handles braking
     /// </summary>
     private void Brake()
     {
@@ -57,7 +57,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Handles progress when the car is moving but not accelerating
+    ///     Handles progress when the car is moving but not accelerating
     /// </summary>
     private void DriveIdle()
     {
@@ -66,7 +66,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Move player to the left
+    ///     Move player to the left
     /// </summary>
     private void SteerLeft()
     {
@@ -74,7 +74,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Move player to the right
+    ///     Move player to the right
     /// </summary>
     private void SteerRight()
     {
@@ -82,7 +82,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Add the controls to the game
+    ///     Add the controls to the game
     /// </summary>
     private void AddControls()
     {

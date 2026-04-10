@@ -1,87 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Jypeli;
+﻿using Jypeli;
 
-namespace RacingGame
+namespace RacingGame;
+
+public class Dashboard
 {
-    public class Dashboard
+    private readonly RacingGame game;
+    private readonly Player player;
+    private readonly Progress progress;
+
+    /// <summary>
+    ///     Creates the UI
+    /// </summary>
+    /// <param name="game"></param>
+    /// <param name="player"></param>
+    /// <param name="progress"></param>
+    public Dashboard(RacingGame game, Player player, Progress progress)
     {
-        private readonly RacingGame game;
-        private readonly Progress progress;
+        this.game = game;
+        this.player = player;
+        this.progress = progress;
 
-        /// <summary>
-        /// Creates the UI
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="player"></param>
-        /// <param name="progress"></param>
-        public Dashboard(RacingGame game, Player player, Progress progress)
+        Init();
+    }
+
+    /// <summary>
+    /// Initializes the UI
+    /// </summary>
+    private void Init()
+    {
+        var background = CreateBackground();
+
+        var topBar = CreateTopBar();
+        game.Add(topBar, 2);
+
+        var healthBar = player.GetHealthBar();
+        healthBar.Left = background.Left + 10;
+        healthBar.Top = background.Top - 10;
+
+        var progressBar = progress.GetProgressBar();
+        progressBar.Right = background.Right - 10;
+        progressBar.Y = background.Y;
+
+        game.Add(progressBar);
+
+        game.Add(healthBar, 2);
+
+        game.Add(background, 2);
+    }
+
+    /// <summary>
+    ///     Creates a background
+    /// </summary>
+    /// <returns></returns>
+    private static GameObject CreateBackground()
+    {
+        var background = new GameObject(Properties.RoadWidth + 2 * Properties.RoadBorderWidth, 125, Shape.Rectangle)
         {
-            this.game = game;
-            this.progress = progress;
-            var background = CreateBackground();
+            X = 0,
+            Bottom = Game.Screen.Bottom,
+            Color = Color.Black
+        };
+        return background;
+    }
 
-            var topBar = CreateTopBar();
-            game.Add(topBar, 2);
-
-            var healthBar = player.GetHealthBar();
-            healthBar.Left = background.Left + 10;
-            healthBar.Top = background.Top - 10;
-
-            var progressBar = progress.GetProgressBar();
-            progressBar.Right = background.Right - 10;
-            progressBar.Y = background.Y;
-
-            game.Add(progressBar);
-
-            game.Add(healthBar, 2);
-
-            game.Add(background, 2);
-        }
-
-        /// <summary>
-        /// Creates a background
-        /// </summary>
-        /// <returns></returns>
-        private static GameObject CreateBackground()
+    /// <summary>
+    ///     Creates a bar on the top containing the timers
+    /// </summary>
+    /// <returns></returns>
+    private GameObject CreateTopBar()
+    {
+        var topBar = new GameObject(Properties.RoadWidth + 2 * Properties.RoadBorderWidth, 40)
         {
-            var background = new GameObject(Properties.RoadWidth+2*Properties.RoadBorderWidth, 125, Shape.Rectangle)
-            {
-                X = 0,
-                Bottom = Game.Screen.Bottom,
-                Color = Color.Black,
-            };
-            return background;
-        }
+            Color = Color.Black,
+            Top = Game.Screen.Top
+        };
 
-        /// <summary>
-        /// Creates a bar on the top containing the timers
-        /// </summary>
-        /// <returns></returns>
-        private GameObject CreateTopBar()
-        {
-            var topBar = new GameObject(Properties.RoadWidth + 2 * Properties.RoadBorderWidth, 40)
-            {
-                Color = Color.Black,
-                Top = Game.Screen.Top,
+        var timeLabel = progress.GetTimeLabel();
+        timeLabel.Position = new Vector(topBar.X - 30, topBar.Y);
+        topBar.Add(timeLabel);
+        var targetTimeLabel = progress.GetTargetTimeLabel();
+        targetTimeLabel.Position = new Vector(topBar.X + 30, topBar.Y);
+        topBar.Add(targetTimeLabel);
 
-            };
-
-            var timeLabel = progress.GetTimeLabel();
-            timeLabel.Position = new Vector(topBar.X - 30, topBar.Y);
-            topBar.Add(timeLabel);
-            var targetTimeLabel = progress.GetTargetTimeLabel();
-            targetTimeLabel.Position = new Vector(topBar.X + 30, topBar.Y);
-            topBar.Add(targetTimeLabel);
-
-            return topBar;
-        }
-
-
-    }    
+        return topBar;
+    }
 }

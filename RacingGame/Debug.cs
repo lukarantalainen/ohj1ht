@@ -1,23 +1,22 @@
-
-using System;
-using System.Collections;
-namespace RacingGame;
 using Jypeli;
 using Jypeli.Widgets;
+
+namespace RacingGame;
+
 public class Debug
 {
-    private readonly RacingGame game; 
-    private readonly Player player;
-    private readonly Map map;
-    private readonly PhysicsObject road;
-    private readonly PhysicsObject road2;
     private readonly PhysicsObject borderLeft;
     private readonly PhysicsObject borderRight;
+    private readonly RacingGame game;
+    private readonly Map map;
+    private readonly Player player;
+    private readonly PhysicsObject road;
+    private readonly PhysicsObject road2;
 
-    private double Y = Game.Screen.Top - 100;
+    private double y = Game.Screen.Top - 100;
 
     /// <summary>
-    /// Gets the objects needed for debugging
+    ///     Gets the objects needed for debugging
     /// </summary>
     /// <param name="game"></param>
     /// <param name="player"></param>
@@ -36,15 +35,15 @@ public class Debug
     }
 
     /// <summary>
-    /// Shows where you clicked
+    ///     Shows where you clicked
     /// </summary>
     private void ShowClickPosition()
     {
         game.MessageDisplay.Add(game.Mouse.PositionOnWorld.ToString());
     }
-    
+
     /// <summary>
-    /// Starts the debug display
+    ///     Starts the debug display
     /// </summary>
     /// <param name="game"></param>
     /// <param name="player"></param>
@@ -56,44 +55,44 @@ public class Debug
         debug.CreatePlayerPosition();
         debug.CreateSpeedOMeter();
     }
-    
+
     /// <summary>
-    /// Add a slider to the debug display
+    ///     Add a slider to the debug display
     /// </summary>
     /// <param name="slider"></param>
     /// <param name="label"></param>
     private void AddToScreen(Slider slider, Label label)
     {
         slider.Left = Game.Screen.Left + 20;
-        slider.Y = Y;
+        slider.Y = y;
         slider.Color = RandomGen.NextColor();
-        Y -= 100;
+        y -= 100;
         game.Add(slider);
-        label.Position = new Vector(slider.X, slider.Y+50);
+        label.Position = new Vector(slider.X, slider.Y + 50);
         game.Add(label);
     }
 
     /// <summary>
-    /// Add a label to the debug display
+    ///     Add a label to the debug display
     /// </summary>
     /// <param name="display"></param>
     /// <param name="label"></param>
     private void AddToScreen(Label display, Label label)
     {
-        display.Position = new Vector(Game.Screen.Left + 100, Y);
+        display.Position = new Vector(Game.Screen.Left + 100, y);
         display.Color = RandomGen.NextColor();
-        Y -= 100;
+        y -= 100;
         game.Add(display);
-        label.Position = new Vector(display.X, display.Y+50);
+        label.Position = new Vector(display.X, display.Y + 50);
         game.Add(label);
     }
 
     /// <summary>
-    /// Create a slider for zooming the map
+    ///     Create a slider for zooming the map
     /// </summary>
     private void CreateZoomSlider()
     {
-        var zoomMeter = new  DoubleMeter(0, -0.99, 1);
+        var zoomMeter = new DoubleMeter(0, -0.99, 1);
         zoomMeter.Changed += ZoomLevel;
 
         var zoomSlider = new Slider(200, 20);
@@ -102,42 +101,41 @@ public class Debug
     }
 
     /// <summary>
-    /// Change camera zoom level
+    ///     Change camera zoom level
     /// </summary>
     /// <param name="oldValue"></param>
     /// <param name="newValue"></param>
     private void ZoomLevel(double oldValue, double newValue)
     {
-        game.Camera.ZoomFactor = 1+newValue;
+        game.Camera.ZoomFactor = 1 + newValue;
     }
-    
+
     /// <summary>
-    /// Create a speedometer
+    ///     Create a speedometer
     /// </summary>
     private void CreateSpeedOMeter()
     {
-        DoubleMeter meter = new DoubleMeter(0);
+        var meter = new DoubleMeter(0);
         var timer = new Timer();
         timer.Interval = 0.5;
-        timer.Timeout += delegate {UpdateSpeedOMeter(meter);};
+        timer.Timeout += delegate { UpdateSpeedOMeter(meter); };
         timer.Start();
-        Label label = new Label();
+        var label = new Label();
         label.BindTo(meter);
-        AddToScreen(label, new  Label("Speed"));
+        AddToScreen(label, new Label("Speed"));
     }
-    
+
     /// <summary>
-    /// Update the speedometer
+    ///     Update the speedometer
     /// </summary>
     /// <param name="meter"></param>
     private void UpdateSpeedOMeter(DoubleMeter meter)
     {
         meter.Value = map.GetVelocity();
-
     }
 
     /// <summary>
-    /// Show player position
+    ///     Show player position
     /// </summary>
     private void CreatePlayerPosition()
     {
@@ -145,21 +143,19 @@ public class Debug
         label.Text = "Player Position";
         label.Position = new Vector(-300, 100);
         AddToScreen(label, new Label("Player Position"));
-        
-        var timer = new  Timer();
+
+        var timer = new Timer();
         timer.Interval = 0.5;
         timer.Timeout += delegate { UpdatePos(label); };
         timer.Start();
     }
 
     /// <summary>
-    /// Update player position
+    ///     Update player position
     /// </summary>
     /// <param name="label"></param>
     private void UpdatePos(Label label)
     {
         label.Text = player.Position.ToString();
     }
-    
-
 }

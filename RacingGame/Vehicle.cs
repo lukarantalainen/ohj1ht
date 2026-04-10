@@ -6,22 +6,19 @@ public enum VehicleType
 {
     Car,
     Truck,
-    Taxi,
+    Taxi
 }
 
 public enum Side
 {
     Left,
-    Right,
+    Right
 }
 
 public class Vehicle : PhysicsObject
 {
-    public double PushVelocity {  get; set; }
-    public Side Side { get; set; }
-
     /// <summary>
-    /// Initialize a vehicle
+    ///     Initialize a vehicle
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
@@ -36,31 +33,32 @@ public class Vehicle : PhysicsObject
 
         switch (type)
         {
-            case (VehicleType.Car):
+            case VehicleType.Car:
                 CreateCar(); break;
-            case (VehicleType.Truck):
+            case VehicleType.Truck:
                 CreateSuperCar(); break;
             case VehicleType.Taxi:
-                CreateTaxi();  break;
+                CreateTaxi(); break;
             default:
                 CreateCar(); break;
         }
     }
 
+    public double PushVelocity { get; private set; }
+    public Side Side { get; set; }
+
     /// <summary>
-    /// Create a car
+    ///     Create a car
     /// </summary>
     private void CreateCar()
     {
         Image = RacingGame.CarImageGreen;
         Shape = RacingGame.CarShape;
         PushVelocity = 500;
-
-
     }
 
     /// <summary>
-    /// Create a supercar
+    ///     Create a supercar
     /// </summary>
     private void CreateSuperCar()
     {
@@ -70,7 +68,7 @@ public class Vehicle : PhysicsObject
     }
 
     /// <summary>
-    /// Create a taxi
+    ///     Create a taxi
     /// </summary>
     private void CreateTaxi()
     {
@@ -78,6 +76,4 @@ public class Vehicle : PhysicsObject
         Shape = RacingGame.CarShape;
         PushVelocity = 500;
     }
-
 }
-

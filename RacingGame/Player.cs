@@ -1,18 +1,18 @@
-    using Jypeli;
-using Jypeli.Assets;
+using Jypeli;
 using Jypeli.Widgets;
+
 namespace RacingGame;
 
 public class Player : PhysicsObject
 {
     private readonly RacingGame game;
-    private readonly Map map;
-
-    private readonly IntMeter healthMeter;
     private readonly ProgressBar healthBar;
 
+    private readonly IntMeter healthMeter;
+    private readonly Map map;
+
     /// <summary>
-    /// Creates the player
+    ///     Creates the player
     /// </summary>
     /// <param name="game"></param>
     /// <param name="map"></param>
@@ -24,7 +24,7 @@ public class Player : PhysicsObject
         healthMeter = new IntMeter(Properties.PlayerHealth)
         {
             MaxValue = Properties.PlayerHealth,
-            MinValue = 0,
+            MinValue = 0
         };
         healthMeter.LowerLimit += HealthEnd;
 
@@ -33,7 +33,7 @@ public class Player : PhysicsObject
     }
 
     /// <summary>
-    /// Do when out of health
+    ///     Do when out of health
     /// </summary>
     private void HealthEnd()
     {
@@ -41,7 +41,7 @@ public class Player : PhysicsObject
     }
 
     /// <summary>
-    /// Creates the player
+    ///     Creates the player
     /// </summary>
     private void CreatePlayer()
     {
@@ -52,13 +52,13 @@ public class Player : PhysicsObject
         CanRotate = false;
         Mass = 1000;
         Tag = "player";
-        base.Position = new Vector(0, Game.Screen.Bottom+350);
+        base.Position = new Vector(0, Game.Screen.Bottom + 350);
         game.Add(this, 0);
         game.AddCollisionHandler(this, "vehicle", HandleCollision);
     }
 
     /// <summary>
-    /// Handles collision to other vehicles
+    ///     Handles collision to other vehicles
     /// </summary>
     /// <param name="colliding"></param>
     /// <param name="target"></param>
@@ -71,16 +71,16 @@ public class Player : PhysicsObject
     }
 
     /// <summary>
-    /// Creates a health bar
+    ///     Creates a health bar
     /// </summary>
     /// <param name="healthMeter"></param>
     /// <returns></returns>
     private static ProgressBar CreateHealthBar(IntMeter healthMeter)
     {
-       var healthbar = new ProgressBar(280, 20)
+        var healthbar = new ProgressBar(280, 20)
         {
             Image = Game.LoadImage("health-bar-empty"),
-            BarImage = Game.LoadImage("health-bar-full"),
+            BarImage = Game.LoadImage("health-bar-full")
         };
 
         healthbar.BindTo(healthMeter);
@@ -88,28 +88,27 @@ public class Player : PhysicsObject
     }
 
     /// <summary>
-    /// Move to the right
+    ///     Move to the right
     /// </summary>
     public void SteerRight()
     {
-        Push(new Vector(Mass*1000, 0));
+        Push(new Vector(Mass * 1000, 0));
     }
 
     /// <summary>
-    /// Move to the left
+    ///     Move to the left
     /// </summary>
     public void SteerLeft()
     {
-        Push(new Vector(-Mass*1000, 0));
+        Push(new Vector(-Mass * 1000, 0));
     }
 
     /// <summary>
-    /// Get the health bar instance
+    ///     Get the health bar instance
     /// </summary>
     /// <returns></returns>
     public ProgressBar GetHealthBar()
     {
         return healthBar;
     }
-    
 }
