@@ -103,7 +103,7 @@ public class RacingGame : PhysicsGame
             StartGame();
         }, "");
 
-        Debug.Start(this, player, map);
+        //Debug.Start(this, player, map);
     }
 
     private void CreateTopList()
