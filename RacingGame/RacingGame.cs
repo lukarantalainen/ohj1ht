@@ -1,22 +1,16 @@
 using Jypeli;
 using Jypeli.Widgets;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace RacingGame;
 
 /// @author lukar
 /// @version 16.01.2026
 /// <summary>
-/// 
 /// </summary>
-/// 
-
 public struct Properties
 {
     public static double MaxVelocity { get; set; }
-    public static double BGMaxVelocity { get; set; }
+    public static double BgMaxVelocity { get; set; }
     public const double RoadWidth = 600;
     public const double RoadBorderWidth = 20;
 
@@ -28,22 +22,10 @@ public struct Properties
 
     public const int PlayerHealth = 100;
     public const int DamageFromCar = 10;
-
-}
-
-public struct CarColors
-{
-    public static Color red = Color.FromHexCode("ff000");
-
 }
 
 public class RacingGame : PhysicsGame
 {
-    private Progress progress;
-    private Player player;
-    private Map map;
-    private VehicleGenerator vehicleGenerator;
-
     public static readonly Image PlayerImage = LoadImage("player-texture");
 
     public static readonly Image CarImage = LoadImage("car-texture");
@@ -63,11 +45,15 @@ public class RacingGame : PhysicsGame
     //https://freesound.org/people/Pastew/sounds/813525/
 
     public static readonly SoundEffect Quack = LoadSoundEffect("quack");
+    private Map map;
+    private Player player;
+    private Progress progress;
 
     //public static readonly Image _cactusTexture = LoadImage("cactus-texture");
 
 
     private ScoreList topList;
+    private VehicleGenerator vehicleGenerator;
 
     public override void Begin()
     {
@@ -75,19 +61,20 @@ public class RacingGame : PhysicsGame
         Init();
     }
 
+    /// <summary>
+    ///     Initializes the game
+    /// </summary>
     private void Init()
     {
         ClearAll();
         CreateTopList();
-        
+
         Keyboard.Listen(Key.R, ButtonState.Pressed, Init, "");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         map = new Map(this);
         player = new Player(this, map);
         progress = new Progress(this);
-        var dashboard = new Dashboard(this, player, progress);
-
-
+        _ = new Dashboard(this, player, progress);
 
         var startLabel = new Label(300, 100)
         {
@@ -106,12 +93,18 @@ public class RacingGame : PhysicsGame
         //Debug.Start(this, player, map);
     }
 
+    /// <summary>
+    ///     Creates a toplist
+    /// </summary>
     private void CreateTopList()
     {
-        topList = DataStorage.TryLoad<ScoreList>(topList, "scores.xml");
+        topList = DataStorage.TryLoad(topList, "scores.xml");
         topList = new ScoreList(10, true, Properties.TargetTime);
     }
 
+    /// <summary>
+    ///     Starts the countdown
+    /// </summary>
     private void StartGame()
     {
         Keyboard.Clear();
@@ -119,6 +112,10 @@ public class RacingGame : PhysicsGame
         progress.Start();
     }
 
+    /// <summary>
+    ///     Shows the name input window
+    /// </summary>
+    /// <param name="time"></param>
     private void ShowTopList(double time)
     {
         var window = new HighScoreWindow(
@@ -128,23 +125,32 @@ public class RacingGame : PhysicsGame
             Color = Color.FromHexCode("fffdcc")
         };
         window.List.ScoreFormat = "{0:0.00}";
-        window.Closed += delegate (Window sender) { SaveScores(sender, time); };
+        window.Closed += delegate(Window sender) { SaveScores(sender, time); };
         Add(window);
     }
 
+    /// <summary>
+    ///     Saves the toplist scores to a file
+    /// </summary>
+    /// <param name="_"></param>
+    /// <param name="time"></param>
     private void SaveScores(Window _, double time)
     {
-        DataStorage.Save<ScoreList>(topList, "scores.xml");
+        DataStorage.Save(topList, "scores.xml");
         CreateSelectionWindow(false, time);
     }
 
+    /// <summary>
+    ///     Creates the seletion window at the end of a game
+    /// </summary>
+    /// <param name="failed"></param>
+    /// <param name="time"></param>
     private void CreateSelectionWindow(bool failed, double time)
     {
-        
         if (failed)
         {
             string[] options = ["Restart", "Quit"];
-            var endWindow = new MultiSelectWindow($"Failed: you crashed too many times.", options);
+            var endWindow = new MultiSelectWindow("Failed: you crashed too many times.", options);
             endWindow.AddItemHandler(0, Init);
             endWindow.AddItemHandler(1, Exit);
             Add(endWindow);
@@ -161,6 +167,9 @@ public class RacingGame : PhysicsGame
         }
     }
 
+    /// <summary>
+    ///     Adds all controls
+    /// </summary>
     public void AddControls()
     {
         Keyboard.Clear();
@@ -169,13 +178,19 @@ public class RacingGame : PhysicsGame
         Controls.Start(this, player, map, progress);
     }
 
+    /// <summary>
+    ///     Starts the game
+    /// </summary>
     public void Start()
     {
         AddControls();
-        
         vehicleGenerator = new VehicleGenerator(this, map.GetRoad());
     }
 
+    /// <summary>
+    ///     Ends the game
+    /// </summary>
+    /// <param name="failed"></param>
     public void End(bool failed)
     {
         IsPaused = true;
@@ -189,23 +204,19 @@ public class RacingGame : PhysicsGame
         }
 
         CreateSelectionWindow(failed, time);
-
     }
 
+    /// <summary>
+    ///     Updates vehicle positions
+    /// </summary>
+    /// <param name="time"></param>
     protected override void Update(Time time)
     {
-        double totalSeconds = time.SinceLastUpdate.TotalSeconds;
-        if (PhysicsEnabled)
-        {
-            Engine.Update(totalSeconds);
-        }
+        var totalSeconds = time.SinceLastUpdate.TotalSeconds;
+        if (PhysicsEnabled) Engine.Update(totalSeconds);
 
         base.Update(time);
         Joints.Update(time);
-        if (vehicleGenerator != null)
-        {
-            vehicleGenerator.Update();
-        }
+        vehicleGenerator?.Update();
     }
-
 }

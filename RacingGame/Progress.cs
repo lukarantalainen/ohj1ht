@@ -1,26 +1,27 @@
 using System.Collections.Generic;
+using Jypeli;
+using Jypeli.Widgets;
 
 namespace RacingGame;
 
-using Jypeli;
-using Jypeli.Widgets;
-using SixLabors.ImageSharp.Processing.Processors.Transforms;
-
 public class Progress
 {
-    private readonly RacingGame game;
-
     private readonly DoubleMeter distMeter = new(0);
     private readonly DoubleMeter distPercentage = new(0);
-    private readonly DoubleMeter timeMeter = new(0);
-    private readonly DoubleMeter timeLeftMeter = new(Properties.TargetTime);
+    private readonly RacingGame game;
+    private readonly Label targetTimeLabel;
 
     private readonly Label timeLabel;
-    private readonly Label targetTimeLabel;
+    private readonly DoubleMeter timeLeftMeter = new(Properties.TargetTime);
+    private readonly DoubleMeter timeMeter = new(0);
+
+    private bool finished;
     private ProgressBar progressBar;
 
-    private bool finished = false;
-
+    /// <summary>
+    ///     Initializes progress indicators
+    /// </summary>
+    /// <param name="game"></param>
     public Progress(RacingGame game)
     {
         this.game = game;
@@ -30,27 +31,38 @@ public class Progress
         progressBar = CreateProgressBar();
     }
 
+    /// <summary>
+    ///     Start the game
+    /// </summary>
     public void Start()
     {
         CreateStartLights();
     }
 
+    /// <summary>
+    ///     Creates a label to show elapsed time
+    /// </summary>
+    /// <returns></returns>
     private Label CreateTimeLabel()
     {
-        var label = new Label()
+        var label = new Label
         {
             Width = 20,
             Color = Color.Black,
             TextColor = Color.BrightGreen,
-            DecimalPlaces = 2,
+            DecimalPlaces = 2
         };
         label.BindTo(timeMeter);
         return label;
     }
 
+    /// <summary>
+    ///     Creates a label to show time remaining
+    /// </summary>
+    /// <returns></returns>
     private Label CreateTargetTimeLabel()
     {
-        var label = new Label()
+        var label = new Label
         {
             Width = 20,
             Color = Color.Black,
@@ -61,6 +73,10 @@ public class Progress
         return label;
     }
 
+    /// <summary>
+    ///     Creates a progress bar
+    /// </summary>
+    /// <returns></returns>
     private ProgressBar CreateProgressBar()
     {
         distMeter.MaxValue = Properties.RoadLength;
@@ -71,15 +87,15 @@ public class Progress
             Angle = -Angle.RightAngle,
             Position = new Vector(Game.Screen.Right - 100, 100),
             BarColor = Color.BrightGreen,
-            Color = Color.Orange,
+            Color = Color.Orange
         };
         progressBar.BindTo(distMeter);
 
-        var progressLabel = new Label()
+        var progressLabel = new Label
         {
             Position = progressBar.Position,
             TextColor = Color.White,
-            DecimalPlaces = 0,
+            DecimalPlaces = 0
         };
         progressLabel.BindTo(distPercentage);
         progressBar.Add(progressLabel);
@@ -87,6 +103,9 @@ public class Progress
         return progressBar;
     }
 
+    /// <summary>
+    ///     Creates and adds a finishline to the screen
+    /// </summary>
     private void AddFinishLine()
     {
         if (!finished)
@@ -98,23 +117,27 @@ public class Progress
                 Position = new Vector(0, Game.Screen.Top),
                 IgnoresCollisionResponse = true,
                 IgnoresExplosions = true,
-                IgnoresPhysicsLogics = true,
+                IgnoresPhysicsLogics = true
             };
 
-            game.AddCollisionHandler(finishLine, "player", delegate (PhysicsObject a, PhysicsObject b) { game.End(false); });
+            game.AddCollisionHandler(finishLine, "player", delegate { game.End(false); });
             game.Add(finishLine, 3);
 
             finishLine.MoveTo(new Vector(finishLine.X, Game.Screen.Bottom), Properties.MaxVelocity);
         }
     }
 
+    /// <summary>
+    ///     Creates background for the start lights
+    /// </summary>
+    /// <returns></returns>
     private static GameObject CreateStartLightBackground()
     {
         var background = new GameObject(400, 150, Shape.Rectangle)
         {
             X = 0,
             Top = Game.Screen.Top - 50,
-            Color = Color.Black,
+            Color = Color.Black
         };
 
         var holderLeft = new GameObject(10, 200, Shape.Rectangle)
@@ -136,7 +159,9 @@ public class Progress
         return background;
     }
 
-
+    /// <summary>
+    ///     Creates the start lights
+    /// </summary>
     private void CreateStartLights()
     {
         var background = CreateStartLightBackground();
@@ -144,14 +169,14 @@ public class Progress
         var lights = new List<GameObject>();
         var color = new Color(27, 27, 27);
         const double r = 70;
-        double gap = (background.Width - (3 * r)) / 4;
+        var gap = (background.Width - 3 * r) / 4;
 
-        for (int i = 1; i < 4; i++)
+        for (var i = 1; i < 4; i++)
         {
             var light = new GameObject(r, r, Shape.Circle)
             {
                 Color = color,
-                Position = new Vector(background.Left + i * gap + (2*i-1)*r/2, background.Y)
+                Position = new Vector(background.Left + i * gap + (2 * i - 1) * r / 2, background.Y)
             };
             lights.Add(light);
             background.Add(light);
@@ -169,26 +194,37 @@ public class Progress
         StartCountdown(lights, root);
     }
 
-    private void StartCountdown(List<GameObject>lights, GameObject root)
+    /// <summary>
+    ///     Starts a countdown
+    /// </summary>
+    /// <param name="lights"></param>
+    /// <param name="root"></param>
+    private void StartCountdown(List<GameObject> lights, GameObject root)
     {
         var countdown = new IntMeter(0);
-        bool penalty = false;
-        game.Keyboard.Listen(Key.W, ButtonState.Down, delegate 
-        { penalty = true;
+        var penalty = false;
+        game.Keyboard.Listen(Key.W, ButtonState.Down, delegate
+        {
+            penalty = true;
             game.MessageDisplay.Add("Penalty: false start");
         }, "");
 
         var timer = new Timer(1);
-        timer.Timeout += delegate () { UpdateLights(countdown, timer, lights, root, penalty); };
+        timer.Timeout += delegate { UpdateLights(countdown, timer, lights, root, penalty); };
         timer.Start();
     }
 
+    /// <summary>
+    ///     Updates the start lights based on time
+    /// </summary>
+    /// <param name="countdown"></param>
+    /// <param name="timer"></param>
+    /// <param name="lights"></param>
+    /// <param name="root"></param>
+    /// <param name="penalty"></param>
     private void UpdateLights(IntMeter countdown, Timer timer, List<GameObject> lights, GameObject root, bool penalty)
     {
-        if (countdown.Value==0)
-        {
-            RacingGame.StartSound.Play();
-        }
+        if (countdown.Value == 0) RacingGame.StartSound.Play();
 
         if (countdown.Value < 3)
         {
@@ -198,10 +234,7 @@ public class Progress
         else if (countdown.Value == 3)
         {
             CreateTimer();
-            foreach (var lightObj in lights)
-            {
-                lightObj.Color = Color.Green;
-            }
+            foreach (var lightObj in lights) lightObj.Color = Color.Green;
 
             if (!penalty)
             {
@@ -222,10 +255,13 @@ public class Progress
             timer.Stop();
             game.Start();
         }
-        
+
         countdown.Value++;
     }
 
+    /// <summary>
+    ///     Creates a time to count elapsed time
+    /// </summary>
     private void CreateTimer()
     {
         var timer = new Timer
@@ -234,41 +270,58 @@ public class Progress
         };
         timer.Timeout += UpdateTimer;
         timer.Start();
-
-        var timeLeft = new Timer(0.01);
-        {
-            timeLeft.Timeout += delegate { timeLeftMeter.Value -= 0.01; };
-        }
-        timeLeft.Start();
     }
-    
+
+    /// <summary>
+    ///     Updates time elapsed
+    /// </summary>
     private void UpdateTimer()
     {
         timeMeter.Value += 0.01;
+        timeLeftMeter.Value -= 0.01;
     }
 
-    public void Drive(double velocity)
-    {
-        distMeter.Value += velocity / 1000;
-        distPercentage.Value = distMeter.Value / Properties.RoadLength*100;
-    }
-
+    /// <summary>
+    ///     Stop the timer
+    /// </summary>
+    /// <returns></returns>
     public double StopTimer()
     {
         return timeMeter.Value;
     }
 
+    /// <summary>
+    ///     Handle driving
+    /// </summary>
+    /// <param name="velocity"></param>
+    public void Drive(double velocity)
+    {
+        distMeter.Value += velocity / 1000;
+        distPercentage.Value = distMeter.Value / Properties.RoadLength * 100;
+    }
+
+    /// <summary>
+    ///     Get time label instance
+    /// </summary>
+    /// <returns></returns>
     public Label GetTimeLabel()
     {
-
         return timeLabel;
     }
 
+    /// <summary>
+    ///     Get target time label instance
+    /// </summary>
+    /// <returns></returns>
     public Label GetTargetTimeLabel()
     {
         return targetTimeLabel;
     }
 
+    /// <summary>
+    ///     Get progress bar instance
+    /// </summary>
+    /// <returns></returns>
     public ProgressBar GetProgressBar()
     {
         return progressBar;
